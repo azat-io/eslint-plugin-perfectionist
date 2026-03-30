@@ -429,55 +429,85 @@ describe('sort-modules', () => {
     })
 
     it('sorts across empty statements', async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
         code: dedent`
-          enum A { a = 'a' }
-          ;
           enum B { b = 'b' }
+          ;
+          enum A { a = 'a' }
         `,
         options: [options],
       })
     })
 
     it('sorts across debugger statements', async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
         code: dedent`
-          enum A { a = 'a' }
-          debugger
           enum B { b = 'b' }
+          debugger
+          enum A { a = 'a' }
         `,
         options: [options],
       })
     })
 
     it('sorts across import declarations', async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
         code: dedent`
-          enum A { a = 'a' }
-          import 'x'
           enum B { b = 'b' }
+          import 'x'
+          enum A { a = 'a' }
         `,
         options: [options],
       })
     })
 
     it('sorts across export-all declarations', async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
         code: dedent`
-          enum A { a = 'a' }
-          export * from 'x'
           enum B { b = 'b' }
+          export * from 'x'
+          enum A { a = 'a' }
         `,
         options: [options],
       })
     })
 
     it('sorts across namespace export declarations', async () => {
-      await valid({
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
         code: dedent`
-          enum A { a = 'a' }
-          export as namespace Foo
           enum B { b = 'b' }
+          export as namespace Foo
+          enum A { a = 'a' }
         `,
         options: [options],
       })
