@@ -335,7 +335,7 @@ Example configuration:
  (`[a, b]`) or `NewExpression` (`new Array(a, b)`) node.
 To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
 
-Example configuration: only sort arrays followed by `as const`.
+Example configuration 1: only sort arrays followed by `as const`.
 ```ts
 {
   'perfectionist/sort-arrays': [
@@ -343,6 +343,36 @@ Example configuration: only sort arrays followed by `as const`.
     {
       useConfigurationIf: {
         matchesAstSelector: 'TSAsExpression > ArrayExpression',
+      },
+      type: 'alphabetical',
+    },
+  ],
+}
+```
+
+Example configuration 2: only sort `ReadonlySet` elements.
+```ts
+{
+  'perfectionist/sort-arrays': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'NewExpression[callee.name="ReadonlySet"] > ArrayExpression'
+      },
+      type: 'alphabetical',
+    },
+  ],
+}
+```
+
+Example configuration 3: only sort the `imports` field of `@Component` decorators in Angular.
+```ts
+{
+  'perfectionist/sort-arrays': [
+    'error',
+    {
+      useConfigurationIf: {
+        matchesAstSelector: 'Decorator[expression.callee.name="Component"] > CallExpression > ObjectExpression > Property[key.name="imports"] > ArrayExpression'
       },
       type: 'alphabetical',
     },
