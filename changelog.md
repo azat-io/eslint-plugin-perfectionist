@@ -1,5 +1,25 @@
 # Changelog
 
+## v5.8.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.7.0...v5.8.0)
+
+### 🚀 Features
+
+- **sort-array:** Add new rule
+  ([76f423c5](https://github.com/azat-io/eslint-plugin-perfectionist/commit/76f423c5))
+
+### 🐞 Bug Fixes
+
+- Add oxlint rule tester and fix issue in sort-classes
+  ([4949b1d7](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4949b1d7))
+- **sort-modules:** Add missing partition cases
+  ([7244ff1e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7244ff1e))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.7.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.6.0...v5.7.0)
