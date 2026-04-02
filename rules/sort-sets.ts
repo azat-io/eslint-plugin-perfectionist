@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options } from './sort-array-includes/types'
+import type { Options } from './sort-arrays/types'
 
 import {
   MISSED_SPACING_ERROR,
@@ -14,7 +14,7 @@ import {
 import { defaultOptions, jsonSchema } from './sort-array-includes'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { sortArray } from './sort-array-includes/sort-array'
+import { sortArray } from './sort-arrays/sort-array'
 
 /**
  * Cache computed groups by modifiers and selectors for performance.
@@ -79,6 +79,7 @@ function sortPotentiallyValidArray({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
+    mustHaveMatchedContextOptions: false,
     cachedGroupsByModifiersAndSelectors,
     matchedAstSelectors,
     defaultOptions,

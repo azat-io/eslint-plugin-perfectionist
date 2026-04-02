@@ -20,6 +20,7 @@ import sortImports from './rules/sort-imports'
 import sortExports from './rules/sort-exports'
 import sortObjects from './rules/sort-objects'
 import sortModules from './rules/sort-modules'
+import sortArrays from './rules/sort-arrays'
 import sortEnums from './rules/sort-enums'
 import sortMaps from './rules/sort-maps'
 import sortSets from './rules/sort-sets'
@@ -45,7 +46,7 @@ interface BaseOptions {
 
 let pluginName = 'perfectionist'
 
-export let rules = {
+let recommendedRules = {
   'sort-variable-declarations': sortVariableDeclarations,
   'sort-intersection-types': sortIntersectionTypes,
   'sort-import-attributes': sortImportAttributes,
@@ -69,6 +70,10 @@ export let rules = {
   'sort-sets': sortSets,
   'sort-maps': sortMaps,
 } as unknown as ESLint.Plugin['rules']
+export let rules = {
+  ...recommendedRules,
+  'sort-arrays': sortArrays,
+} as unknown as ESLint.Plugin['rules']
 
 let plugin = {
   meta: {
@@ -80,7 +85,7 @@ let plugin = {
 
 function getRules(options: BaseOptions): Linter.RulesRecord {
   return Object.fromEntries(
-    Object.keys(plugin.rules!).map(ruleName => [
+    Object.keys(recommendedRules!).map(ruleName => [
       `${pluginName}/${ruleName}`,
       ['error', options],
     ]),

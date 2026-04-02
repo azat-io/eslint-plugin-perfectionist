@@ -32,10 +32,10 @@ import { sortArray } from './sort-arrays/sort-array'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-const ORDER_ERROR_ID = 'unexpectedArrayIncludesOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedArrayIncludesGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArrayIncludesMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArrayIncludesMembers'
+const ORDER_ERROR_ID = 'unexpectedArraysOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedArraysGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArraysMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArraysMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID
@@ -43,7 +43,7 @@ type MessageId =
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
 
-export let defaultOptions: Required<Options[number]> = {
+let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
@@ -60,7 +60,7 @@ export let defaultOptions: Required<Options[number]> = {
   order: 'asc',
 }
 
-export let jsonSchema: JSONSchema4 = {
+let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
       ...buildCommonJsonSchemas(),
@@ -76,6 +76,7 @@ export let jsonSchema: JSONSchema4 = {
       partitionByComment: partitionByCommentJsonSchema,
       partitionByNewLine: partitionByNewLineJsonSchema,
     },
+    required: ['useConfigurationIf'],
     additionalProperties: false,
     type: 'object',
   },
@@ -92,9 +93,9 @@ export default createEslintRule<Options, MessageId>({
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
-      description: 'Enforce sorted arrays before include method.',
-      url: 'https://perfectionist.dev/rules/sort-array-includes',
-      recommended: true,
+      url: 'https://perfectionist.dev/rules/sort-arrays',
+      description: 'Enforce sorted arrays.',
+      recommended: false,
     },
     schema: jsonSchema,
     type: 'suggestion',
@@ -103,14 +104,14 @@ export default createEslintRule<Options, MessageId>({
   create: context =>
     buildAstListeners({
       nodeTypes: [AST_NODE_TYPES.NewExpression, AST_NODE_TYPES.ArrayExpression],
-      sorter: sortPotentiallyValidArray,
       context,
+      sorter,
     }),
   defaultOptions: [defaultOptions],
-  name: 'sort-array-includes',
+  name: 'sort-arrays',
 })
 
-function sortPotentiallyValidArray({
+function sorter({
   matchedAstSelectors,
   context,
   node,
@@ -119,10 +120,6 @@ function sortPotentiallyValidArray({
   context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
 }): void {
-  if (!isValidArray()) {
-    return
-  }
-
   sortArray<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
@@ -130,34 +127,11 @@ function sortPotentiallyValidArray({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
-    mustHaveMatchedContextOptions: false,
     cachedGroupsByModifiersAndSelectors,
+    mustHaveMatchedContextOptions: true,
     matchedAstSelectors,
     defaultOptions,
     context,
     node,
   })
-
-  function isValidArray(): boolean {
-    if (node.parent.type !== AST_NODE_TYPES.MemberExpression) {
-      return false
-    }
-
-    if (node.parent.property.type !== AST_NODE_TYPES.Identifier) {
-      return false
-    }
-    if (node.parent.property.name !== 'includes') {
-      return false
-    }
-
-    if (node.parent.parent.type !== AST_NODE_TYPES.CallExpression) {
-      return false
-    }
-
-    if (node.parent.parent.callee !== node.parent) {
-      return false
-    }
-
-    return true
-  }
 }
