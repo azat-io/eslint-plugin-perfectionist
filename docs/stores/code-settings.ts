@@ -10,5 +10,5 @@ let initialCodeSettings: Record<string, string> = {
 
 export let codeSettings: MapStore<Record<string, string>> =
   import.meta.env.SSR ?
-    map<Record<string, string>>(initialCodeSettings)
-  : persistentMap<Record<string, string>>('code:', initialCodeSettings)
+    map(initialCodeSettings)
+  : persistentMap('code:', initialCodeSettings)
