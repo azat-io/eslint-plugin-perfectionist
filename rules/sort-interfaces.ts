@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options as SortObjectTypesOptions } from './sort-object-types/types'
+import type { Options } from './sort-interfaces/types'
 
 import {
   MISSED_SPACING_ERROR,
@@ -15,8 +15,6 @@ import { sortObjectTypeElements } from './sort-object-types/sort-object-type-ele
 import { defaultOptions, jsonSchema } from './sort-object-types'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-
-type Options = SortObjectTypesOptions
 
 const ORDER_ERROR_ID = 'unexpectedInterfacePropertiesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedInterfacePropertiesGroupOrder'

@@ -3,8 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { CommonOptions, TypeOption } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
+import type { Options } from './sort-switch-case/types'
 
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
@@ -26,8 +26,6 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
 }
 
 const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
-
-type Options = [Partial<CommonOptions<TypeOption>>]
 
 type MessageId = typeof ORDER_ERROR_ID
 

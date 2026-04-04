@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options as SortImportAttributesOptions } from './sort-import-attributes/types'
+import type { Options } from './sort-export-attributes/types'
 
 import {
   MISSED_SPACING_ERROR,
@@ -26,8 +26,6 @@ type MessageId =
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
-
-type Options = SortImportAttributesOptions
 
 let defaultOptions: Required<Options[0]> = {
   fallbackSort: { type: 'unsorted' },

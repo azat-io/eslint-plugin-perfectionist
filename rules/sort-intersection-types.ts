@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options as SortUnionTypesOptions } from './sort-union-types/types'
+import type { Options } from './sort-intersection-types/types'
 
 import {
   MISSED_SPACING_ERROR,
@@ -31,8 +31,6 @@ type MessageId =
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
   | typeof ORDER_ERROR_ID
-
-type Options = SortUnionTypesOptions
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
