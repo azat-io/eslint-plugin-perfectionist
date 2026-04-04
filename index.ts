@@ -147,3 +147,27 @@ export default {
   ...plugin,
   configs,
 } as { configs: PluginConfigs } & ESLint.Plugin
+
+export type { Options as SortVariableDeclarationsOptions } from './rules/sort-variable-declarations/types'
+export type { Options as SortIntersectionTypesOptions } from './rules/sort-intersection-types/types'
+export type { Options as SortImportAttributesOptions } from './rules/sort-import-attributes/types'
+export type { Options as SortExportAttributesOptions } from './rules/sort-export-attributes/types'
+export type { Options as SortHeritageClausesOptions } from './rules/sort-heritage-clauses/types'
+export type { Options as SortArrayIncludesOptions } from './rules/sort-array-includes/types'
+export type { Options as SortNamedImportsOptions } from './rules/sort-named-imports/types'
+export type { Options as SortNamedExportsOptions } from './rules/sort-named-exports/types'
+export type { Options as SortObjectTypesOptions } from './rules/sort-object-types/types'
+export type { Options as SortSwitchCaseOptions } from './rules/sort-switch-case/types'
+export type { Options as SortUnionTypesOptions } from './rules/sort-union-types/types'
+export type { Options as SortInterfacesOptions } from './rules/sort-interfaces/types'
+export type { Options as SortDecoratorsOptions } from './rules/sort-decorators/types'
+export type { Options as SortJsxPropsOptions } from './rules/sort-jsx-props/types'
+export type { Options as SortClassesOptions } from './rules/sort-classes/types'
+export type { Options as SortImportsOptions } from './rules/sort-imports/types'
+export type { Options as SortExportsOptions } from './rules/sort-exports/types'
+export type { Options as SortObjectsOptions } from './rules/sort-objects/types'
+export type { Options as SortModulesOptions } from './rules/sort-modules/types'
+export type { Options as SortArraysOptions } from './rules/sort-arrays/types'
+export type { Options as SortEnumsOptions } from './rules/sort-enums/types'
+export type { Options as SortMapsOptions } from './rules/sort-maps/types'
+export type { Options as SortSetsOptions } from './rules/sort-sets/types'
