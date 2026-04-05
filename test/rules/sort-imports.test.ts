@@ -602,7 +602,7 @@ describe('sort-imports', () => {
       })
     })
 
-    it('handles hash symbol in internal patterns correctly', async () => {
+    it('marks submodule imports as internal by default', async () => {
       await valid({
         code: dedent`
           import type { T } from 'a'
@@ -616,12 +616,7 @@ describe('sort-imports', () => {
 
           import { d } from '../d'
         `,
-        options: [
-          {
-            ...options,
-            internalPattern: ['#.+'],
-          },
-        ],
+        options: [options],
       })
 
       await invalid({
@@ -658,12 +653,7 @@ describe('sort-imports', () => {
 
           import { d } from '../d'
         `,
-        options: [
-          {
-            ...options,
-            internalPattern: ['#.+'],
-          },
-        ],
+        options: [options],
       })
     })
 
@@ -4222,7 +4212,7 @@ describe('sort-imports', () => {
       })
     })
 
-    it('handles hash symbol in internal patterns correctly', async () => {
+    it('marks submodule imports as internal by default', async () => {
       await valid({
         code: dedent`
           import type { T } from 'a'
@@ -4236,12 +4226,7 @@ describe('sort-imports', () => {
 
           import { d } from '../d'
         `,
-        options: [
-          {
-            ...options,
-            internalPattern: ['#.+'],
-          },
-        ],
+        options: [options],
       })
 
       await invalid({
@@ -4278,12 +4263,7 @@ describe('sort-imports', () => {
 
           import { d } from '../d'
         `,
-        options: [
-          {
-            ...options,
-            internalPattern: ['#.+'],
-          },
-        ],
+        options: [options],
       })
     })
 
@@ -7642,7 +7622,7 @@ describe('sort-imports', () => {
       })
     })
 
-    it('handles hash symbol in internal patterns correctly', async () => {
+    it('marks submodule imports as internal by default', async () => {
       await valid({
         code: dedent`
           import type { T } from 'a'
@@ -7656,12 +7636,7 @@ describe('sort-imports', () => {
 
           import { d } from '../d'
         `,
-        options: [
-          {
-            ...options,
-            internalPattern: ['#.+'],
-          },
-        ],
+        options: [options],
       })
 
       await invalid({
@@ -7698,12 +7673,7 @@ describe('sort-imports', () => {
 
           import { d } from '../d'
         `,
-        options: [
-          {
-            ...options,
-            internalPattern: ['#.+'],
-          },
-        ],
+        options: [options],
       })
     })
 
