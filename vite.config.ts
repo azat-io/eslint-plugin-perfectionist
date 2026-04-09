@@ -44,12 +44,15 @@ export default defineConfig({
       name: 'eslint-plugin-perfectionist',
       formats: ['es'],
     },
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         preserveModules: true,
         exports: 'auto',
       },
       external: (id: string) => !id.startsWith('.') && !path.isAbsolute(id),
+      experimental: {
+        attachDebugInfo: 'none',
+      },
     },
     minify: false,
   },
