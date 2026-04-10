@@ -28,7 +28,10 @@ import {
   partitionByCommentJsonSchema,
   partitionByNewLineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
+import {
+  buildCommonGroupsJsonSchemas,
+  newlinesBetweenJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
 import { defaultOptions, sortClass } from './sort-classes/sort-class'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -50,6 +53,7 @@ export default createEslintRule<Options, MessageId>({
           }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
+          newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
           ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,

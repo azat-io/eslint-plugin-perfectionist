@@ -4061,8 +4061,111 @@ describe('sort-classes', () => {
       })
     })
 
+    describe('newlinesBetweenOverloadSignatures', () => {
+      it('removes newlines between when newlinesBetweenOverloadSignatures is 0', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
+            },
+            {
+              messageId: 'extraSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
+            },
+          ],
+          output: dedent`
+            class Class {
+              method(a: string): void
+              method(a: number): void
+              method(a: string | number): void {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              method(a: string): void
+
+              method(a: number): void
+
+              method(a: string | number): void {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetweenOverloadSignatures: 0,
+              newlinesBetween: 1,
+            },
+          ],
+        })
+      })
+
+      it('ignores newlines between when newlinesBetweenOverloadSignatures is "ignore"', async () => {
+        await valid({
+          code: dedent`
+            class Class {
+              method(a: string): void
+
+
+              method(a: number): void
+
+              method(a: string | number): void {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetweenOverloadSignatures: 'ignore',
+              newlinesBetween: 1,
+            },
+          ],
+        })
+      })
+
+      it('enforces newlines between when newlinesBetweenOverloadSignatures is > 0', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'missedSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
+            },
+            {
+              messageId: 'missedSpacingBetweenClassMembers',
+              data: { right: 'method', left: 'method' },
+            },
+          ],
+          output: dedent`
+            class Class {
+              method(a: string): void
+
+
+              method(a: number): void
+
+
+              method(a: string | number): void {}
+            }
+          `,
+          code: dedent`
+            class Class {
+              method(a: string): void
+              method(a: number): void
+
+              method(a: string | number): void {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetweenOverloadSignatures: 2,
+              newlinesBetween: 1,
+            },
+          ],
+        })
+      })
+    })
+
     it.each([1, 'ignore', 0])(
-      'enforces 0 newline between overload signatures when newlinesBetween is %s',
+      'enforces 0 newline between overload signatures by default when newlinesBetween is %s',
       async newlinesBetween => {
         await invalid({
           errors: [

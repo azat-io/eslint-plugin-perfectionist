@@ -337,6 +337,19 @@ or [`customGroups`](#customgroups) options.
 
 This option is only applicable when [`partitionByNewLine`](#partitionbynewline) is `false`.
 
+### newlinesBetweenOverloadSignatures
+
+<sub>
+  type: `number | 'ignore'`
+</sub>
+<sub>default: `0`</sub>
+
+Specifies how to handle newlines between overload signatures and the implementation of the same method.
+
+- `'ignore'` — Do not report errors related to newlines.
+- `0` — No newlines are allowed.
+- Any other number — Enforce this number of newlines between each overload signature.
+
 ### ignoreCallbackDependenciesPatterns
 
 <sub>
