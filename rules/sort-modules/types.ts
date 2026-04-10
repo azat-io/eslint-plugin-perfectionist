@@ -12,17 +12,6 @@ import {
 } from '../../utils/json-schemas/common-groups-json-schemas'
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
-export type SortModulesNode =
-  | TSESTree.ExportDefaultDeclaration
-  | TSESTree.ExportNamedDeclaration
-  | TSESTree.TSInterfaceDeclaration
-  | TSESTree.TSTypeAliasDeclaration
-  | TSESTree.FunctionDeclaration
-  | TSESTree.TSModuleDeclaration
-  | TSESTree.TSDeclareFunction
-  | TSESTree.TSEnumDeclaration
-  | TSESTree.ClassDeclaration
-
 /**
  * Configuration options for the sort-modules rule.
  *
@@ -49,6 +38,17 @@ export type Options = [
     >
   >,
 ]
+
+export type SortModulesNode =
+  | TSESTree.ExportDefaultDeclaration
+  | TSESTree.ExportNamedDeclaration
+  | TSESTree.TSInterfaceDeclaration
+  | TSESTree.TSTypeAliasDeclaration
+  | TSESTree.FunctionDeclaration
+  | TSESTree.TSModuleDeclaration
+  | TSESTree.TSDeclareFunction
+  | TSESTree.TSEnumDeclaration
+  | TSESTree.ClassDeclaration
 
 /**
  * Represents a sorting node for a module statement.
