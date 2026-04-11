@@ -88,6 +88,7 @@ export let defaultOptions: Required<Options[number]> = {
   ],
   useExperimentalDependencyDetection: true,
   ignoreCallbackDependenciesPatterns: [],
+  newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   partitionByComment: false,
@@ -140,7 +141,9 @@ export function sortClass({
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
   let overloadSignatureNewlinesBetweenValueGetter =
-    buildOverloadSignatureNewlinesBetweenValueGetter()
+    buildOverloadSignatureNewlinesBetweenValueGetter(
+      options.newlinesBetweenOverloadSignatures,
+    )
 
   let className = node.parent.id?.name
 

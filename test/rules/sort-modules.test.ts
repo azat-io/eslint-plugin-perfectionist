@@ -1176,8 +1176,101 @@ describe('sort-modules', () => {
       })
     })
 
+    describe('newlinesBetweenOverloadSignatures', () => {
+      it('removes newlines between when newlinesBetweenOverloadSignatures is 0', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'a', left: 'a' },
+            },
+            {
+              messageId: 'extraSpacingBetweenModulesMembers',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            function a(arg: string): void
+            function a(arg: number): void
+            export function a(arg: string | number): void {}
+          `,
+          code: dedent`
+            function a(arg: string): void
+
+            function a(arg: number): void
+
+            export function a(arg: string | number): void {}
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetweenOverloadSignatures: 0,
+              newlinesBetween: 1,
+            },
+          ],
+        })
+      })
+
+      it('ignores newlines between when newlinesBetweenOverloadSignatures is "ignore"', async () => {
+        await valid({
+          code: dedent`
+            function a(arg: string): void
+
+
+            function a(arg: number): void
+
+            export function a(arg: string | number): void {}
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetweenOverloadSignatures: 'ignore',
+              newlinesBetween: 1,
+            },
+          ],
+        })
+      })
+
+      it('enforces newlines between when newlinesBetweenOverloadSignatures is > 0', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'missedSpacingBetweenModulesMembers',
+              data: { right: 'a', left: 'a' },
+            },
+            {
+              messageId: 'missedSpacingBetweenModulesMembers',
+              data: { right: 'a', left: 'a' },
+            },
+          ],
+          output: dedent`
+            function a(arg: string): void
+
+
+            function a(arg: number): void
+
+
+            export function a(arg: string | number): void {}
+          `,
+          code: dedent`
+            function a(arg: string): void
+            function a(arg: number): void
+
+            export function a(arg: string | number): void {}
+          `,
+          options: [
+            {
+              ...options,
+              newlinesBetweenOverloadSignatures: 2,
+              newlinesBetween: 1,
+            },
+          ],
+        })
+      })
+    })
+
     it.each([1, 'ignore', 0])(
-      'enforces 0 newline between overload signatures when newlinesBetween is %s',
+      'enforces 0 newline between overload signatures by default when newlinesBetween is %s',
       async newlinesBetween => {
         await invalid({
           errors: [

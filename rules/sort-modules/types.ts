@@ -2,6 +2,7 @@ import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
+import type { NewlinesBetweenOption } from '../../types/common-groups-options'
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
 
@@ -10,17 +11,6 @@ import {
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
 import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
-
-export type SortModulesNode =
-  | TSESTree.ExportDefaultDeclaration
-  | TSESTree.ExportNamedDeclaration
-  | TSESTree.TSInterfaceDeclaration
-  | TSESTree.TSTypeAliasDeclaration
-  | TSESTree.FunctionDeclaration
-  | TSESTree.TSModuleDeclaration
-  | TSESTree.TSDeclareFunction
-  | TSESTree.TSEnumDeclaration
-  | TSESTree.ClassDeclaration
 
 /**
  * Configuration options for the sort-modules rule.
@@ -32,6 +22,12 @@ export type Options = [
   Partial<
     {
       /**
+       * Determines how many newlines should be placed between overload
+       * signatures of the same function.
+       */
+      newlinesBetweenOverloadSignatures: NewlinesBetweenOption
+
+      /**
        * Enables experimental dependency detection.
        */
       useExperimentalDependencyDetection: boolean
@@ -42,6 +38,17 @@ export type Options = [
     >
   >,
 ]
+
+export type SortModulesNode =
+  | TSESTree.ExportDefaultDeclaration
+  | TSESTree.ExportNamedDeclaration
+  | TSESTree.TSInterfaceDeclaration
+  | TSESTree.TSTypeAliasDeclaration
+  | TSESTree.FunctionDeclaration
+  | TSESTree.TSModuleDeclaration
+  | TSESTree.TSDeclareFunction
+  | TSESTree.TSEnumDeclaration
+  | TSESTree.ClassDeclaration
 
 /**
  * Represents a sorting node for a module statement.

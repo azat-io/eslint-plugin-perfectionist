@@ -28,13 +28,16 @@ import {
   useExperimentalDependencyDetectionJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
+import {
+  buildCommonGroupsJsonSchemas,
+  newlinesBetweenJsonSchema,
+} from '../utils/json-schemas/common-groups-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { computeDependenciesBySortingNode } from './sort-modules/compute-dependencies-by-sorting-node'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
-import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -88,6 +91,7 @@ let defaultOptions: Required<Options[number]> = {
     'function',
   ],
   useExperimentalDependencyDetection: true,
+  newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   partitionByComment: false,
@@ -117,6 +121,7 @@ export default createEslintRule<Options, MessageId>({
           }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
+          newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewLineJsonSchema,
         },
@@ -186,7 +191,9 @@ function analyzeModule({
 }): void {
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
   let overloadSignatureNewlinesBetweenValueGetter =
-    buildOverloadSignatureNewlinesBetweenValueGetter()
+    buildOverloadSignatureNewlinesBetweenValueGetter(
+      options.newlinesBetweenOverloadSignatures,
+    )
 
   let sortingNodeGroupsWithoutOverloadSignature: Omit<
     SortModulesSortingNode,
