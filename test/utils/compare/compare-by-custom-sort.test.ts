@@ -82,4 +82,28 @@ describe('compare-by-custom-sort', () => {
 
     expect(result).toBe(expected)
   })
+
+  it('sorts base16 palette keys in hex order with uppercase-first custom alphabet', () => {
+    let base16Options = {
+      alphabet: Alphabet.generateRecommendedAlphabet()
+        .sortByLocaleCompare('en-US')
+        .placeAllWithCaseBeforeAllWithOtherCase('uppercase')
+        .getCharacters(),
+      specialCharacters: 'keep' as const,
+      order: 'asc' as const,
+      ignoreCase: false,
+    }
+    let keys = ['base0F', 'base09', 'base0A', 'base00', 'base0B', 'base05']
+    let sorted = keys.toSorted((a, b) =>
+      compareByCustomSort(a, b, base16Options),
+    )
+    expect(sorted).toEqual([
+      'base00',
+      'base05',
+      'base09',
+      'base0A',
+      'base0B',
+      'base0F',
+    ])
+  })
 })
