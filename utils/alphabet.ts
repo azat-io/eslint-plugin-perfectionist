@@ -247,22 +247,18 @@ export class Alphabet {
   public placeAllWithCaseBeforeAllWithOtherCase(
     caseToComeFirst: 'uppercase' | 'lowercase',
   ): this {
-    let charactersWithCase = this.getCharactersWithCase()
-    let orderedCharacters = [
-      ...charactersWithCase.filter(character =>
-        caseToComeFirst === 'uppercase' ?
-          !character.character.uppercaseCharacterCodePoint
-        : character.character.uppercaseCharacterCodePoint,
-      ),
-      ...charactersWithCase.filter(character =>
-        caseToComeFirst === 'uppercase' ?
-          character.character.uppercaseCharacterCodePoint
-        : !character.character.uppercaseCharacterCodePoint,
-      ),
-    ]
-    for (let [i, element] of charactersWithCase.entries()) {
-      this.characters[element.index] = orderedCharacters[i]!.character
+    let otherCaseKey:
+      | 'lowercaseCharacterCodePoint'
+      | 'uppercaseCharacterCodePoint' =
+      caseToComeFirst === 'uppercase' ?
+        'uppercaseCharacterCodePoint'
+      : 'lowercaseCharacterCodePoint'
+    let keep: Character[] = []
+    let move: Character[] = []
+    for (let character of this.characters) {
+      ;(character[otherCaseKey] === undefined ? keep : move).push(character)
     }
+    this.characters = [...keep, ...move]
     return this
   }
 

@@ -278,6 +278,24 @@ describe('alphabet', () => {
               .getCharacters(),
           ).toBe('abcdABCD')
         })
+
+        it('preserves position of uncased characters between cased ones', () => {
+          expect(
+            Alphabet.generateFrom('a-A.b/B+')
+              .placeAllWithCaseBeforeAllWithOtherCase('uppercase')
+              .getCharacters(),
+          ).toBe('-A./B+ab')
+        })
+
+        it('does not relocate uppercase letters ahead of digits when combining marks have case mappings', () => {
+          let alphabet = Alphabet.generateRecommendedAlphabet()
+            .sortByLocaleCompare('en-US')
+            .placeAllWithCaseBeforeAllWithOtherCase('uppercase')
+            .getCharacters()
+          let chars = [...alphabet]
+          expect(chars.indexOf('9')).toBeLessThan(chars.indexOf('A'))
+          expect(chars.indexOf('A')).toBeLessThan(chars.indexOf('a'))
+        })
       })
     })
   })
