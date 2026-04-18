@@ -1,5 +1,28 @@
 # Changelog
 
+## v5.9.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.8.0...v5.9.0)
+
+### 🚀 Features
+
+- Export class option types
+  ([b98c82d9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b98c82d9))
+- Support configurable spacing between overload signatures
+  ([a4b425db](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a4b425db))
+
+### 🐞 Bug Fixes
+
+- **sort-imports:** Add submodule imports as internal patterns
+  ([c05d1b14](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c05d1b14))
+- Preserve uncased character positions
+  ([3d75ce26](https://github.com/azat-io/eslint-plugin-perfectionist/commit/3d75ce26))
+
+### ❤️ Contributors
+
+- Aaron Campbell ([@aarcamp](https://github.com/aarcamp))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.8.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.7.0...v5.8.0)
