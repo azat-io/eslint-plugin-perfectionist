@@ -5,7 +5,6 @@
   alt="ESLint Plugin Perfectionist logo"
   align="right"
   height="160"
-  width="160"
 />
 
 [![Version](https://img.shields.io/npm/v/eslint-plugin-perfectionist.svg?color=4a32c3&labelColor=26272b)](https://npmjs.com/package/eslint-plugin-perfectionist)
