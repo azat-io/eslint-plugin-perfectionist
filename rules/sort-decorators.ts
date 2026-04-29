@@ -5,6 +5,9 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type {
   SortDecoratorsSortingNode,
+  AdditionalSortOptions,
+  Selector,
+  Modifier,
   Options,
 } from './sort-decorators/types'
 
@@ -28,13 +31,14 @@ import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schema
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { allModifiers, allSelectors } from './sort-decorators/types'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { getNodeDecorators } from '../utils/get-node-decorators'
 import { getDecoratorName } from '../utils/get-decorator-name'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { computeGroup } from '../utils/compute-group'
+import { GroupMatcher } from '../utils/group-matcher'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
@@ -73,6 +77,83 @@ let defaultOptions: Required<Options[number]> = {
 }
 
 export default createEslintRule<Options, MessageId>({
+  create: context => {
+    let settings = getSettings(context.settings)
+
+    let options = complete(context.options.at(0), settings, defaultOptions)
+    validateCustomSortConfiguration(options)
+    validateGroupsConfiguration({
+      modifiers: allModifiers,
+      selectors: allSelectors,
+      options,
+    })
+    validateNewlinesAndPartitionConfiguration(options)
+
+    let groupMatcher = new GroupMatcher({
+      allModifiers,
+      allSelectors,
+      options,
+    })
+
+    return {
+      Decorator: decorator => {
+        if (!options.sortOnParameters) {
+          return
+        }
+        if (
+          'decorators' in decorator.parent &&
+          decorator.parent.type === AST_NODE_TYPES.Identifier &&
+          decorator.parent.parent.type === AST_NODE_TYPES.FunctionExpression
+        ) {
+          let { decorators } = decorator.parent
+          if (decorator !== decorators[0]) {
+            return
+          }
+          sortDecorators({ groupMatcher, decorators, options, context })
+        }
+      },
+      PropertyDefinition: propertyDefinition => {
+        if (options.sortOnProperties) {
+          sortDecorators({
+            decorators: getNodeDecorators(propertyDefinition),
+            groupMatcher,
+            context,
+            options,
+          })
+        }
+      },
+      AccessorProperty: accessorDefinition => {
+        if (options.sortOnAccessors) {
+          sortDecorators({
+            decorators: getNodeDecorators(accessorDefinition),
+            groupMatcher,
+            context,
+            options,
+          })
+        }
+      },
+      MethodDefinition: methodDefinition => {
+        if (options.sortOnMethods) {
+          sortDecorators({
+            decorators: getNodeDecorators(methodDefinition),
+            groupMatcher,
+            context,
+            options,
+          })
+        }
+      },
+      ClassDeclaration: declaration => {
+        if (options.sortOnClasses) {
+          sortDecorators({
+            decorators: getNodeDecorators(declaration),
+            groupMatcher,
+            context,
+            options,
+          })
+        }
+      },
+    }
+  },
   meta: {
     schema: {
       items: {
@@ -127,65 +208,6 @@ export default createEslintRule<Options, MessageId>({
     type: 'suggestion',
     fixable: 'code',
   },
-  create: context => {
-    let settings = getSettings(context.settings)
-
-    let options = complete(context.options.at(0), settings, defaultOptions)
-    validateCustomSortConfiguration(options)
-    validateGroupsConfiguration({
-      modifiers: [],
-      selectors: [],
-      options,
-    })
-    validateNewlinesAndPartitionConfiguration(options)
-
-    return {
-      Decorator: decorator => {
-        if (!options.sortOnParameters) {
-          return
-        }
-        if (
-          'decorators' in decorator.parent &&
-          decorator.parent.type === AST_NODE_TYPES.Identifier &&
-          decorator.parent.parent.type === AST_NODE_TYPES.FunctionExpression
-        ) {
-          let { decorators } = decorator.parent
-          if (decorator !== decorators[0]) {
-            return
-          }
-          sortDecorators(context, options, decorators)
-        }
-      },
-      PropertyDefinition: propertyDefinition => {
-        if (options.sortOnProperties) {
-          sortDecorators(
-            context,
-            options,
-            getNodeDecorators(propertyDefinition),
-          )
-        }
-      },
-      AccessorProperty: accessorDefinition => {
-        if (options.sortOnAccessors) {
-          sortDecorators(
-            context,
-            options,
-            getNodeDecorators(accessorDefinition),
-          )
-        }
-      },
-      MethodDefinition: methodDefinition => {
-        if (options.sortOnMethods) {
-          sortDecorators(context, options, getNodeDecorators(methodDefinition))
-        }
-      },
-      ClassDeclaration: declaration => {
-        if (options.sortOnClasses) {
-          sortDecorators(context, options, getNodeDecorators(declaration))
-        }
-      },
-    }
-  },
   defaultOptions: [defaultOptions],
   name: 'sort-decorators',
 })
@@ -196,15 +218,22 @@ export default createEslintRule<Options, MessageId>({
  * Processes the decorators, groups them according to options, and reports any
  * ordering errors found. Handles partitioning by comments and newlines.
  *
- * @param context - The ESLint rule context.
- * @param options - The sorting options for decorators.
- * @param decorators - Array of decorator nodes to sort.
+ * @param params - Parameters object.
+ * @param params.decorators - Array of decorator nodes to sort.
+ * @param params.options - The sorting options for decorators.
+ * @param params.context - The ESLint rule context.
  */
-function sortDecorators(
-  context: Readonly<RuleContext<MessageId, Options>>,
-  options: Required<Options[number]>,
-  decorators: TSESTree.Decorator[],
-): void {
+function sortDecorators({
+  groupMatcher,
+  decorators,
+  options,
+  context,
+}: {
+  groupMatcher: GroupMatcher<AdditionalSortOptions, Selector, Modifier>
+  context: Readonly<RuleContext<MessageId, Options>>
+  options: Required<Options[number]>
+  decorators: TSESTree.Decorator[]
+}): void {
   if (!isSortable(decorators)) {
     return
   }
@@ -222,16 +251,16 @@ function sortDecorators(
         decorator,
       })
 
-      let group = computeGroup({
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             elementName: name,
-            selectors: [],
             modifiers: [],
+            selectors: [],
             customGroup,
           }),
-        predefinedGroups: [],
-        options,
+        selectors: [],
+        modifiers: [],
       })
 
       let sortingNode: Omit<SortDecoratorsSortingNode, 'partitionId'> = {

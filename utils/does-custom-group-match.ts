@@ -1,4 +1,4 @@
-import type { AnyOfCustomGroup } from '../types/common-groups-options'
+import type { CustomGroupsOption } from '../types/common-groups-options'
 import type { RegexOption } from '../types/common-options'
 
 import { matches } from './matches'
@@ -9,7 +9,18 @@ import { matches } from './matches'
  * Contains all the properties of an element that can be used for matching
  * against custom group criteria.
  */
-interface DoesCustomGroupMatchParameters {
+interface DoesCustomGroupMatchParameters<
+  CustomGroupMatchOptions extends BaseCustomGroupMatchOptions,
+> {
+  /**
+   * Custom group configuration to test against.
+   */
+  customGroup: CustomGroupsOption<
+    string,
+    unknown,
+    CustomGroupMatchOptions
+  >[number]
+
   /**
    * Optional value of the element. Used for matching against
    * elementValuePattern in custom groups.
@@ -132,13 +143,7 @@ interface BaseCustomGroupMatchOptions {
  */
 export function doesCustomGroupMatch<
   CustomGroupMatchOptions extends BaseCustomGroupMatchOptions,
->(
-  props: {
-    customGroup:
-      | AnyOfCustomGroup<CustomGroupMatchOptions>
-      | CustomGroupMatchOptions
-  } & DoesCustomGroupMatchParameters,
-): boolean {
+>(props: DoesCustomGroupMatchParameters<CustomGroupMatchOptions>): boolean {
   if ('anyOf' in props.customGroup) {
     return props.customGroup.anyOf.some(subgroup =>
       doesSingleCustomGroupMatch({
