@@ -37,6 +37,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@d22a32a27c918fe470bbc562e984f80ec48c2668 # v4.0.0
         with:
+          netlify-config-path: './netlify.toml'
           publish-dir: './dist'
           production-branch: main
           deploy-message: 'deploy from github actions'

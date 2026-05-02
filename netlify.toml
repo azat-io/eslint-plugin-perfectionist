@@ -1,0 +1,8 @@
+[build]
+  command = "pnpm run docs:build"
+  publish = "dist"
+  edge_functions = "docs/.netlify/edge-functions"
+
+[dev]
+  command = "pnpm run docs:dev:astro"
+  targetPort = 3000
