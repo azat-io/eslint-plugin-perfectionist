@@ -5,6 +5,11 @@
 # Astro
 .astro/
 
+# Netlify
+.netlify/
+deno.lock
+docs/.netlify/
+
 # Build
 dist/
 
