@@ -1,3 +1,9 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  netlify-cli: true
+  unix-dgram: true
+
 configDependencies:
   '@pnpm/plugin-trusted-deps': 0.2.1+sha512-eexZgdsCkalvvWOdtlhlLoMg5Kylqj7CjeAzhSshEi3Io3TJawdKNwRg10ObK0V4DSWNF0lP2ilobwUKUdoCyw==
 
