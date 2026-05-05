@@ -140,9 +140,9 @@ interface CustomGroupMatchOptions {
  */
 export let allSelectors = [
   'index-signature',
-  'member',
   'method',
   'property',
+  'member',
 ] as const
 
 /**
@@ -150,7 +150,7 @@ export let allSelectors = [
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allModifiers = ['optional', 'required', 'multiline'] as const
+export let allModifiers = ['multiline', 'optional', 'required'] as const
 
 const SORT_BY_OPTION = ['name', 'value'] as const
 type SortByOption = (typeof SORT_BY_OPTION)[number]

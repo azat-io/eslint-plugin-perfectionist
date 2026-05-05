@@ -174,7 +174,7 @@ interface CustomGroupMatchOptions {
  *
  * Used for validation and configuration in the ESLint rule.
  */
-export let allSelectors = ['member', 'method', 'property'] as const
+export let allSelectors = ['method', 'property', 'member'] as const
 
 /**
  * Array of all available modifiers for object members.

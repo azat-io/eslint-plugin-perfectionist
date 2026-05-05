@@ -7,26 +7,30 @@ import type { SortingNode } from '../../types/sorting-node'
 
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import {
+  type Modifier,
+  type Selector,
+  allSelectors,
+  allModifiers,
+  type Options,
+} from './types'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
-import { type Selector, allSelectors, type Options } from './types'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { complete } from '../../utils/complete'
 
 export function sortUnionOrIntersectionTypes<MessageIds extends string>({
-  cachedGroupsByModifiersAndSelectors,
   tokenValueToIgnoreBefore,
   matchedAstSelectors,
   availableMessageIds,
@@ -40,7 +44,6 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  cachedGroupsByModifiersAndSelectors: Map<string, string[]>
   node: TSESTree.TSIntersectionType | TSESTree.TSUnionType
   context: Readonly<RuleContext<MessageIds, Options>>
   defaultOptions: Required<Options[number]>
@@ -59,12 +62,17 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 
   let { sourceCode, id } = context
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -138,21 +146,17 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
         type,
       })
 
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        modifiers: [],
-        selectors,
-      })
-      let group = computeGroup({
+      let modifiers: Modifier[] = []
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             elementName: name,
-            modifiers: [],
             customGroup,
+            modifiers,
             selectors,
           }),
-        predefinedGroups,
-        options,
+        selectors,
+        modifiers,
       })
 
       let lastGroup = accumulator.at(-1)

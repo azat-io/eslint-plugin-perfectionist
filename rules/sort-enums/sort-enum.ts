@@ -3,7 +3,13 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortEnumsSortingNode, MessageId, Options } from './types'
+import type {
+  SortEnumsSortingNode,
+  MessageId,
+  Selector,
+  Modifier,
+  Options,
+} from './types'
 
 import {
   DEPENDENCY_ORDER_ERROR_ID,
@@ -11,6 +17,8 @@ import {
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
+  allSelectors,
+  allModifiers,
 } from './types'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
@@ -30,7 +38,7 @@ import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { getEnumMembers } from '../../utils/get-enum-members'
 import { computeDependencies } from './compute-dependencies'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -83,13 +91,18 @@ export function sortEnum({
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
-    selectors: [],
-    modifiers: [],
+    selectors: allSelectors,
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 
   let { sourceCode, id } = context
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -100,17 +113,19 @@ export function sortEnum({
     (accumulator: SortEnumsSortingNode[][], member) => {
       let name = computeNodeName({ node: member, sourceCode })
 
-      let group = computeGroup({
+      let selectors: Selector[] = []
+      let modifiers: Modifier[] = []
+      let group = groupMatcher.computeGroup({
         customGroupMatcher: customGroup =>
           doesCustomGroupMatch({
             elementValue: sourceCode.getText(member.initializer),
             elementName: name,
-            selectors: [],
-            modifiers: [],
             customGroup,
+            selectors,
+            modifiers,
           }),
-        predefinedGroups: [],
-        options,
+        selectors,
+        modifiers,
       })
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)

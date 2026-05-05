@@ -3,14 +3,16 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
+import type { MessageId, Selector, Modifier, Options } from './types'
 import type { SortingNode } from '../../types/sorting-node'
-import type { MessageId, Options } from './types'
 
 import {
   MISSED_SPACING_ERROR_ID,
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
+  allModifiers,
+  allSelectors,
 } from './types'
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
@@ -24,7 +26,7 @@ import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -76,13 +78,18 @@ export function sortHeritageClause({
   let options = complete(matchedContextOptions, settings, defaultOptions)
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
-    modifiers: [],
-    selectors: [],
+    modifiers: allModifiers,
+    selectors: allSelectors,
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)
 
   let { sourceCode, id } = context
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -93,16 +100,18 @@ export function sortHeritageClause({
   for (let heritageClause of heritageClauses) {
     let name = computeNodeName(heritageClause.expression)
 
-    let group = computeGroup({
+    let selectors: Selector[] = []
+    let modifiers: Modifier[] = []
+    let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           elementName: name,
-          selectors: [],
-          modifiers: [],
           customGroup,
+          selectors,
+          modifiers,
         }),
-      predefinedGroups: [],
-      options,
+      selectors,
+      modifiers,
     })
 
     let sortingNode: SortingNode = {
