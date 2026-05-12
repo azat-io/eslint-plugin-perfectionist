@@ -17,7 +17,6 @@ import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
-import { computeArrayElements } from './compute-array-elements'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
@@ -28,11 +27,9 @@ import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 import { allSelectors } from './types'
 
-type SortArraySortingNode = SortingNode<
-  TSESTree.SpreadElement | TSESTree.Expression
->
+type SortClassConstructorSortingNode = SortingNode<TSESTree.Parameter>
 
-export function sortArray<MessageIds extends string>({
+export function sortClassConstructor<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
   mustHaveMatchedContextOptions,
   availableMessageIds,
@@ -48,18 +45,15 @@ export function sortArray<MessageIds extends string>({
     unexpectedOrder: MessageIds
   }
   cachedGroupsByModifiersAndSelectors: Map<string, string[]>
-  node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageIds, Options>>
   defaultOptions: Required<Options[number]>
   matchedAstSelectors: ReadonlySet<string>
   mustHaveMatchedContextOptions: boolean
+  node: TSESTree.MethodDefinition
 }): void {
-  let elements = computeArrayElements(node)
-  if (!elements) {
-    return
-  }
+  let { params } = node.value
 
-  if (!isSortable(elements)) {
+  if (!isSortable(params)) {
     return
   }
 
@@ -68,8 +62,8 @@ export function sortArray<MessageIds extends string>({
 
   let matchedContextOptions = computeMatchedContextOptions({
     matchedAstSelectors,
-    elements,
     context,
+    params,
   })
 
   if (mustHaveMatchedContextOptions && !matchedContextOptions) {
@@ -91,22 +85,18 @@ export function sortArray<MessageIds extends string>({
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
-  let formattedMembers: SortArraySortingNode[][] = elements.reduce(
+  let formattedMembers: SortClassConstructorSortingNode[][] = params.reduce(
     (
-      accumulator: SortArraySortingNode[][],
-      element: TSESTree.SpreadElement | TSESTree.Expression | null,
+      accumulator: SortClassConstructorSortingNode[][],
+      parameter: TSESTree.Parameter,
     ) => {
-      if (element === null) {
-        return accumulator
-      }
-
-      if (element.type === AST_NODE_TYPES.SpreadElement) {
+      if (parameter.type === AST_NODE_TYPES.RestElement) {
         accumulator.push([])
         return accumulator
       }
 
-      let name = computeNodeName({ node: element, sourceCode })
-      let selector: Selector = 'literal'
+      let name = computeNodeName({ node: parameter, sourceCode })
+      let selector: Selector = 'parameter'
       let predefinedGroups = generatePredefinedGroups({
         cache: cachedGroupsByModifiersAndSelectors,
         selectors: [selector],
@@ -124,10 +114,10 @@ export function sortArray<MessageIds extends string>({
         options,
       })
 
-      let sortingNode: Omit<SortArraySortingNode, 'partitionId'> = {
-        isEslintDisabled: isNodeEslintDisabled(element, eslintDisabledLines),
-        size: rangeToDiff(element, sourceCode),
-        node: element,
+      let sortingNode: Omit<SortClassConstructorSortingNode, 'partitionId'> = {
+        isEslintDisabled: isNodeEslintDisabled(parameter, eslintDisabledLines),
+        size: rangeToDiff(parameter, sourceCode),
+        node: parameter,
         group,
         name,
       }
@@ -156,7 +146,7 @@ export function sortArray<MessageIds extends string>({
 
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortArraySortingNode[] {
+  ): SortClassConstructorSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,

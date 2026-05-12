@@ -4,7 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options } from './sort-arrays/types'
+import type { Options } from './sort-class-constructors/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -22,20 +22,20 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-arrays/types'
+import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-class-constructors/types'
+import { sortClassConstructor } from './sort-class-constructors/sort-class-constructor'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { sortArray } from './sort-arrays/sort-array'
 
 /**
  * Cache computed groups by modifiers and selectors for performance.
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-const ORDER_ERROR_ID = 'unexpectedArraysOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedArraysGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenArraysMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenArraysMembers'
+const ORDER_ERROR_ID = 'unexpectedClassConstructorsOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedClassConstructorsGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenClassConstructorsMembers'
+const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenClassConstructorsMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID
@@ -51,8 +51,8 @@ let defaultOptions: Required<Options[number]> = {
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
   useConfigurationIf: {},
+  groups: ['parameter'],
   type: 'alphabetical',
-  groups: ['literal'],
   ignoreCase: true,
   locales: 'en-US',
   customGroups: [],
@@ -93,8 +93,8 @@ export default createEslintRule<Options, MessageId>({
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
-      url: 'https://perfectionist.dev/rules/sort-arrays',
-      description: 'Enforce sorted arrays.',
+      url: 'https://perfectionist.dev/rules/sort-class-constructors',
+      description: 'Enforce sorted class constructor parameters.',
       recommended: false,
     },
     schema: jsonSchema,
@@ -103,12 +103,12 @@ export default createEslintRule<Options, MessageId>({
   },
   create: context =>
     buildAstListeners({
-      nodeTypes: [AST_NODE_TYPES.NewExpression, AST_NODE_TYPES.ArrayExpression],
+      nodeTypes: [AST_NODE_TYPES.MethodDefinition],
       context,
       sorter,
     }),
   defaultOptions: [defaultOptions],
-  name: 'sort-arrays',
+  name: 'sort-class-constructors',
 })
 
 function sorter({
@@ -116,11 +116,15 @@ function sorter({
   context,
   node,
 }: {
-  node: TSESTree.ArrayExpression | TSESTree.NewExpression
   context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
+  node: TSESTree.MethodDefinition
 }): void {
-  sortArray<MessageId>({
+  if (node.kind !== 'constructor') {
+    return
+  }
+
+  sortClassConstructor<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
       extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
