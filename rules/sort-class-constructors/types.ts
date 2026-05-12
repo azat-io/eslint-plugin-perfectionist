@@ -6,11 +6,10 @@ import type { AllCommonOptions } from '../../types/all-common-options'
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
- * Configuration options for the sort-array-includes rule.
+ * Configuration options for the sort-class-constructors rule.
  *
- * This rule enforces the sorting of arrays passed to the `.includes()` method,
- * ensuring consistent ordering of array elements for better readability and
- * maintainability.
+ * This rule enforces the sorting of class constructor parameters, ensuring
+ * consistent ordering for better readability and maintainability.
  */
 export type Options = Partial<
   {
@@ -19,13 +18,13 @@ export type Options = Partial<
      */
     useConfigurationIf: {
       /**
-       * Regular expression pattern to match against all array element names.
-       * The rule is only applied when all names match this pattern.
+       * Regular expression pattern to match against all constructor parameter
+       * names. The rule is only applied when all names match this pattern.
        */
       allNamesMatchPattern?: RegexOption
 
       /**
-       * AST selector to match against ArrayExpression nodes.
+       * AST selector to match against MethodDefinition nodes.
        */
       matchesAstSelector?: string
     }
@@ -37,29 +36,29 @@ export type Options = Partial<
 >[]
 
 /**
- * Represents the type of array element selector. Note: Spread elements are not
- * sorted and act as partition boundaries.
+ * Represents the type of constructor parameter selector. Note: Rest elements
+ * are not sorted and act as partition boundaries.
  */
 export type Selector = (typeof allSelectors)[number]
 
 /**
  * Additional configuration for a single custom group.
  *
- * Custom groups allow fine-grained control over how array elements are grouped
- * and sorted based on their names and types.
+ * Custom groups allow fine-grained control over how constructor parameters are
+ * grouped and sorted based on their names and types.
  *
  * @example
  *
  * ```ts
  * {
- *   "selector": "literal"
+ *   "selector": "parameter"
  * }
  * ```
  */
 interface CustomGroupMatchOptions {
   /**
-   * Specifies the type of array elements to include in this group. Only
-   * 'literal' is available since spread elements create partition boundaries
+   * Specifies the type of constructor parameters to include in this group. Only
+   * 'parameter' is available since rest elements create partition boundaries
    * and are not sorted.
    */
   selector?: Selector
@@ -68,10 +67,10 @@ interface CustomGroupMatchOptions {
 type AdditionalSortOptions = object
 
 /**
- * Complete list of available selectors for array elements. Used for validation
- * and JSON schema generation.
+ * Complete list of available selectors for constructor parameters. Used for
+ * validation and JSON schema generation.
  */
-export let allSelectors = ['literal'] as const
+export let allSelectors = ['parameter'] as const
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate
