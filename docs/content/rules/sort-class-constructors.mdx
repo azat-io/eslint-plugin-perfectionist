@@ -1,15 +1,15 @@
 ---
-title: sort-arrays
-description: Ensure your arrays are sorted based on custom conditions. Improve readability and maintain consistent code with this ESLint rule
-shortDescription: Enforce sorted arrays based on custom conditions
+title: sort-class-constructors
+description: Ensure your class constructor parameters are sorted based on custom conditions. Improve readability and maintain consistent code with this ESLint rule
+shortDescription: Enforce sorted class constructor parameters based on custom conditions
 keywords:
   - eslint
-  - sort arrays
+  - sort class constructors
   - eslint rule
   - coding standards
   - code quality
   - javascript linting
-  - array sorting
+  - constructor parameter sorting
 ---
 
 import CodeExample from '../../components/CodeExample.svelte'
@@ -17,88 +17,85 @@ import Important from '../../components/Important.astro'
 import CodeTabs from '../../components/CodeTabs.svelte'
 import dedent from 'dedent'
 
-Enforce sorted array values on arrays matching configured conditions.
+Enforce sorted constructor parameters on classes matching configured conditions.
 
-This rule does not sort arrays by default. It must be configured with [`useConfigurationIf`](#useconfigurationif) to
-target only the arrays where element order does not matter (e.g., `as const` arrays used as enumerations).
+This rule does not sort constructor parameters by default. It must be configured with [`useConfigurationIf`](#useconfigurationif) to
+target only the classes where parameter order does not matter (e.g., classes using dependency injection).
 
-By keeping those arrays sorted, developers can quickly scan and verify the values, making the code more predictable
+By keeping those constructor parameters sorted, developers can quickly scan and verify the dependencies, making the code more predictable
 and reducing the likelihood of errors.
 
 ## Try it out
 
 <CodeExample
   alphabetical={dedent`
-    const ELECTRONICS = [
-      'Drone',
-      'Headphones',
-      'Keyboard',
-      'Laptop',
-      'Monitor',
-      'Mouse',
-      'Router',
-      'Smartphone',
-      'Smartwatch',
-      'Tablet',
-    ] as const
+    @Component({
+      selector: 'app-dashboard',
+      templateUrl: './dashboard.component.html',
+    })
+    export class DashboardComponent {
+      constructor(
+        private analyticsService: AnalyticsService,
+        private authService: AuthService,
+        private router: Router,
+        private userService: UserService,
+      ) {}
+    }
 
-    const ACCESSORIES = [
-      'Adapter',
-      'Battery',
-      'Cable',
-      'Case',
-      'Charger',
-      'Memory Card',
-      'Screen Protector',
-    ] as const
+    @Injectable()
+    export class DataService {
+      constructor(
+        private cacheService: CacheService,
+        private httpClient: HttpClient,
+        private loggerService: LoggerService,
+      ) {}
+    }
 `}
   lineLength={dedent`
-    const ELECTRONICS = [
-      'Smartphone',
-      'Smartwatch',
-      'Headphones',
-      'Keyboard',
-      'Monitor',
-      'Laptop',
-      'Router',
-      'Tablet',
-      'Drone',
-      'Mouse',
-    ] as const
+    @Component({
+      selector: 'app-dashboard',
+      templateUrl: './dashboard.component.html',
+    })
+    export class DashboardComponent {
+      constructor(
+        private analyticsService: AnalyticsService,
+        private userService: UserService,
+        private authService: AuthService,
+        private router: Router,
+      ) {}
+    }
 
-    const ACCESSORIES = [
-      'Screen Protector',
-      'Memory Card',
-      'Adapter',
-      'Charger',
-      'Battery',
-      'Cable',
-      'Case',
-    ] as const
+    @Injectable()
+    export class DataService {
+      constructor(
+        private loggerService: LoggerService,
+        private cacheService: CacheService,
+        private httpClient: HttpClient,
+      ) {}
+    }
 `}
   initial={dedent`
-    const ELECTRONICS = [
-      'Mouse',
-      'Drone',
-      'Smartphone',
-      'Keyboard',
-      'Tablet',
-      'Monitor',
-      'Laptop',
-      'Smartwatch',
-      'Router',
-      'Headphones',
-    ] as const
+    @Component({
+      selector: 'app-dashboard',
+      templateUrl: './dashboard.component.html',
+    })
+    export class DashboardComponent {
+      constructor(
+        private router: Router,
+        private analyticsService: AnalyticsService,
+        private userService: UserService,
+        private authService: AuthService,
+      ) {}
+    }
 
-    const ACCESSORIES = [
-      'Memory Card',
-      'Charger',
-      'Cable',
-      'Battery',
-      'Screen Protector',
-      'Case',
-      'Adapter',
-    ] as const
+    @Injectable()
+    export class DataService {
+      constructor(
+        private httpClient: HttpClient,
+        private cacheService: CacheService,
+        private loggerService: LoggerService,
+      ) {}
+    }
 `}
   client:load
   lang="tsx"
@@ -203,7 +200,7 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 
 <sub>default: `false`</sub>
 
-Enables the use of comments to separate the members of arrays into logical groups. This can help in organizing and maintaining large arrays by creating partitions based on comments.
+Enables the use of comments to separate the constructor parameters into logical groups. This can help in organizing and maintaining constructors with many parameters by creating partitions based on comments.
 
 - `true` — All comments will be treated as delimiters, creating partitions.
 - `false` — Comments will not be used as delimiters.
@@ -215,29 +212,21 @@ Enables the use of comments to separate the members of arrays into logical group
 
 <sub>default: `false`</sub>
 
-When `true`, the rule will not sort the members of an array if there is an empty line between them. This helps maintain the defined order of logically separated groups of members.
+When `true`, the rule will not sort the constructor parameters if there is an empty line between them. This helps maintain the defined order of logically separated groups of parameters.
 
 ```ts
-const ELECTRONICS = [
-     // Group 1
-    'Drone',
-    'Keyboard',
-    'Mouse',
-    'Smartphone',
+constructor(
+  // Group 1
+  private authService: AuthService,
+  private userService: UserService,
 
-    // Group 2
-    'Laptop',
-    'Monitor',
-    'Smartwatch',
-    'Tablet',
-
-    // Group 3
-    'Headphones',
-    'Router',
-  ] as const
+  // Group 2
+  private logger: LoggerService,
+  private router: Router,
+) {}
 ```
 
-Each group of elements (separated by empty lines) is treated independently, and the order within each group is preserved.
+Each group of parameters (separated by empty lines) is treated independently, and the order within each group is preserved.
 
 ### newlinesBetween
 
@@ -296,83 +285,23 @@ This option must be explicitly set in each configuration object.
   ```
 </sub>
 
-Specifies filters to match a particular options configuration for a given array.
+Specifies filters to match a particular options configuration for a given constructor.
 
-The first matching options configuration will be used. If no configuration matches, the array is left unsorted. No fallback configuration is applied.
+The first matching options configuration will be used. If no configuration matches, the constructor is left unsorted. No fallback configuration is applied.
 
-- `allNamesMatchPattern` — A regexp pattern that all array elements must match.
+- `allNamesMatchPattern` — A regexp pattern that all constructor parameter names must match.
 
-Example configuration:
-```ts
-{
-  'perfectionist/sort-arrays': [
-    'error',
-    {
-      groups: ['r', 'g', 'b'], // Sort colors by RGB
-      customGroups: [
-        {
-          elementNamePattern: '^r$',
-          groupName: 'r',
-        },
-        {
-          elementNamePattern: '^g$',
-          groupName: 'g',
-        },
-        {
-          elementNamePattern: '^b$',
-          groupName: 'b',
-        },
-      ],
-      useConfigurationIf: {
-        allNamesMatchPattern: '^[rgb]$',
-      },
-    },
-  ],
-}
-```
-
-- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching an `ArrayExpression`
- (`[a, b]`) or `NewExpression` (`new Array(a, b)`) node.
+- `matchesAstSelector` — An [AST selector](https://eslint.org/docs/latest/extend/selectors) matching a `MethodDefinition` node.
 To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
 
-Example configuration 1: only sort arrays followed by `as const`.
+Example configuration: only sort constructors of Angular components, services, and pipes.
 ```ts
 {
-  'perfectionist/sort-arrays': [
+  'perfectionist/sort-class-constructors': [
     'error',
     {
       useConfigurationIf: {
-        matchesAstSelector: 'TSAsExpression > ArrayExpression',
-      },
-      type: 'alphabetical',
-    },
-  ],
-}
-```
-
-Example configuration 2: only sort `ReadonlySet` elements.
-```ts
-{
-  'perfectionist/sort-arrays': [
-    'error',
-    {
-      useConfigurationIf: {
-        matchesAstSelector: 'NewExpression[callee.name="ReadonlySet"] > ArrayExpression'
-      },
-      type: 'alphabetical',
-    },
-  ],
-}
-```
-
-Example configuration 3: only sort the `imports` field of `@Component` decorators in Angular.
-```ts
-{
-  'perfectionist/sort-arrays': [
-    'error',
-    {
-      useConfigurationIf: {
-        matchesAstSelector: 'Decorator[expression.callee.name="Component"] > CallExpression > ObjectExpression > Property[key.name="imports"] > ArrayExpression'
+        matchesAstSelector: 'ClassDeclaration:has(Decorator[expression.callee.name=/^(Component|Injectable|Pipe)$/]) > ClassBody > MethodDefinition',
       },
       type: 'alphabetical',
     },
@@ -399,7 +328,7 @@ Example configuration 3: only sort the `imports` field of `@Component` decorator
     >
   ```
 </sub>
-<sub>default: `['literal']`</sub>
+<sub>default: `['parameter']`</sub>
 
 Specifies a list of groups for sorting. Groups help organize elements into categories.
 
@@ -415,9 +344,9 @@ Predefined groups are characterized by a selector.
 
 ##### Selectors
 
-- `'literal'` — Array elements that are not spread values.
+- `'parameter'` — Constructor parameters that are not rest elements.
 
-**Note:** Spread elements (`...array`) are not sorted and act as partition boundaries. This ensures the original order of spread elements is preserved, which is important because reordering spread elements can change the resulting array values.
+**Note:** Rest elements (`...args`) are not sorted and act as partition boundaries. This ensures the original order of rest elements is preserved.
 
 #### Group with overridden settings
 
@@ -431,7 +360,7 @@ You may directly override options for a specific group by using an object with t
 ```ts
 {
   groups: [
-    'literal',
+    'parameter',
   ]
 }
 ```
@@ -462,7 +391,7 @@ This feature is only applicable when [`partitionByNewLine`](#partitionbynewline)
 </sub>
 <sub>default: `[]`</sub>
 
-Defines custom groups to match specific array members.
+Defines custom groups to match specific constructor parameters.
 
 A custom group definition may follow one of the two following interfaces:
 
@@ -478,7 +407,7 @@ interface CustomGroupDefinition {
 }
 ```
 
-An array element will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
+A constructor parameter will match a `CustomGroupDefinition` group if it matches all the filters of the custom group's definition.
 
 or:
 
@@ -496,7 +425,7 @@ interface CustomGroupAnyOfDefinition {
 }
 ```
 
-An array element will match a `CustomGroupAnyOfDefinition` group if it matches at least one of the `anyOf` items.
+A constructor parameter will match a `CustomGroupAnyOfDefinition` group if it matches at least one of the `anyOf` items.
 
 #### Attributes
 
@@ -530,7 +459,7 @@ Custom groups have a higher priority than any predefined group.
               perfectionist,
             },
             rules: {
-              'perfectionist/sort-arrays': [
+              'perfectionist/sort-class-constructors': [
                 'error',
                 {
                   type: 'alphabetical',
@@ -542,9 +471,9 @@ Custom groups have a higher priority than any predefined group.
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
                   useConfigurationIf: {
-                    matchesAstSelector: 'TSAsExpression > ArrayExpression',
+                    matchesAstSelector: 'ClassDeclaration:has(Decorator[expression.callee.name=/^(Component|Injectable|Pipe)$/]) > ClassBody > MethodDefinition',
                   },
-                  groups: ["literal"],
+                  groups: ["parameter"],
                   customGroups: [],
                 },
               ],
@@ -563,7 +492,7 @@ Custom groups have a higher priority than any predefined group.
             'perfectionist',
           ],
           rules: {
-            'perfectionist/sort-arrays': [
+            'perfectionist/sort-class-constructors': [
               'error',
               {
                 type: 'alphabetical',
@@ -575,9 +504,9 @@ Custom groups have a higher priority than any predefined group.
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
                 useConfigurationIf: {
-                  matchesAstSelector: 'TSAsExpression > ArrayExpression',
+                  matchesAstSelector: 'ClassDeclaration:has(Decorator[expression.callee.name=/^(Component|Injectable|Pipe)$/]) > ClassBody > MethodDefinition',
                 },
-                groups: ["literal"],
+                groups: ["parameter"],
                 customGroups: [],
               },
             ],
@@ -595,9 +524,9 @@ Custom groups have a higher priority than any predefined group.
 
 ## Version
 
-This rule was introduced in [v5.8.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v5.8.0).
+This rule was introduced in [v5.10.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v5.10.0).
 
 ## Resources
 
-- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-arrays.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-arrays.test.ts)
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-class-constructors.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-class-constructors.test.ts)
