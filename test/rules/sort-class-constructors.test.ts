@@ -1,18 +1,18 @@
 import { createRuleTester } from 'eslint-vitest-rule-tester'
+import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
-import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
+import rule from '../../rules/sort-class-constructors'
 import { Alphabet } from '../../utils/alphabet'
-import rule from '../../rules/sort-arrays'
 
-describe('sort-arrays', () => {
+describe('sort-class-constructors', () => {
   let { invalid, valid } = createRuleTester({
-    name: 'sort-arrays',
+    name: 'sort-class-constructors',
+    parser: typescriptParser,
     rule,
   })
-  let oxlintRuleTester = buildOxlintRuleTester(rule)
 
   describe('alphabetical', () => {
     let options = {
@@ -21,10 +21,12 @@ describe('sort-arrays', () => {
       order: 'asc',
     } as const
 
-    it('accepts sorted arrays', async () => {
+    it('accepts sorted constructor parameters', async () => {
       await valid({
         code: dedent`
-          ['aaa', 'bb', 'c']
+          class Foo {
+            constructor(aaa, bb, c) {}
+          }
         `,
         options: [options],
       })
@@ -41,68 +43,80 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          ['b', 'c', 'a']
+          class Foo {
+            constructor(b, c, a) {}
+          }
         `,
       })
     })
 
-    it('reports error when array is not sorted', async () => {
+    it('reports error when constructor is not sorted', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
         output: dedent`
-          ['aaa', 'bb', 'c']
+          class Foo {
+            constructor(aaa, bb, c) {}
+          }
         `,
         code: dedent`
-          ['bb', 'c', 'aaa']
+          class Foo {
+            constructor(bb, c, aaa) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('preserves array structure when fixing sort order', async () => {
+    it('preserves constructor structure when fixing sort order', async () => {
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            e,
+            ...other
+            ) {}
+          }
         `,
         options: [options],
       })
 
       await invalid({
         output: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            e,
+            ...other
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'c',
-            'b',
-            'd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            a,
+            c,
+            b,
+            d,
+            e,
+            ...other
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -110,125 +124,99 @@ describe('sort-arrays', () => {
       })
     })
 
-    it('does not sort spread elements', async () => {
+    it('does not sort non-constructor methods', async () => {
       await valid({
         code: dedent`
-          [
-            ...aaa,
-            ...ccc,
-            ...bbbb,
-          ]
+          class Foo {
+            myMethod(b, a) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('treats spread elements as partition boundaries', async () => {
-      await valid({
-        code: dedent`
-          [
-            'a',
-            'b',
-            ...spread1,
-            'd',
-            'e',
-            ...spread2,
-            'g',
-            'h',
-          ]
-        `,
-        options: [options],
-      })
-
+    it('sorts TypeScript parameter properties', async () => {
       await invalid({
         output: dedent`
-          [
-            'a',
-            'b',
-            ...spread,
-            'c',
-            'd',
-          ]
+          class Foo {
+            constructor(
+              private aService: AService,
+              private bService: BService,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'a',
-            ...spread,
-            'c',
-            'd',
-          ]
+          class Foo {
+            constructor(
+              private bService: BService,
+              private aService: AService,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'a', left: 'b' },
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'aService', left: 'bService' },
           },
         ],
         options: [options],
       })
     })
 
-    it('handles arrays with empty slots correctly', async () => {
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c',, 'd']
-        `,
-        options: [options],
-      })
-
+    it('sorts parameters with default values', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          ['a', 'b', 'c',, 'd']
+          class Foo {
+            constructor(a = 'x', b = 'y') {}
+          }
         `,
         code: dedent`
-          ['b', 'a', 'c',, 'd']
+          class Foo {
+            constructor(b = 'y', a = 'x') {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('sorts elements in Array constructor calls', async () => {
-      await valid({
-        code: dedent`
-          new Array(
-            'a',
-            'b',
-            'c',
-            'd',
-          )
-        `,
-        options: [options],
-      })
-
+    it('sorts destructured parameters', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'b', left: 'c' },
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: '{ aaa }', left: '{ bb }' },
           },
         ],
         output: dedent`
-          new Array(
-            'a',
-            'b',
-            'c',
-            'd',
-          )
+          class Foo {
+            constructor({ aaa }, { bb }) {}
+          }
         `,
         code: dedent`
-          new Array(
-            'a',
-            'c',
-            'b',
-            'd',
-          )
+          class Foo {
+            constructor({ bb }, { aaa }) {}
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not sort rest elements', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -245,35 +233,39 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'd' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
-          [
-            'a',
-            'd',
+          class Foo {
+            constructor(
+            a,
+            d,
 
-            'c',
+            c,
 
-            'b',
-            'e',
-          ]
+            b,
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'd',
-            'a',
+          class Foo {
+            constructor(
+            d,
+            a,
 
-            'c',
+            c,
 
-            'e',
-            'b',
-          ]
+            e,
+            b,
+            ) {}
+          }
         `,
         options: partitionOptions,
       })
@@ -303,7 +295,7 @@ describe('sort-arrays', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
           {
             data: {
@@ -312,26 +304,30 @@ describe('sort-arrays', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'c',
+          class Foo {
+            constructor(
+            top2,
+            c,
 
-            'top1',
-            'a',
-          ]
+            top1,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top2',
+          class Foo {
+            constructor(
+            c,
+            top2,
 
-            'a',
-            'top1',
-          ]
+            a,
+            top1,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -347,13 +343,15 @@ describe('sort-arrays', () => {
 
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
+          class Foo {
+            constructor(
+            a,
+            b,
 
-            'c',
-            'd',
-          ]
+            c,
+            d,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -369,44 +367,48 @@ describe('sort-arrays', () => {
 
       await invalid({
         output: dedent`
-          [
+          class Foo {
+            constructor(
             // Part: A
             // Not partition comment
-            'bbb',
-            'cc',
-            'd',
+            bbb,
+            cc,
+            d,
             // Part: B
-            'aaaa',
-            'e',
+            aaaa,
+            e,
             // Part: C
             // Not partition comment
-            'fff',
-            'gg',
-          ]
+            fff,
+            gg,
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             // Part: A
-            'cc',
-            'd',
+            cc,
+            d,
             // Not partition comment
-            'bbb',
+            bbb,
             // Part: B
-            'aaaa',
-            'e',
+            aaaa,
+            e,
             // Part: C
-            'gg',
+            gg,
             // Not partition comment
-            'fff',
-          ]
+            fff,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -417,12 +419,14 @@ describe('sort-arrays', () => {
     it('treats every comment as partition boundary when set to true', async () => {
       await valid({
         code: dedent`
-          [
+          class Foo {
+            constructor(
             // Comment
-            'bb',
+            bb,
             // Other comment
-            'a',
-          ]
+            a,
+            ) {}
+          }
         `,
         options: [
           {
@@ -443,34 +447,38 @@ describe('sort-arrays', () => {
 
       await invalid({
         output: dedent`
-          [
+          class Foo {
+            constructor(
             /* Partition Comment */
             // Part: A
-            'd',
+            d,
             // Part: B
-            'aaa',
-            'bb',
-            'c',
+            aaa,
+            bb,
+            c,
             /* Other */
-            'e',
-          ]
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             /* Partition Comment */
             // Part: A
-            'd',
+            d,
             // Part: B
-            'aaa',
-            'c',
-            'bb',
+            aaa,
+            c,
+            bb,
             /* Other */
-            'e',
-          ]
+            e,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -502,7 +510,7 @@ describe('sort-arrays', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
           {
             data: {
@@ -511,26 +519,30 @@ describe('sort-arrays', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'c',
+          class Foo {
+            constructor(
+            top2,
+            c,
             // Part: 1
-            'top1',
-            'a',
-          ]
+            top1,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top2',
+          class Foo {
+            constructor(
+            c,
+            top2,
             // Part: 1
-            'a',
-            'top1',
-          ]
+            a,
+            top1,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -549,23 +561,27 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             /* Comment */
-            'a',
-            'b'
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* Comment */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
         options: lineCommentsOnlyOptions,
       })
@@ -582,11 +598,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // Comment
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -602,13 +620,15 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'c',
+          class Foo {
+            constructor(
+            c,
             // b
-            'b',
+            b,
             // a
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -624,11 +644,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // I am a partition comment because I don't have f o o
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -646,23 +668,27 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             // Comment
-            'a',
-            'b'
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // Comment
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
         options: blockCommentsOnlyOptions,
       })
@@ -679,11 +705,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* Comment */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -699,13 +727,15 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'c',
+          class Foo {
+            constructor(
+            c,
             /* b */
-            'b',
+            b,
             /* a */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -721,11 +751,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* I am a partition comment because I don't have f o o */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -733,13 +765,15 @@ describe('sort-arrays', () => {
     it('supports regex patterns for partition comments', async () => {
       await valid({
         code: dedent`
-          [
-            'e',
-            'f',
+          class Foo {
+            constructor(
+            e,
+            f,
             // I am a partition comment because I don't have f o o
-            'a',
-            'b',
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         options: [
           {
@@ -759,11 +793,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            '$a',
-            'b',
-            '$c',
-          ]
+          class Foo {
+            constructor(
+            $a,
+            b,
+            $c,
+            ) {}
+          }
         `,
       })
     })
@@ -777,69 +813,81 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'ab',
-            'a$c',
-          ]
+          class Foo {
+            constructor(
+            ab,
+            a$c,
+            ) {}
+          }
         `,
       })
     })
 
-    it('sorts elements according to locale-specific rules', async () => {
+    it('sorts parameters according to locale-specific rules', async () => {
       await valid({
         code: dedent`
-          [
-            '你好',
-            '世界',
-            'a',
-            'A',
-            'b',
-            'B'
-          ]
+          class Foo {
+            constructor(
+            你好,
+            世界,
+            a,
+            A,
+            b,
+            B,
+            ) {}
+          }
         `,
         options: [{ ...options, locales: 'zh-CN' }],
       })
     })
 
-    it('sorts single-line arrays correctly', async () => {
+    it('sorts single-line constructor parameters correctly', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
-            a, b
-          ]
+          class Foo {
+            constructor(
+            a, b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            b, a
-          ]
+          class Foo {
+            constructor(
+            b, a,
+            ) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('handles trailing commas in single-line arrays', async () => {
+    it('handles trailing commas in constructor parameters', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             a, b,
-          ]
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             b, a,
-          ]
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -863,32 +911,47 @@ describe('sort-arrays', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'a' },
           },
         ],
         output: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
 
-            'a',
-          ]
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            ) {}
+          }
         `,
       })
     })
 
     it('enforces custom group ordering', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'parameter',
+              rightGroup: 'top',
+              right: 'top1',
+              left: 'c',
+            },
+            messageId: 'unexpectedClassConstructorsGroupOrder',
+          },
+        ],
         options: [
           {
             ...options,
@@ -898,33 +961,26 @@ describe('sort-arrays', () => {
                 groupName: 'top',
               },
             ],
-            groups: ['top', 'literal'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              leftGroup: 'literal',
-              rightGroup: 'top',
-              right: 'top1',
-              left: 'c',
-            },
-            messageId: 'unexpectedArraysGroupOrder',
+            groups: ['top', 'parameter'],
           },
         ],
         output: dedent`
-          [
-            'top1',
-            'a',
-            'c'
-          ]
+          class Foo {
+            constructor(
+            top1,
+            a,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top1',
-            'a'
-          ]
+          class Foo {
+            constructor(
+            c,
+            top1,
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -935,10 +991,10 @@ describe('sort-arrays', () => {
           customGroups: [
             {
               elementNamePattern: '^top',
-              groupName: 'topElements',
+              groupName: 'topParams',
             },
           ],
-          groups: ['topElements', 'unknown'],
+          groups: ['topParams', 'unknown'],
           useConfigurationIf: {},
         },
       ]
@@ -947,25 +1003,29 @@ describe('sort-arrays', () => {
         errors: [
           {
             data: {
-              rightGroup: 'topElements',
+              rightGroup: 'topParams',
               leftGroup: 'unknown',
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top1',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            top1,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'top1',
-          ]
+          class Foo {
+            constructor(
+            b,
+            top1,
+            ) {}
+          }
         `,
         options: customGroupOptions,
       })
@@ -983,12 +1043,12 @@ describe('sort-arrays', () => {
           {
             customGroups: [
               {
-                groupName: 'literalsStartingWithHello',
-                selector: 'literal',
+                groupName: 'parametersStartingWithHello',
+                selector: 'parameter',
                 elementNamePattern,
               },
             ],
-            groups: ['literalsStartingWithHello', 'unknown'],
+            groups: ['parametersStartingWithHello', 'unknown'],
             useConfigurationIf: {},
           },
         ]
@@ -997,27 +1057,31 @@ describe('sort-arrays', () => {
           errors: [
             {
               data: {
-                rightGroup: 'literalsStartingWithHello',
-                right: 'helloLiteral',
+                rightGroup: 'parametersStartingWithHello',
                 leftGroup: 'unknown',
+                right: 'helloParam',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysGroupOrder',
+              messageId: 'unexpectedClassConstructorsGroupOrder',
             },
           ],
           output: dedent`
-            [
-              'helloLiteral',
-              'a',
-              'b',
-            ]
+            class Foo {
+              constructor(
+              helloParam,
+              a,
+              b,
+              ) {}
+            }
           `,
           code: dedent`
-            [
-              'a',
-              'b',
-              'helloLiteral',
-            ]
+            class Foo {
+              constructor(
+              a,
+              b,
+              helloParam,
+              ) {}
+            }
           `,
           options: customGroupOptions,
         })
@@ -1029,13 +1093,13 @@ describe('sort-arrays', () => {
         {
           customGroups: [
             {
-              groupName: 'reversedLiteralsByLineLength',
-              selector: 'literal',
+              groupName: 'reversedParametersByLineLength',
+              selector: 'parameter',
               type: 'line-length',
               order: 'desc',
             },
           ],
-          groups: ['reversedLiteralsByLineLength', 'unknown'],
+          groups: ['reversedParametersByLineLength', 'unknown'],
           useConfigurationIf: {},
           type: 'alphabetical',
           order: 'asc',
@@ -1045,45 +1109,37 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'dddd', left: 'ccc' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
-          [
-            'dddd',
-            'ccc',
-            'bb',
-            'a',
-            ...m,
-            'eee',
-            'ff',
-            'g',
-            ...o,
-            ...p,
-          ]
+          class Foo {
+            constructor(
+              dddd,
+              ccc,
+              bb,
+              a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'bb',
-            'ccc',
-            'dddd',
-            ...m,
-            'eee',
-            'ff',
-            'g',
-            ...o,
-            ...p,
-          ]
+          class Foo {
+            constructor(
+              a,
+              bb,
+              ccc,
+              dddd,
+            ) {}
+          }
         `,
         options: customSortOptions,
       })
@@ -1114,21 +1170,25 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'fooBar', left: 'fooZar' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
-          [
-            'fooBar',
-            'fooZar',
-          ]
+          class Foo {
+            constructor(
+            fooBar,
+            fooZar,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'fooZar',
-            'fooBar',
-          ]
+          class Foo {
+            constructor(
+            fooZar,
+            fooBar,
+            ) {}
+          }
         `,
         options: fallbackSortOptions,
       })
@@ -1158,28 +1218,32 @@ describe('sort-arrays', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'top1',
-            'top4',
-            'top5',
-            'top3',
-            'm',
-          ]
+          class Foo {
+            constructor(
+            top2,
+            top1,
+            top4,
+            top5,
+            top3,
+            m,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'top2',
-            'top1',
-            'top4',
-            'top5',
-            'm',
-            'top3',
-          ]
+          class Foo {
+            constructor(
+            top2,
+            top1,
+            top4,
+            top5,
+            m,
+            top3,
+            ) {}
+          }
         `,
         options: unsortedGroupOptions,
       })
@@ -1198,10 +1262,10 @@ describe('sort-arrays', () => {
                   elementNamePattern: 'Foo',
                 },
               ],
-              groupName: 'elementsIncludingFoo',
+              groupName: 'parametersIncludingFoo',
             },
           ],
-          groups: ['elementsIncludingFoo', 'unknown'],
+          groups: ['parametersIncludingFoo', 'unknown'],
           useConfigurationIf: {},
         },
       ]
@@ -1210,27 +1274,31 @@ describe('sort-arrays', () => {
         errors: [
           {
             data: {
-              rightGroup: 'elementsIncludingFoo',
+              rightGroup: 'parametersIncludingFoo',
               leftGroup: 'unknown',
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'bFoo',
-            'cFoo',
-            'a',
-          ]
+          class Foo {
+            constructor(
+            bFoo,
+            cFoo,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'bFoo',
-            'cFoo',
-          ]
+          class Foo {
+            constructor(
+            a,
+            bFoo,
+            cFoo,
+            ) {}
+          }
         `,
         options: anyOfOptions,
       })
@@ -1243,21 +1311,23 @@ describe('sort-arrays', () => {
             customGroups: [
               {
                 elementNamePattern: '^(?!.*Foo).*$',
-                groupName: 'elementsWithoutFoo',
+                groupName: 'parametersWithoutFoo',
               },
             ],
-            groups: ['unknown', 'elementsWithoutFoo'],
+            groups: ['unknown', 'parametersWithoutFoo'],
             useConfigurationIf: {},
             type: 'alphabetical',
           },
         ],
         code: dedent`
-          [
-            'iHaveFooInMyName',
-            'meTooIHaveFoo',
-            'a',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            iHaveFooInMyName,
+            meTooIHaveFoo,
+            a,
+            b,
+            ) {}
+          }
         `,
       })
     })
@@ -1310,7 +1380,7 @@ describe('sort-arrays', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedArraysGroupOrder',
+                messageId: 'unexpectedClassConstructorsGroupOrder',
               },
               {
                 data: {
@@ -1319,22 +1389,26 @@ describe('sort-arrays', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedArraysGroupOrder',
+                messageId: 'unexpectedClassConstructorsGroupOrder',
               },
             ],
             output: dedent`
-              [
-                'r',
-                'g',
-                'b',
-              ]
+              class Foo {
+                constructor(
+                r,
+                g,
+                b,
+                ) {}
+              }
             `,
             code: dedent`
-              [
-                'b',
-                'g',
-                'r',
-              ]
+              class Foo {
+                constructor(
+                b,
+                g,
+                r,
+                ) {}
+              }
             `,
             options: conditionalOptions,
           })
@@ -1349,7 +1423,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'VariableDeclarator',
+                matchesAstSelector: 'ExpressionStatement',
               },
               type: 'unsorted',
             },
@@ -1363,20 +1437,24 @@ describe('sort-arrays', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
             },
           ],
           output: dedent`
-            const array = [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            const array = [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
       })
@@ -1387,16 +1465,18 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'unsorted',
             },
           ],
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
 
@@ -1405,16 +1485,18 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'unsorted',
             },
           ],
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
       })
@@ -1425,7 +1507,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: '* > ArrayExpression',
+                matchesAstSelector: 'ClassBody > MethodDefinition',
                 allNamesMatchPattern: '^[ac]$',
               },
               type: 'unsorted',
@@ -1433,7 +1515,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'alphabetical',
             },
@@ -1444,20 +1526,24 @@ describe('sort-arrays', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
 
@@ -1466,7 +1552,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
                 allNamesMatchPattern: '^[ac]$',
               },
               type: 'unsorted',
@@ -1474,7 +1560,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'alphabetical',
             },
@@ -1485,20 +1571,24 @@ describe('sort-arrays', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
 
@@ -1507,7 +1597,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
                 allNamesMatchPattern: '^[ac]$',
               },
               type: 'unsorted',
@@ -1527,20 +1617,24 @@ describe('sort-arrays', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
             },
           ],
           output: dedent`
-            const a = [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            const a = [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
         })
       })
@@ -1551,23 +1645,25 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'unsorted',
             },
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: '* > ArrayExpression',
+                matchesAstSelector: 'ClassBody > MethodDefinition',
               },
               type: 'alphabetical',
             },
           ],
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
 
@@ -1576,14 +1672,14 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'alphabetical',
             },
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: '* > ArrayExpression',
+                matchesAstSelector: 'ClassBody > MethodDefinition',
               },
               type: 'unsorted',
             },
@@ -1594,20 +1690,24 @@ describe('sort-arrays', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
       })
@@ -1622,7 +1722,7 @@ describe('sort-arrays', () => {
             {
               ...options,
               useConfigurationIf: {
-                matchesAstSelector: 'ArrayExpression',
+                matchesAstSelector: 'MethodDefinition',
               },
               type: 'unsorted',
             },
@@ -1633,20 +1733,24 @@ describe('sort-arrays', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               b,
               a,
-            ]
+              ) {}
+            }
           `,
         })
       })
@@ -1656,15 +1760,15 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'z' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1682,29 +1786,43 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'y',
-          'z',
+           y,
+          z,
 
-              'b'
-          ]
+              b,
+            ) {}
+          }
         `,
         output: dedent`
-          [
-            'a',
-           'b',
-          'y',
-              'z'
-          ]
+          class Foo {
+            constructor(
+            a,
+           b,
+          y,
+              z,
+            ) {}
+          }
         `,
       })
     })
 
     it('removes newlines inside groups when newlinesInside is 0', async () => {
       await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'b', left: 'z' },
+          },
+          {
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            data: { right: 'b', left: 'z' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -1718,36 +1836,30 @@ describe('sort-arrays', () => {
             newlinesInside: 0,
           },
         ],
-        errors: [
-          {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'b', left: 'z' },
-          },
-          {
-            messageId: 'extraSpacingBetweenArraysMembers',
-            data: { right: 'b', left: 'z' },
-          },
-        ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'b',
-          'y',
-              'z'
-          ]
+           b,
+          y,
+              z,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'y',
-          'z',
+           y,
+          z,
 
-              'b'
-          ]
+              b,
+            ) {}
+          }
         `,
       })
     })
@@ -1771,33 +1883,37 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'y',
-          'z',
+           y,
+          z,
 
-              'b'
-          ]
+              b,
+            ) {}
+          }
         `,
         output: dedent`
-          [
-            'a',
-           'b',
-          'y',
+          class Foo {
+            constructor(
+            a,
+           b,
+          y,
 
-              'z'
-          ]
+              z,
+            ) {}
+          }
         `,
         options: newlinesOptions,
       })
@@ -1825,37 +1941,41 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'z', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'y', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
-           'y',
-          'z',
+           y,
+          z,
 
-              'b',
-          ]
+              b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'z',
-          'y',
-              'b',
-          ]
+           z,
+          y,
+              b,
+            ) {}
+          }
         `,
         options: multiGroupOptions,
       })
@@ -1913,44 +2033,48 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
-            'b',
+            b,
 
-            'c',
-            'd',
+            c,
+            d,
 
 
-            'e'
-          ]
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'b',
+          class Foo {
+            constructor(
+            a,
+            b,
 
 
-            'c',
+            c,
 
-            'd',
+            d,
 
 
-            'e'
-          ]
+            e,
+            ) {}
+          }
         `,
         options: inlineNewlineOptions,
       })
@@ -1985,23 +2109,27 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenArraysMembers',
+              messageId: 'missedSpacingBetweenClassConstructorsMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
 
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           options: mixedNewlineOptions,
         })
@@ -2036,22 +2164,26 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenArraysMembers',
+              messageId: 'extraSpacingBetweenClassConstructorsMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
               b,
-            ]
+              ) {}
+            }
           `,
           options: noNewlineBetweenGroupsOptions,
         })
@@ -2084,21 +2216,25 @@ describe('sort-arrays', () => {
 
         await valid({
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
               b,
-            ]
+              ) {}
+            }
           `,
           options: ignoreNewlineOptions,
         })
 
         await valid({
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           options: ignoreNewlineOptions,
         })
@@ -2130,24 +2266,28 @@ describe('sort-arrays', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'a', // Comment after
+          class Foo {
+            constructor(
+            a, // Comment after
 
-            'b',
-            'c'
-          ]
+            b,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'a', // Comment after
+          class Foo {
+            constructor(
+            b,
+            a, // Comment after
 
-            'c'
-          ]
+            c,
+            ) {}
+          }
         `,
         options: commentOptions,
       })
@@ -2172,29 +2312,33 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
             // Partition comment
 
-            'b',
-            'c',
-          ]
+            b,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
             // Partition comment
 
-            'c',
-            'b',
-          ]
+            c,
+            b,
+            ) {}
+          }
         `,
         options: partitionOptions,
       })
@@ -2208,72 +2352,84 @@ describe('sort-arrays', () => {
       order: 'asc',
     } as const
 
-    it('accepts sorted arrays', async () => {
+    it('accepts sorted constructor parameters', async () => {
       await valid({
         code: dedent`
-          ['aaa', 'bb', 'c']
+          class Foo {
+            constructor(aaa, bb, c) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('reports error when array is not sorted', async () => {
+    it('reports error when constructor is not sorted', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
         output: dedent`
-          ['aaa', 'bb', 'c']
+          class Foo {
+            constructor(aaa, bb, c) {}
+          }
         `,
         code: dedent`
-          ['bb', 'c', 'aaa']
+          class Foo {
+            constructor(bb, c, aaa) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('preserves array structure when fixing sort order', async () => {
+    it('preserves constructor structure when fixing sort order', async () => {
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            e,
+            ...other
+            ) {}
+          }
         `,
         options: [options],
       })
 
       await invalid({
         output: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            e,
+            ...other
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'c',
-            'b',
-            'd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            a,
+            c,
+            b,
+            d,
+            e,
+            ...other
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -2281,125 +2437,16 @@ describe('sort-arrays', () => {
       })
     })
 
-    it('does not sort spread elements', async () => {
+    it('does not sort rest elements', async () => {
       await valid({
         code: dedent`
-          [
-            ...aaa,
-            ...ccc,
-            ...bbbb,
-          ]
-        `,
-        options: [options],
-      })
-    })
-
-    it('treats spread elements as partition boundaries', async () => {
-      await valid({
-        code: dedent`
-          [
-            'a',
-            'b',
-            ...spread1,
-            'd',
-            'e',
-            ...spread2,
-            'g',
-            'h',
-          ]
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        output: dedent`
-          [
-            'a',
-            'b',
-            ...spread,
-            'c',
-            'd',
-          ]
-        `,
-        code: dedent`
-          [
-            'b',
-            'a',
-            ...spread,
-            'c',
-            'd',
-          ]
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        options: [options],
-      })
-    })
-
-    it('handles arrays with empty slots correctly', async () => {
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c',, 'd']
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
-        output: dedent`
-          ['a', 'b', 'c',, 'd']
-        `,
-        code: dedent`
-          ['b', 'a', 'c',, 'd']
-        `,
-        options: [options],
-      })
-    })
-
-    it('sorts elements in Array constructor calls', async () => {
-      await valid({
-        code: dedent`
-          new Array(
-            'a',
-            'b',
-            'c',
-            'd',
-          )
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
-        output: dedent`
-          new Array(
-            'a',
-            'b',
-            'c',
-            'd',
-          )
-        `,
-        code: dedent`
-          new Array(
-            'a',
-            'c',
-            'b',
-            'd',
-          )
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -2416,35 +2463,39 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'd' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'e' },
           },
         ],
         output: dedent`
-          [
-            'a',
-            'd',
+          class Foo {
+            constructor(
+            a,
+            d,
 
-            'c',
+            c,
 
-            'b',
-            'e',
-          ]
+            b,
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'd',
-            'a',
+          class Foo {
+            constructor(
+            d,
+            a,
 
-            'c',
+            c,
 
-            'e',
-            'b',
-          ]
+            e,
+            b,
+            ) {}
+          }
         `,
         options: partitionOptions,
       })
@@ -2474,7 +2525,7 @@ describe('sort-arrays', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
           {
             data: {
@@ -2483,26 +2534,30 @@ describe('sort-arrays', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'c',
+          class Foo {
+            constructor(
+            top2,
+            c,
 
-            'top1',
-            'a',
-          ]
+            top1,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top2',
+          class Foo {
+            constructor(
+            c,
+            top2,
 
-            'a',
-            'top1',
-          ]
+            a,
+            top1,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -2518,13 +2573,15 @@ describe('sort-arrays', () => {
 
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
+          class Foo {
+            constructor(
+            a,
+            b,
 
-            'c',
-            'd',
-          ]
+            c,
+            d,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -2540,44 +2597,48 @@ describe('sort-arrays', () => {
 
       await invalid({
         output: dedent`
-          [
+          class Foo {
+            constructor(
             // Part: A
             // Not partition comment
-            'bbb',
-            'cc',
-            'd',
+            bbb,
+            cc,
+            d,
             // Part: B
-            'aaaa',
-            'e',
+            aaaa,
+            e,
             // Part: C
             // Not partition comment
-            'fff',
-            'gg',
-          ]
+            fff,
+            gg,
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             // Part: A
-            'cc',
-            'd',
+            cc,
+            d,
             // Not partition comment
-            'bbb',
+            bbb,
             // Part: B
-            'aaaa',
-            'e',
+            aaaa,
+            e,
             // Part: C
-            'gg',
+            gg,
             // Not partition comment
-            'fff',
-          ]
+            fff,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -2588,12 +2649,14 @@ describe('sort-arrays', () => {
     it('treats every comment as partition boundary when set to true', async () => {
       await valid({
         code: dedent`
-          [
+          class Foo {
+            constructor(
             // Comment
-            'bb',
+            bb,
             // Other comment
-            'a',
-          ]
+            a,
+            ) {}
+          }
         `,
         options: [
           {
@@ -2614,34 +2677,38 @@ describe('sort-arrays', () => {
 
       await invalid({
         output: dedent`
-          [
+          class Foo {
+            constructor(
             /* Partition Comment */
             // Part: A
-            'd',
+            d,
             // Part: B
-            'aaa',
-            'bb',
-            'c',
+            aaa,
+            bb,
+            c,
             /* Other */
-            'e',
-          ]
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             /* Partition Comment */
             // Part: A
-            'd',
+            d,
             // Part: B
-            'aaa',
-            'c',
-            'bb',
+            aaa,
+            c,
+            bb,
             /* Other */
-            'e',
-          ]
+            e,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -2673,7 +2740,7 @@ describe('sort-arrays', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
           {
             data: {
@@ -2682,26 +2749,30 @@ describe('sort-arrays', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'c',
+          class Foo {
+            constructor(
+            top2,
+            c,
             // Part: 1
-            'top1',
-            'a',
-          ]
+            top1,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top2',
+          class Foo {
+            constructor(
+            c,
+            top2,
             // Part: 1
-            'a',
-            'top1',
-          ]
+            a,
+            top1,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -2720,23 +2791,27 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             /* Comment */
-            'a',
-            'b'
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* Comment */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
         options: lineCommentsOnlyOptions,
       })
@@ -2753,11 +2828,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // Comment
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -2773,13 +2850,15 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'c',
+          class Foo {
+            constructor(
+            c,
             // b
-            'b',
+            b,
             // a
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -2795,11 +2874,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // I am a partition comment because I don't have f o o
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -2817,23 +2898,27 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             // Comment
-            'a',
-            'b'
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // Comment
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
         options: blockCommentsOnlyOptions,
       })
@@ -2850,11 +2935,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* Comment */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -2870,13 +2957,15 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'c',
+          class Foo {
+            constructor(
+            c,
             /* b */
-            'b',
+            b,
             /* a */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -2892,11 +2981,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* I am a partition comment because I don't have f o o */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -2904,13 +2995,15 @@ describe('sort-arrays', () => {
     it('supports regex patterns for partition comments', async () => {
       await valid({
         code: dedent`
-          [
-            'e',
-            'f',
+          class Foo {
+            constructor(
+            e,
+            f,
             // I am a partition comment because I don't have f o o
-            'a',
-            'b',
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         options: [
           {
@@ -2930,11 +3023,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            '$a',
-            'b',
-            '$c',
-          ]
+          class Foo {
+            constructor(
+            $a,
+            b,
+            $c,
+            ) {}
+          }
         `,
       })
     })
@@ -2948,69 +3043,81 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'ab',
-            'a$c',
-          ]
+          class Foo {
+            constructor(
+            ab,
+            a$c,
+            ) {}
+          }
         `,
       })
     })
 
-    it('sorts elements according to locale-specific rules', async () => {
+    it('sorts parameters according to locale-specific rules', async () => {
       await valid({
         code: dedent`
-          [
-            '你好',
-            '世界',
-            'a',
-            'A',
-            'b',
-            'B'
-          ]
+          class Foo {
+            constructor(
+            你好,
+            世界,
+            a,
+            A,
+            b,
+            B,
+            ) {}
+          }
         `,
         options: [{ ...options, locales: 'zh-CN' }],
       })
     })
 
-    it('sorts single-line arrays correctly', async () => {
+    it('sorts single-line constructor parameters correctly', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
-            a, b
-          ]
+          class Foo {
+            constructor(
+            a, b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            b, a
-          ]
+          class Foo {
+            constructor(
+            b, a,
+            ) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('handles trailing commas in single-line arrays', async () => {
+    it('handles trailing commas in constructor parameters', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             a, b,
-          ]
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             b, a,
-          ]
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -3018,6 +3125,17 @@ describe('sort-arrays', () => {
 
     it('enforces custom group ordering', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'parameter',
+              rightGroup: 'top',
+              right: 'top1',
+              left: 'c',
+            },
+            messageId: 'unexpectedClassConstructorsGroupOrder',
+          },
+        ],
         options: [
           {
             ...options,
@@ -3027,33 +3145,26 @@ describe('sort-arrays', () => {
                 groupName: 'top',
               },
             ],
-            groups: ['top', 'literal'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              leftGroup: 'literal',
-              rightGroup: 'top',
-              right: 'top1',
-              left: 'c',
-            },
-            messageId: 'unexpectedArraysGroupOrder',
+            groups: ['top', 'parameter'],
           },
         ],
         output: dedent`
-          [
-            'top1',
-            'a',
-            'c'
-          ]
+          class Foo {
+            constructor(
+            top1,
+            a,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top1',
-            'a'
-          ]
+          class Foo {
+            constructor(
+            c,
+            top1,
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -3064,10 +3175,10 @@ describe('sort-arrays', () => {
           customGroups: [
             {
               elementNamePattern: '^top',
-              groupName: 'topElements',
+              groupName: 'topParams',
             },
           ],
-          groups: ['topElements', 'unknown'],
+          groups: ['topParams', 'unknown'],
           useConfigurationIf: {},
         },
       ]
@@ -3076,25 +3187,29 @@ describe('sort-arrays', () => {
         errors: [
           {
             data: {
-              rightGroup: 'topElements',
+              rightGroup: 'topParams',
               leftGroup: 'unknown',
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top1',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            top1,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'top1',
-          ]
+          class Foo {
+            constructor(
+            b,
+            top1,
+            ) {}
+          }
         `,
         options: customGroupOptions,
       })
@@ -3112,12 +3227,12 @@ describe('sort-arrays', () => {
           {
             customGroups: [
               {
-                groupName: 'literalsStartingWithHello',
-                selector: 'literal',
+                groupName: 'parametersStartingWithHello',
+                selector: 'parameter',
                 elementNamePattern,
               },
             ],
-            groups: ['literalsStartingWithHello', 'unknown'],
+            groups: ['parametersStartingWithHello', 'unknown'],
             useConfigurationIf: {},
           },
         ]
@@ -3126,27 +3241,31 @@ describe('sort-arrays', () => {
           errors: [
             {
               data: {
-                rightGroup: 'literalsStartingWithHello',
-                right: 'helloLiteral',
+                rightGroup: 'parametersStartingWithHello',
                 leftGroup: 'unknown',
+                right: 'helloParam',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysGroupOrder',
+              messageId: 'unexpectedClassConstructorsGroupOrder',
             },
           ],
           output: dedent`
-            [
-              'helloLiteral',
-              'a',
-              'b',
-            ]
+            class Foo {
+              constructor(
+              helloParam,
+              a,
+              b,
+              ) {}
+            }
           `,
           code: dedent`
-            [
-              'a',
-              'b',
-              'helloLiteral',
-            ]
+            class Foo {
+              constructor(
+              a,
+              b,
+              helloParam,
+              ) {}
+            }
           `,
           options: customGroupOptions,
         })
@@ -3158,13 +3277,13 @@ describe('sort-arrays', () => {
         {
           customGroups: [
             {
-              groupName: 'reversedLiteralsByLineLength',
-              selector: 'literal',
+              groupName: 'reversedParametersByLineLength',
+              selector: 'parameter',
               type: 'line-length',
               order: 'desc',
             },
           ],
-          groups: ['reversedLiteralsByLineLength', 'unknown'],
+          groups: ['reversedParametersByLineLength', 'unknown'],
           useConfigurationIf: {},
           type: 'alphabetical',
           order: 'asc',
@@ -3174,45 +3293,37 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'dddd', left: 'ccc' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
-          [
-            'dddd',
-            'ccc',
-            'bb',
-            'a',
-            ...m,
-            'eee',
-            'ff',
-            'g',
-            ...o,
-            ...p,
-          ]
+          class Foo {
+            constructor(
+              dddd,
+              ccc,
+              bb,
+              a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'bb',
-            'ccc',
-            'dddd',
-            ...m,
-            'eee',
-            'ff',
-            'g',
-            ...o,
-            ...p,
-          ]
+          class Foo {
+            constructor(
+              a,
+              bb,
+              ccc,
+              dddd,
+            ) {}
+          }
         `,
         options: customSortOptions,
       })
@@ -3243,21 +3354,25 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'fooBar', left: 'fooZar' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
-          [
-            'fooBar',
-            'fooZar',
-          ]
+          class Foo {
+            constructor(
+            fooBar,
+            fooZar,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'fooZar',
-            'fooBar',
-          ]
+          class Foo {
+            constructor(
+            fooZar,
+            fooBar,
+            ) {}
+          }
         `,
         options: fallbackSortOptions,
       })
@@ -3287,28 +3402,32 @@ describe('sort-arrays', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'top1',
-            'top4',
-            'top5',
-            'top3',
-            'm',
-          ]
+          class Foo {
+            constructor(
+            top2,
+            top1,
+            top4,
+            top5,
+            top3,
+            m,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'top2',
-            'top1',
-            'top4',
-            'top5',
-            'm',
-            'top3',
-          ]
+          class Foo {
+            constructor(
+            top2,
+            top1,
+            top4,
+            top5,
+            m,
+            top3,
+            ) {}
+          }
         `,
         options: unsortedGroupOptions,
       })
@@ -3327,10 +3446,10 @@ describe('sort-arrays', () => {
                   elementNamePattern: 'Foo',
                 },
               ],
-              groupName: 'elementsIncludingFoo',
+              groupName: 'parametersIncludingFoo',
             },
           ],
-          groups: ['elementsIncludingFoo', 'unknown'],
+          groups: ['parametersIncludingFoo', 'unknown'],
           useConfigurationIf: {},
         },
       ]
@@ -3339,27 +3458,31 @@ describe('sort-arrays', () => {
         errors: [
           {
             data: {
-              rightGroup: 'elementsIncludingFoo',
+              rightGroup: 'parametersIncludingFoo',
               leftGroup: 'unknown',
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'bFoo',
-            'cFoo',
-            'a',
-          ]
+          class Foo {
+            constructor(
+            bFoo,
+            cFoo,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'bFoo',
-            'cFoo',
-          ]
+          class Foo {
+            constructor(
+            a,
+            bFoo,
+            cFoo,
+            ) {}
+          }
         `,
         options: anyOfOptions,
       })
@@ -3372,21 +3495,23 @@ describe('sort-arrays', () => {
             customGroups: [
               {
                 elementNamePattern: '^(?!.*Foo).*$',
-                groupName: 'elementsWithoutFoo',
+                groupName: 'parametersWithoutFoo',
               },
             ],
-            groups: ['unknown', 'elementsWithoutFoo'],
+            groups: ['unknown', 'parametersWithoutFoo'],
             useConfigurationIf: {},
             type: 'alphabetical',
           },
         ],
         code: dedent`
-          [
-            'iHaveFooInMyName',
-            'meTooIHaveFoo',
-            'a',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            iHaveFooInMyName,
+            meTooIHaveFoo,
+            a,
+            b,
+            ) {}
+          }
         `,
       })
     })
@@ -3439,7 +3564,7 @@ describe('sort-arrays', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedArraysGroupOrder',
+                messageId: 'unexpectedClassConstructorsGroupOrder',
               },
               {
                 data: {
@@ -3448,22 +3573,26 @@ describe('sort-arrays', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedArraysGroupOrder',
+                messageId: 'unexpectedClassConstructorsGroupOrder',
               },
             ],
             output: dedent`
-              [
-                'r',
-                'g',
-                'b',
-              ]
+              class Foo {
+                constructor(
+                r,
+                g,
+                b,
+                ) {}
+              }
             `,
             code: dedent`
-              [
-                'b',
-                'g',
-                'r',
-              ]
+              class Foo {
+                constructor(
+                b,
+                g,
+                r,
+                ) {}
+              }
             `,
             options: conditionalOptions,
           })
@@ -3490,33 +3619,37 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'y',
-          'z',
+           y,
+          z,
 
-              'b'
-          ]
+              b,
+            ) {}
+          }
         `,
         output: dedent`
-          [
-            'a',
-           'b',
-          'y',
+          class Foo {
+            constructor(
+            a,
+           b,
+          y,
 
-              'z'
-          ]
+              z,
+            ) {}
+          }
         `,
         options: newlinesOptions,
       })
@@ -3544,37 +3677,41 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'z', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'y', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'y' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
-           'y',
-          'z',
+           y,
+          z,
 
-              'b',
-          ]
+              b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
 
-           'z',
-          'y',
-              'b',
-          ]
+           z,
+          y,
+              b,
+            ) {}
+          }
         `,
         options: multiGroupOptions,
       })
@@ -3632,44 +3769,48 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
-            'b',
+            b,
 
-            'c',
-            'd',
+            c,
+            d,
 
 
-            'e'
-          ]
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'b',
+          class Foo {
+            constructor(
+            a,
+            b,
 
 
-            'c',
+            c,
 
-            'd',
+            d,
 
 
-            'e'
-          ]
+            e,
+            ) {}
+          }
         `,
         options: inlineNewlineOptions,
       })
@@ -3704,23 +3845,27 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenArraysMembers',
+              messageId: 'missedSpacingBetweenClassConstructorsMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
 
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           options: mixedNewlineOptions,
         })
@@ -3755,22 +3900,26 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenArraysMembers',
+              messageId: 'extraSpacingBetweenClassConstructorsMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
               b,
-            ]
+              ) {}
+            }
           `,
           options: noNewlineBetweenGroupsOptions,
         })
@@ -3803,21 +3952,25 @@ describe('sort-arrays', () => {
 
         await valid({
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
               b,
-            ]
+              ) {}
+            }
           `,
           options: ignoreNewlineOptions,
         })
 
         await valid({
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           options: ignoreNewlineOptions,
         })
@@ -3849,24 +4002,28 @@ describe('sort-arrays', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'a', // Comment after
+          class Foo {
+            constructor(
+            a, // Comment after
 
-            'b',
-            'c'
-          ]
+            b,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'a', // Comment after
+          class Foo {
+            constructor(
+            b,
+            a, // Comment after
 
-            'c'
-          ]
+            c,
+            ) {}
+          }
         `,
         options: commentOptions,
       })
@@ -3891,29 +4048,33 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
             // Partition comment
 
-            'b',
-            'c',
-          ]
+            b,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
             // Partition comment
 
-            'c',
-            'b',
-          ]
+            c,
+            b,
+            ) {}
+          }
         `,
         options: partitionOptions,
       })
@@ -3927,182 +4088,101 @@ describe('sort-arrays', () => {
       order: 'desc',
     } as const
 
-    it('accepts sorted arrays', async () => {
+    it('accepts sorted constructor parameters', async () => {
       await valid({
         code: dedent`
-          ['aaa', 'bb', 'c']
+          class Foo {
+            constructor(aaa, bb, c) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('reports error when array is not sorted', async () => {
+    it('reports error when constructor is not sorted', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
         output: dedent`
-          ['aaa', 'bb', 'c']
+          class Foo {
+            constructor(aaa, bb, c) {}
+          }
         `,
         code: dedent`
-          ['bb', 'c', 'aaa']
+          class Foo {
+            constructor(bb, c, aaa) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('preserves array structure when fixing sort order', async () => {
+    it('preserves constructor structure when fixing sort order', async () => {
       await valid({
         code: dedent`
-          [
-            'aaaaa',
-            'bbbb',
-            'ccc',
-            'dd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            aaaaa,
+            bbbb,
+            ccc,
+            dd,
+            e,
+            ...other
+            ) {}
+          }
         `,
         options: [options],
       })
 
       await invalid({
         output: dedent`
-          [
-            'aaaaa',
-            'bbbb',
-            'ccc',
-            'dd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            aaaaa,
+            bbbb,
+            ccc,
+            dd,
+            e,
+            ...other
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'aaaaa',
-            'ccc',
-            'bbbb',
-            'dd',
-            'e',
-            ...other,
-          ]
+          class Foo {
+            constructor(
+            aaaaa,
+            ccc,
+            bbbb,
+            dd,
+            e,
+            ...other
+            ) {}
+          }
         `,
         errors: [
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bbbb', left: 'ccc' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         options: [options],
       })
     })
 
-    it('does not sort spread elements', async () => {
+    it('does not sort rest elements', async () => {
       await valid({
         code: dedent`
-          [
-            ...aaa,
-            ...bbbb,
-            ...ccc,
-          ]
-        `,
-        options: [options],
-      })
-    })
-
-    it('treats spread elements as partition boundaries', async () => {
-      await valid({
-        code: dedent`
-          [
-            'aa',
-            'b',
-            ...spread1,
-            'dd',
-            'e',
-            ...spread2,
-            'gg',
-            'h',
-          ]
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        output: dedent`
-          [
-            'aa',
-            'b',
-            ...spread,
-            'cc',
-            'd',
-          ]
-        `,
-        code: dedent`
-          [
-            'b',
-            'aa',
-            ...spread,
-            'cc',
-            'd',
-          ]
-        `,
-        errors: [
-          {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'aa', left: 'b' },
-          },
-        ],
-        options: [options],
-      })
-    })
-
-    it('handles arrays with empty slots correctly', async () => {
-      await valid({
-        code: dedent`
-          ['a', 'b', 'c',, 'd']
-        `,
-        options: [options],
-      })
-    })
-
-    it('sorts elements in Array constructor calls', async () => {
-      await valid({
-        code: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            'cc',
-            'd',
-          )
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedArraysOrder',
-            data: { right: 'bbb', left: 'cc' },
-          },
-        ],
-        output: dedent`
-          new Array(
-            'aaaa',
-            'bbb',
-            'cc',
-            'd',
-          )
-        `,
-        code: dedent`
-          new Array(
-            'aaaa',
-            'cc',
-            'bbb',
-            'd',
-          )
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -4119,35 +4199,39 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aaaaa', left: 'dd' },
-            messageId: 'unexpectedArraysOrder',
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bbbb', left: 'e' },
           },
         ],
         output: dedent`
-          [
-            'aaaaa',
-            'dd',
+          class Foo {
+            constructor(
+            aaaaa,
+            dd,
 
-            'ccc',
+            ccc,
 
-            'bbbb',
-            'e',
-          ]
+            bbbb,
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'dd',
-            'aaaaa',
+          class Foo {
+            constructor(
+            dd,
+            aaaaa,
 
-            'ccc',
+            ccc,
 
-            'e',
-            'bbbb',
-          ]
+            e,
+            bbbb,
+            ) {}
+          }
         `,
         options: partitionOptions,
       })
@@ -4177,7 +4261,7 @@ describe('sort-arrays', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
           {
             data: {
@@ -4186,26 +4270,30 @@ describe('sort-arrays', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'c',
+          class Foo {
+            constructor(
+            top2,
+            c,
 
-            'top1',
-            'a',
-          ]
+            top1,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top2',
+          class Foo {
+            constructor(
+            c,
+            top2,
 
-            'a',
-            'top1',
-          ]
+            a,
+            top1,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -4221,13 +4309,15 @@ describe('sort-arrays', () => {
 
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
+          class Foo {
+            constructor(
+            a,
+            b,
 
-            'c',
-            'd',
-          ]
+            c,
+            d,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -4243,44 +4333,48 @@ describe('sort-arrays', () => {
 
       await invalid({
         output: dedent`
-          [
+          class Foo {
+            constructor(
             // Part: A
             // Not partition comment
-            'bbb',
-            'cc',
-            'd',
+            bbb,
+            cc,
+            d,
             // Part: B
-            'aaaa',
-            'e',
+            aaaa,
+            e,
             // Part: C
             // Not partition comment
-            'fff',
-            'gg',
-          ]
+            fff,
+            gg,
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             // Part: A
-            'cc',
-            'd',
+            cc,
+            d,
             // Not partition comment
-            'bbb',
+            bbb,
             // Part: B
-            'aaaa',
-            'e',
+            aaaa,
+            e,
             // Part: C
-            'gg',
+            gg,
             // Not partition comment
-            'fff',
-          ]
+            fff,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -4291,12 +4385,14 @@ describe('sort-arrays', () => {
     it('treats every comment as partition boundary when set to true', async () => {
       await valid({
         code: dedent`
-          [
+          class Foo {
+            constructor(
             // Comment
-            'bb',
+            bb,
             // Other comment
-            'a',
-          ]
+            a,
+            ) {}
+          }
         `,
         options: [
           {
@@ -4317,34 +4413,38 @@ describe('sort-arrays', () => {
 
       await invalid({
         output: dedent`
-          [
+          class Foo {
+            constructor(
             /* Partition Comment */
             // Part: A
-            'd',
+            d,
             // Part: B
-            'aaa',
-            'bb',
-            'c',
+            aaa,
+            bb,
+            c,
             /* Other */
-            'e',
-          ]
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             /* Partition Comment */
             // Part: A
-            'd',
+            d,
             // Part: B
-            'aaa',
-            'c',
-            'bb',
+            aaa,
+            c,
+            bb,
             /* Other */
-            'e',
-          ]
+            e,
+            ) {}
+          }
         `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -4376,7 +4476,7 @@ describe('sort-arrays', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
           {
             data: {
@@ -4385,26 +4485,30 @@ describe('sort-arrays', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'c',
+          class Foo {
+            constructor(
+            top2,
+            c,
             // Part: 1
-            'top1',
-            'a',
-          ]
+            top1,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top2',
+          class Foo {
+            constructor(
+            c,
+            top2,
             // Part: 1
-            'a',
-            'top1',
-          ]
+            a,
+            top1,
+            ) {}
+          }
         `,
         options: partitionWithGroupOptions,
       })
@@ -4423,23 +4527,27 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             /* Comment */
-            'aa',
-            'b'
-          ]
+            aa,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* Comment */
-            'aa'
-          ]
+            aa,
+            ) {}
+          }
         `,
         options: lineCommentsOnlyOptions,
       })
@@ -4456,11 +4564,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // Comment
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -4476,13 +4586,15 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'c',
+          class Foo {
+            constructor(
+            c,
             // b
-            'b',
+            b,
             // a
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -4498,11 +4610,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // I am a partition comment because I don't have f o o
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -4520,23 +4634,27 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             // Comment
-            'aa',
-            'b'
-          ]
+            aa,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             // Comment
-            'aa'
-          ]
+            aa,
+            ) {}
+          }
         `,
         options: blockCommentsOnlyOptions,
       })
@@ -4553,11 +4671,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* Comment */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -4573,13 +4693,15 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'c',
+          class Foo {
+            constructor(
+            c,
             /* b */
-            'b',
+            b,
             /* a */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -4595,11 +4717,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
             /* I am a partition comment because I don't have f o o */
-            'a'
-          ]
+            a,
+            ) {}
+          }
         `,
       })
     })
@@ -4607,13 +4731,15 @@ describe('sort-arrays', () => {
     it('supports regex patterns for partition comments', async () => {
       await valid({
         code: dedent`
-          [
-            'e',
-            'f',
+          class Foo {
+            constructor(
+            e,
+            f,
             // I am a partition comment because I don't have f o o
-            'a',
-            'b',
-          ]
+            a,
+            b,
+            ) {}
+          }
         `,
         options: [
           {
@@ -4633,11 +4759,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            '$aa',
-            'bb',
-            '$c',
-          ]
+          class Foo {
+            constructor(
+            $aa,
+            bb,
+            $c,
+            ) {}
+          }
         `,
       })
     })
@@ -4651,69 +4779,81 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
-            'abc',
-            'a$c',
-          ]
+          class Foo {
+            constructor(
+            abc,
+            a$c,
+            ) {}
+          }
         `,
       })
     })
 
-    it('sorts elements according to locale-specific rules', async () => {
+    it('sorts parameters according to locale-specific rules', async () => {
       await valid({
         code: dedent`
-          [
-            '你好',
-            '世界',
-            'a',
-            'A',
-            'b',
-            'B'
-          ]
+          class Foo {
+            constructor(
+            你好,
+            世界,
+            a,
+            A,
+            b,
+            B,
+            ) {}
+          }
         `,
         options: [{ ...options, locales: 'zh-CN' }],
       })
     })
 
-    it('sorts single-line arrays correctly', async () => {
+    it('sorts single-line constructor parameters correctly', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
-          [
-            aa, b
-          ]
+          class Foo {
+            constructor(
+            aa, b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            b, aa
-          ]
+          class Foo {
+            constructor(
+            b, aa,
+            ) {}
+          }
         `,
         options: [options],
       })
     })
 
-    it('handles trailing commas in single-line arrays', async () => {
+    it('handles trailing commas in constructor parameters', async () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
         output: dedent`
-          [
+          class Foo {
+            constructor(
             aa, b,
-          ]
+            ) {}
+          }
         `,
         code: dedent`
-          [
+          class Foo {
+            constructor(
             b, aa,
-          ]
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -4721,6 +4861,17 @@ describe('sort-arrays', () => {
 
     it('enforces custom group ordering', async () => {
       await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'parameter',
+              rightGroup: 'top',
+              right: 'top1',
+              left: 'c',
+            },
+            messageId: 'unexpectedClassConstructorsGroupOrder',
+          },
+        ],
         options: [
           {
             ...options,
@@ -4730,33 +4881,26 @@ describe('sort-arrays', () => {
                 groupName: 'top',
               },
             ],
-            groups: ['top', 'literal'],
-          },
-        ],
-        errors: [
-          {
-            data: {
-              leftGroup: 'literal',
-              rightGroup: 'top',
-              right: 'top1',
-              left: 'c',
-            },
-            messageId: 'unexpectedArraysGroupOrder',
+            groups: ['top', 'parameter'],
           },
         ],
         output: dedent`
-          [
-            'top1',
-            'aa',
-            'c'
-          ]
+          class Foo {
+            constructor(
+            top1,
+            aa,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'c',
-            'top1',
-            'aa'
-          ]
+          class Foo {
+            constructor(
+            c,
+            top1,
+            aa,
+            ) {}
+          }
         `,
       })
     })
@@ -4767,10 +4911,10 @@ describe('sort-arrays', () => {
           customGroups: [
             {
               elementNamePattern: '^top',
-              groupName: 'topElements',
+              groupName: 'topParams',
             },
           ],
-          groups: ['topElements', 'unknown'],
+          groups: ['topParams', 'unknown'],
           useConfigurationIf: {},
         },
       ]
@@ -4779,25 +4923,29 @@ describe('sort-arrays', () => {
         errors: [
           {
             data: {
-              rightGroup: 'topElements',
+              rightGroup: 'topParams',
               leftGroup: 'unknown',
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top1',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            top1,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'top1',
-          ]
+          class Foo {
+            constructor(
+            b,
+            top1,
+            ) {}
+          }
         `,
         options: customGroupOptions,
       })
@@ -4815,12 +4963,12 @@ describe('sort-arrays', () => {
           {
             customGroups: [
               {
-                groupName: 'literalsStartingWithHello',
-                selector: 'literal',
+                groupName: 'parametersStartingWithHello',
+                selector: 'parameter',
                 elementNamePattern,
               },
             ],
-            groups: ['literalsStartingWithHello', 'unknown'],
+            groups: ['parametersStartingWithHello', 'unknown'],
             useConfigurationIf: {},
           },
         ]
@@ -4829,27 +4977,31 @@ describe('sort-arrays', () => {
           errors: [
             {
               data: {
-                rightGroup: 'literalsStartingWithHello',
-                right: 'helloLiteral',
+                rightGroup: 'parametersStartingWithHello',
                 leftGroup: 'unknown',
+                right: 'helloParam',
                 left: 'b',
               },
-              messageId: 'unexpectedArraysGroupOrder',
+              messageId: 'unexpectedClassConstructorsGroupOrder',
             },
           ],
           output: dedent`
-            [
-              'helloLiteral',
-              'a',
-              'b',
-            ]
+            class Foo {
+              constructor(
+              helloParam,
+              a,
+              b,
+              ) {}
+            }
           `,
           code: dedent`
-            [
-              'a',
-              'b',
-              'helloLiteral',
-            ]
+            class Foo {
+              constructor(
+              a,
+              b,
+              helloParam,
+              ) {}
+            }
           `,
           options: customGroupOptions,
         })
@@ -4861,13 +5013,13 @@ describe('sort-arrays', () => {
         {
           customGroups: [
             {
-              groupName: 'reversedLiteralsByLineLength',
-              selector: 'literal',
+              groupName: 'reversedParametersByLineLength',
+              selector: 'parameter',
               type: 'line-length',
               order: 'desc',
             },
           ],
-          groups: ['reversedLiteralsByLineLength', 'unknown'],
+          groups: ['reversedParametersByLineLength', 'unknown'],
           useConfigurationIf: {},
           type: 'alphabetical',
           order: 'asc',
@@ -4877,45 +5029,37 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'dddd', left: 'ccc' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
-          [
-            'dddd',
-            'ccc',
-            'bb',
-            'a',
-            ...m,
-            'eee',
-            'ff',
-            'g',
-            ...o,
-            ...p,
-          ]
+          class Foo {
+            constructor(
+              dddd,
+              ccc,
+              bb,
+              a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'bb',
-            'ccc',
-            'dddd',
-            ...m,
-            'eee',
-            'ff',
-            'g',
-            ...o,
-            ...p,
-          ]
+          class Foo {
+            constructor(
+              a,
+              bb,
+              ccc,
+              dddd,
+            ) {}
+          }
         `,
         options: customSortOptions,
       })
@@ -4946,21 +5090,25 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'fooBar', left: 'fooZar' },
-            messageId: 'unexpectedArraysOrder',
           },
         ],
         output: dedent`
-          [
-            'fooBar',
-            'fooZar',
-          ]
+          class Foo {
+            constructor(
+            fooBar,
+            fooZar,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'fooZar',
-            'fooBar',
-          ]
+          class Foo {
+            constructor(
+            fooZar,
+            fooBar,
+            ) {}
+          }
         `,
         options: fallbackSortOptions,
       })
@@ -4990,28 +5138,32 @@ describe('sort-arrays', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'top2',
-            'top1',
-            'top4',
-            'top5',
-            'top3',
-            'm',
-          ]
+          class Foo {
+            constructor(
+            top2,
+            top1,
+            top4,
+            top5,
+            top3,
+            m,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'top2',
-            'top1',
-            'top4',
-            'top5',
-            'm',
-            'top3',
-          ]
+          class Foo {
+            constructor(
+            top2,
+            top1,
+            top4,
+            top5,
+            m,
+            top3,
+            ) {}
+          }
         `,
         options: unsortedGroupOptions,
       })
@@ -5030,10 +5182,10 @@ describe('sort-arrays', () => {
                   elementNamePattern: 'Foo',
                 },
               ],
-              groupName: 'elementsIncludingFoo',
+              groupName: 'parametersIncludingFoo',
             },
           ],
-          groups: ['elementsIncludingFoo', 'unknown'],
+          groups: ['parametersIncludingFoo', 'unknown'],
           useConfigurationIf: {},
         },
       ]
@@ -5042,27 +5194,31 @@ describe('sort-arrays', () => {
         errors: [
           {
             data: {
-              rightGroup: 'elementsIncludingFoo',
+              rightGroup: 'parametersIncludingFoo',
               leftGroup: 'unknown',
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'bFoo',
-            'cFoo',
-            'a',
-          ]
+          class Foo {
+            constructor(
+            bFoo,
+            cFoo,
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'bFoo',
-            'cFoo',
-          ]
+          class Foo {
+            constructor(
+            a,
+            bFoo,
+            cFoo,
+            ) {}
+          }
         `,
         options: anyOfOptions,
       })
@@ -5075,21 +5231,23 @@ describe('sort-arrays', () => {
             customGroups: [
               {
                 elementNamePattern: '^(?!.*Foo).*$',
-                groupName: 'elementsWithoutFoo',
+                groupName: 'parametersWithoutFoo',
               },
             ],
-            groups: ['unknown', 'elementsWithoutFoo'],
+            groups: ['unknown', 'parametersWithoutFoo'],
             useConfigurationIf: {},
             type: 'alphabetical',
           },
         ],
         code: dedent`
-          [
-            'iHaveFooInMyName',
-            'meTooIHaveFoo',
-            'a',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            iHaveFooInMyName,
+            meTooIHaveFoo,
+            a,
+            b,
+            ) {}
+          }
         `,
       })
     })
@@ -5142,7 +5300,7 @@ describe('sort-arrays', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedArraysGroupOrder',
+                messageId: 'unexpectedClassConstructorsGroupOrder',
               },
               {
                 data: {
@@ -5151,22 +5309,26 @@ describe('sort-arrays', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedArraysGroupOrder',
+                messageId: 'unexpectedClassConstructorsGroupOrder',
               },
             ],
             output: dedent`
-              [
-                'r',
-                'g',
-                'b',
-              ]
+              class Foo {
+                constructor(
+                r,
+                g,
+                b,
+                ) {}
+              }
             `,
             code: dedent`
-              [
-                'b',
-                'g',
-                'r',
-              ]
+              class Foo {
+                constructor(
+                b,
+                g,
+                r,
+                ) {}
+              }
             `,
             options: conditionalOptions,
           })
@@ -5197,32 +5359,36 @@ describe('sort-arrays', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bbb', left: 'z' },
           },
         ],
         code: dedent`
-          [
-            'aaaa',
+          class Foo {
+            constructor(
+            aaaa,
 
 
-           'yy',
-          'z',
+           yy,
+          z,
 
-              'bbb'
-          ]
+              bbb,
+            ) {}
+          }
         `,
         output: dedent`
-          [
-            'aaaa',
-           'bbb',
-          'yy',
+          class Foo {
+            constructor(
+            aaaa,
+           bbb,
+          yy,
 
-              'z'
-          ]
+              z,
+            ) {}
+          }
         `,
         options: newlinesOptions,
       })
@@ -5254,36 +5420,40 @@ describe('sort-arrays', () => {
               left: 'aaaa',
               right: 'z',
             },
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'yy', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'bbb', left: 'yy' },
           },
         ],
         output: dedent`
-          [
-            'aaaa',
+          class Foo {
+            constructor(
+            aaaa,
 
-           'yy',
-          'z',
+           yy,
+          z,
 
-              'bbb',
-          ]
+              bbb,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'aaaa',
+          class Foo {
+            constructor(
+            aaaa,
 
 
-           'z',
-          'yy',
-              'bbb',
-          ]
+           z,
+          yy,
+              bbb,
+            ) {}
+          }
         `,
         options: multiGroupOptions,
       })
@@ -5341,44 +5511,48 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenArraysMembers',
+            messageId: 'extraSpacingBetweenClassConstructorsMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
         output: dedent`
-          [
-            'a',
+          class Foo {
+            constructor(
+            a,
 
-            'b',
+            b,
 
-            'c',
-            'd',
+            c,
+            d,
 
 
-            'e'
-          ]
+            e,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'b',
+          class Foo {
+            constructor(
+            a,
+            b,
 
 
-            'c',
+            c,
 
-            'd',
+            d,
 
 
-            'e'
-          ]
+            e,
+            ) {}
+          }
         `,
         options: inlineNewlineOptions,
       })
@@ -5413,23 +5587,27 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenArraysMembers',
+              messageId: 'missedSpacingBetweenClassConstructorsMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
 
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           options: mixedNewlineOptions,
         })
@@ -5464,22 +5642,26 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenArraysMembers',
+              messageId: 'extraSpacingBetweenClassConstructorsMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
           output: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
               b,
-            ]
+              ) {}
+            }
           `,
           options: noNewlineBetweenGroupsOptions,
         })
@@ -5512,21 +5694,25 @@ describe('sort-arrays', () => {
 
         await valid({
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
 
               b,
-            ]
+              ) {}
+            }
           `,
           options: ignoreNewlineOptions,
         })
 
         await valid({
           code: dedent`
-            [
+            class Foo {
+              constructor(
               a,
               b,
-            ]
+              ) {}
+            }
           `,
           options: ignoreNewlineOptions,
         })
@@ -5558,24 +5744,28 @@ describe('sort-arrays', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'a', // Comment after
+          class Foo {
+            constructor(
+            a, // Comment after
 
-            'b',
-            'c'
-          ]
+            b,
+            c,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'a', // Comment after
+          class Foo {
+            constructor(
+            b,
+            a, // Comment after
 
-            'c'
-          ]
+            c,
+            ) {}
+          }
         `,
         options: commentOptions,
       })
@@ -5598,31 +5788,35 @@ describe('sort-arrays', () => {
       ]
 
       await invalid({
-        output: dedent`
-          [
-            'aaa',
-
-            // Partition comment
-
-            'bb',
-            'c',
-          ]
-        `,
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
-        code: dedent`
-          [
-            'aaa',
+        output: dedent`
+          class Foo {
+            constructor(
+            aaa,
 
             // Partition comment
 
-            'c',
-            'bb',
-          ]
+            bb,
+            c,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+            aaa,
+
+            // Partition comment
+
+            c,
+            bb,
+            ) {}
+          }
         `,
         options: partitionOptions,
       })
@@ -5630,7 +5824,7 @@ describe('sort-arrays', () => {
   })
 
   describe('custom', () => {
-    it('sorts elements according to custom alphabet order', async () => {
+    it('sorts constructor parameters according to custom alphabet order', async () => {
       let alphabet = Alphabet.generateRecommendedAlphabet()
         .sortByLocaleCompare('en-US')
         .getCharacters()
@@ -5646,12 +5840,14 @@ describe('sort-arrays', () => {
 
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            ) {}
+          }
         `,
         options: customAlphabetOptions,
       })
@@ -5659,25 +5855,29 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
         output: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'a',
-            'c',
-            'b',
-            'd',
-          ]
+          class Foo {
+            constructor(
+            a,
+            c,
+            b,
+            d,
+            ) {}
+          }
         `,
         options: customAlphabetOptions,
       })
@@ -5715,29 +5915,33 @@ describe('sort-arrays', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'b' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aa', left: 'a' },
           },
         ],
         output: dedent`
-          [
-            'aa',
-            'bb',
-            'a',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            aa,
+            bb,
+            a,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'bb',
-            'a',
-            'aa',
-          ]
+          class Foo {
+            constructor(
+            b,
+            bb,
+            a,
+            aa,
+            ) {}
+          }
         `,
       })
     })
@@ -5762,29 +5966,33 @@ describe('sort-arrays', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'bb', left: 'b' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'aa', left: 'a' },
           },
         ],
         output: dedent`
-          [
-            'aa',
-            'bb',
-            'a',
-            'b',
-          ]
+          class Foo {
+            constructor(
+            aa,
+            bb,
+            a,
+            b,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'bb',
-            'a',
-            'aa',
-          ]
+          class Foo {
+            constructor(
+            b,
+            bb,
+            a,
+            aa,
+            ) {}
+          }
         `,
       })
     })
@@ -5800,11 +6008,13 @@ describe('sort-arrays', () => {
     it('allows any order when type is unsorted', async () => {
       await valid({
         code: dedent`
-          [
-            'b',
-            'c',
-            'a'
-          ]
+          class Foo {
+            constructor(
+            b,
+            c,
+            a,
+            ) {}
+          }
         `,
         options: [unsortedOptions],
       })
@@ -5837,24 +6047,28 @@ describe('sort-arrays', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedArraysGroupOrder',
+            messageId: 'unexpectedClassConstructorsGroupOrder',
           },
         ],
         output: dedent`
-          [
-            'ba',
-            'bb',
-            'ab',
-            'aa',
-          ]
+          class Foo {
+            constructor(
+            ba,
+            bb,
+            ab,
+            aa,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'ab',
-            'aa',
-            'ba',
-            'bb',
-          ]
+          class Foo {
+            constructor(
+            ab,
+            aa,
+            ba,
+            bb,
+            ) {}
+          }
         `,
         options: groupingOptions,
       })
@@ -5882,22 +6096,26 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenArraysMembers',
+            messageId: 'missedSpacingBetweenClassConstructorsMembers',
             data: { right: 'a', left: 'b' },
           },
         ],
         output: dedent`
-          [
-            'b',
+          class Foo {
+            constructor(
+            b,
 
-            'a',
-          ]
+            a,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'a',
-          ]
+          class Foo {
+            constructor(
+            b,
+            a,
+            ) {}
+          }
         `,
         options: newlinesOptions,
       })
@@ -5918,12 +6136,14 @@ describe('sort-arrays', () => {
     it('uses alphabetical ascending order by default', async () => {
       await valid({
         code: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -5931,29 +6151,33 @@ describe('sort-arrays', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'a', left: 'b' },
           },
           {
-            messageId: 'unexpectedArraysOrder',
+            messageId: 'unexpectedClassConstructorsOrder',
             data: { right: 'c', left: 'd' },
           },
         ],
         output: dedent`
-          [
-            'a',
-            'b',
-            'c',
-            'd',
-          ]
+          class Foo {
+            constructor(
+            a,
+            b,
+            c,
+            d,
+            ) {}
+          }
         `,
         code: dedent`
-          [
-            'b',
-            'a',
-            'd',
-            'c',
-          ]
+          class Foo {
+            constructor(
+            b,
+            a,
+            d,
+            c,
+            ) {}
+          }
         `,
         options: [options],
       })
@@ -5962,12 +6186,14 @@ describe('sort-arrays', () => {
     it('respects natural sorting with numbers', async () => {
       await valid({
         code: dedent`
-          [
-            'v1.png',
-            'v10.png',
-            'v12.png',
-            'v2.png',
-          ]
+          class Foo {
+            constructor(
+              v1,
+              v10,
+              v12,
+              v2,
+            ) {}
+          }
         `,
         options: [
           {
@@ -5978,22 +6204,13 @@ describe('sort-arrays', () => {
       })
     })
 
-    it('handles empty arrays and single-element arrays', async () => {
+    it('handles empty constructors and single-parameter constructors', async () => {
       await valid({
-        code: '[]',
+        code: 'class Foo { constructor() {} }',
       })
 
       await valid({
-        code: "['a']",
-      })
-    })
-
-    it('treats different quote styles as equivalent', async () => {
-      await valid({
-        code: dedent`
-          ['a', "b", 'c']
-        `,
-        options: [options],
+        code: 'class Foo { constructor(a) {} }',
       })
     })
 
@@ -6007,11 +6224,13 @@ describe('sort-arrays', () => {
 
       await valid({
         code: dedent`
-          [
+          class Foo {
+            constructor(
             ccc,
             bb,
             a,
-          ]
+            ) {}
+          }
         `,
         options: [options],
         settings,
@@ -6026,11 +6245,13 @@ describe('sort-arrays', () => {
           },
         ],
         code: dedent`
-          [
+          class Foo {
+            constructor(
             a,
             bb,
             ccc,
-          ]
+            ) {}
+          }
         `,
         settings,
       })
@@ -6040,39 +6261,45 @@ describe('sort-arrays', () => {
       it('excludes disabled elements from sorting', async () => {
         await valid({
           code: dedent`
-            [
-              'b',
-              'c',
+            class Foo {
+              constructor(
+              b,
+              c,
               // eslint-disable-next-line
-              'a',
-            ]
+              a,
+              ) {}
+            }
           `,
           options: [options],
         })
 
         await invalid({
-          output: dedent`
-            [
-              'b',
-              'c',
-              // eslint-disable-next-line
-              'a',
-            ]
-          `,
-          code: dedent`
-            [
-              'c',
-              'b',
-              // eslint-disable-next-line
-              'a',
-            ]
-          `,
           errors: [
             {
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
+          output: dedent`
+            class Foo {
+              constructor(
+              b,
+              c,
+              // eslint-disable-next-line
+              a,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+              c,
+              b,
+              // eslint-disable-next-line
+              a,
+              ) {}
+            }
+          `,
           options: [options],
         })
       })
@@ -6081,23 +6308,27 @@ describe('sort-arrays', () => {
         await invalid({
           errors: [
             {
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
           output: dedent`
-            [
-              'b',
-              'c',
-              'a', // eslint-disable-line
-            ]
+            class Foo {
+              constructor(
+              b,
+              c,
+              a, // eslint-disable-line
+              ) {}
+            }
           `,
           code: dedent`
-            [
-              'c',
-              'b',
-              'a', // eslint-disable-line
-            ]
+            class Foo {
+              constructor(
+              c,
+              b,
+              a, // eslint-disable-line
+              ) {}
+            }
           `,
           options: [options],
         })
@@ -6106,32 +6337,36 @@ describe('sort-arrays', () => {
       it('respects eslint-disable blocks', async () => {
         await invalid({
           output: dedent`
-            [
-              'a',
-              'd',
+            class Foo {
+              constructor(
+              a,
+              d,
               /* eslint-disable */
-              'c',
-              'b',
+              c,
+              b,
               // Shouldn't move
               /* eslint-enable */
-              'e',
-            ]
+              e,
+              ) {}
+            }
           `,
           code: dedent`
-            [
-              'd',
-              'e',
+            class Foo {
+              constructor(
+              d,
+              e,
               /* eslint-disable */
-              'c',
-              'b',
+              c,
+              b,
               // Shouldn't move
               /* eslint-enable */
-              'a',
-            ]
+              a,
+              ) {}
+            }
           `,
           errors: [
             {
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
               data: { right: 'a', left: 'b' },
             },
           ],
@@ -6142,80 +6377,33 @@ describe('sort-arrays', () => {
       it('handles rule-specific eslint-disable comments', async () => {
         await invalid({
           output: dedent`
-            [
-              'b',
-              'c',
-              // eslint-disable-next-line rule-to-test/sort-arrays
-              'a',
-            ]
+            class Foo {
+              constructor(
+              b,
+              c,
+              // eslint-disable-next-line rule-to-test/sort-class-constructors
+              a,
+              ) {}
+            }
           `,
           code: dedent`
-            [
-              'c',
-              'b',
-              // eslint-disable-next-line rule-to-test/sort-arrays
-              'a',
-            ]
+            class Foo {
+              constructor(
+              c,
+              b,
+              // eslint-disable-next-line rule-to-test/sort-class-constructors
+              a,
+              ) {}
+            }
           `,
           errors: [
             {
-              messageId: 'unexpectedArraysOrder',
+              messageId: 'unexpectedClassConstructorsOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
           options: [options],
         })
-      })
-    })
-
-    describe('oxlint', () => {
-      oxlintRuleTester.run('supports oxlint', {
-        invalid: [
-          {
-            errors: [
-              {
-                messageId: 'unexpectedArraysOrder',
-                data: { right: 'a', left: 'b' },
-              },
-            ],
-            options: [
-              {
-                ...options,
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
-            output: dedent`
-              [
-                'a',
-                'b',
-              ]
-            `,
-            code: dedent`
-              [
-                'b',
-                'a',
-              ]
-            `,
-          },
-        ],
-        valid: [
-          {
-            options: [
-              {
-                ...options,
-                type: 'alphabetical',
-                order: 'asc',
-              },
-            ],
-            code: dedent`
-              [
-                'a',
-                'b',
-              ]
-            `,
-          },
-        ],
       })
     })
   })
