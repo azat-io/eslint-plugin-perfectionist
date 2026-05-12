@@ -49,6 +49,7 @@ function isContextOptionMatching({
   options: Options[number]
   nodeNames: string[]
 }): boolean {
+  /* v8 ignore if -- Filtered at validation level */
   if (!options.useConfigurationIf) {
     return true
   }
