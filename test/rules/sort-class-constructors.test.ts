@@ -222,6 +222,49 @@ describe('sort-class-constructors', () => {
       })
     })
 
+    it('treats rest elements as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        output: dedent`
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b,
+              a,
+              ...rest
+            ) {}
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [options],
+      })
+    })
+
     it('sorts elements within newline-separated groups independently', async () => {
       let partitionOptions = [
         {
@@ -559,12 +602,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -583,20 +620,18 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: lineCommentsOnlyOptions,
       })
     })
 
     it('uses line comments as partition boundaries', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: true,
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -606,19 +641,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: true,
+            },
+          },
+        ],
       })
     })
 
     it('matches specific line comment patterns', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: ['a', 'b'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -630,19 +665,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['a', 'b'],
+            },
+          },
+        ],
       })
     })
 
     it('supports regex patterns for line comments', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: ['^(?!.*foo).*$'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -652,6 +687,14 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
       })
     })
 
@@ -666,12 +709,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -690,20 +727,18 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: blockCommentsOnlyOptions,
       })
     })
 
     it('uses block comments as partition boundaries', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: true,
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -713,19 +748,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: true,
+            },
+          },
+        ],
       })
     })
 
     it('matches specific block comment patterns', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: ['a', 'b'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -737,19 +772,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['a', 'b'],
+            },
+          },
+        ],
       })
     })
 
     it('supports regex patterns for block comments', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: ['^(?!.*foo).*$'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -759,6 +794,14 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
       })
     })
 
@@ -786,12 +829,6 @@ describe('sort-class-constructors', () => {
 
     it('ignores special characters at start when trimming', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'trim',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -801,17 +838,17 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'trim',
+          },
+        ],
       })
     })
 
     it('ignores special characters completely when removing', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'remove',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -820,6 +857,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'remove',
+          },
+        ],
       })
     })
 
@@ -2310,12 +2353,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -2340,6 +2377,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: partitionOptions,
       })
     })
@@ -2448,6 +2491,49 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [options],
+      })
+    })
+
+    it('treats rest elements as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        output: dedent`
+          class Foo {
+            constructor(
+              a,
+              b,
+              ...rest
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b,
+              a,
+              ...rest
+            ) {}
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -2789,12 +2875,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -2813,20 +2893,18 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: lineCommentsOnlyOptions,
       })
     })
 
     it('uses line comments as partition boundaries', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: true,
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -2836,19 +2914,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: true,
+            },
+          },
+        ],
       })
     })
 
     it('matches specific line comment patterns', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: ['a', 'b'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -2860,19 +2938,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['a', 'b'],
+            },
+          },
+        ],
       })
     })
 
     it('supports regex patterns for line comments', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: ['^(?!.*foo).*$'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -2882,6 +2960,14 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
       })
     })
 
@@ -2896,12 +2982,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'a', left: 'b' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -2920,20 +3000,18 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
         options: blockCommentsOnlyOptions,
       })
     })
 
     it('uses block comments as partition boundaries', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: true,
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -2943,19 +3021,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: true,
+            },
+          },
+        ],
       })
     })
 
     it('matches specific block comment patterns', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: ['a', 'b'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -2967,19 +3045,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['a', 'b'],
+            },
+          },
+        ],
       })
     })
 
     it('supports regex patterns for block comments', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: ['^(?!.*foo).*$'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -2989,6 +3067,14 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
       })
     })
 
@@ -3016,12 +3102,6 @@ describe('sort-class-constructors', () => {
 
     it('ignores special characters at start when trimming', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'trim',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -3031,17 +3111,17 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'trim',
+          },
+        ],
       })
     })
 
     it('ignores special characters completely when removing', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'remove',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -3050,6 +3130,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'remove',
+          },
+        ],
       })
     })
 
@@ -4046,12 +4132,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -4076,6 +4156,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: partitionOptions,
       })
     })
@@ -4184,6 +4270,49 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [options],
+      })
+    })
+
+    it('treats rest elements as partition boundaries', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              aa,
+              b,
+              ...rest
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        output: dedent`
+          class Foo {
+            constructor(
+              aa,
+              b,
+              ...rest
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b,
+              aa,
+              ...rest
+            ) {}
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'aa', left: 'b' },
+          },
+        ],
         options: [options],
       })
     })
@@ -4525,12 +4654,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'aa', left: 'b' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -4549,20 +4672,18 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'aa', left: 'b' },
+          },
+        ],
         options: lineCommentsOnlyOptions,
       })
     })
 
     it('uses line comments as partition boundaries', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: true,
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4572,19 +4693,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: true,
+            },
+          },
+        ],
       })
     })
 
     it('matches specific line comment patterns', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: ['a', 'b'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4596,19 +4717,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['a', 'b'],
+            },
+          },
+        ],
       })
     })
 
     it('supports regex patterns for line comments', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              line: ['^(?!.*foo).*$'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4618,6 +4739,14 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              line: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
       })
     })
 
@@ -4632,12 +4761,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'aa', left: 'b' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -4656,20 +4779,18 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'aa', left: 'b' },
+          },
+        ],
         options: blockCommentsOnlyOptions,
       })
     })
 
     it('uses block comments as partition boundaries', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: true,
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4679,19 +4800,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: true,
+            },
+          },
+        ],
       })
     })
 
     it('matches specific block comment patterns', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: ['a', 'b'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4703,19 +4824,19 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['a', 'b'],
+            },
+          },
+        ],
       })
     })
 
     it('supports regex patterns for block comments', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            partitionByComment: {
-              block: ['^(?!.*foo).*$'],
-            },
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4725,6 +4846,14 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            partitionByComment: {
+              block: ['^(?!.*foo).*$'],
+            },
+          },
+        ],
       })
     })
 
@@ -4752,12 +4881,6 @@ describe('sort-class-constructors', () => {
 
     it('ignores special characters at start when trimming', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'trim',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4767,17 +4890,17 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'trim',
+          },
+        ],
       })
     })
 
     it('ignores special characters completely when removing', async () => {
       await valid({
-        options: [
-          {
-            ...options,
-            specialCharacters: 'remove',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -4786,6 +4909,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            specialCharacters: 'remove',
+          },
+        ],
       })
     })
 
@@ -5788,12 +5917,6 @@ describe('sort-class-constructors', () => {
       ]
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'bb', left: 'c' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -5818,6 +5941,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'bb', left: 'c' },
+          },
+        ],
         options: partitionOptions,
       })
     })
@@ -5853,12 +5982,6 @@ describe('sort-class-constructors', () => {
       })
 
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedClassConstructorsOrder',
-            data: { right: 'b', left: 'c' },
-          },
-        ],
         output: dedent`
           class Foo {
             constructor(
@@ -5879,6 +6002,12 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        errors: [
+          {
+            messageId: 'unexpectedClassConstructorsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
         options: customAlphabetOptions,
       })
     })
@@ -6237,13 +6366,6 @@ describe('sort-class-constructors', () => {
       })
 
       await valid({
-        options: [
-          {
-            ...options,
-            type: 'alphabetical',
-            order: 'asc',
-          },
-        ],
         code: dedent`
           class Foo {
             constructor(
@@ -6253,6 +6375,13 @@ describe('sort-class-constructors', () => {
             ) {}
           }
         `,
+        options: [
+          {
+            ...options,
+            type: 'alphabetical',
+            order: 'asc',
+          },
+        ],
         settings,
       })
     })
@@ -6274,12 +6403,6 @@ describe('sort-class-constructors', () => {
         })
 
         await invalid({
-          errors: [
-            {
-              messageId: 'unexpectedClassConstructorsOrder',
-              data: { right: 'b', left: 'c' },
-            },
-          ],
           output: dedent`
             class Foo {
               constructor(
@@ -6300,18 +6423,18 @@ describe('sort-class-constructors', () => {
               ) {}
             }
           `,
+          errors: [
+            {
+              messageId: 'unexpectedClassConstructorsOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
           options: [options],
         })
       })
 
       it('handles inline eslint-disable comments', async () => {
         await invalid({
-          errors: [
-            {
-              messageId: 'unexpectedClassConstructorsOrder',
-              data: { right: 'b', left: 'c' },
-            },
-          ],
           output: dedent`
             class Foo {
               constructor(
@@ -6330,6 +6453,12 @@ describe('sort-class-constructors', () => {
               ) {}
             }
           `,
+          errors: [
+            {
+              messageId: 'unexpectedClassConstructorsOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
           options: [options],
         })
       })
