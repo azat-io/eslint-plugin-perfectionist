@@ -9,6 +9,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             selector: 'selector1',
+            groupName: 'group',
           },
           selectors: ['selector1'],
           elementName: '',
@@ -22,6 +23,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             selector: 'selector1',
+            groupName: 'group',
           },
           selectors: ['selector2'],
           elementName: '',
@@ -37,6 +39,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             modifiers: ['modifier1', 'modifier2'],
+            groupName: 'group',
           },
           modifiers: ['modifier2', 'modifier1'],
           elementName: '',
@@ -50,6 +53,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             modifiers: ['modifier1', 'modifier2'],
+            groupName: 'group',
           },
           modifiers: ['modifier1'],
           elementName: '',
@@ -71,6 +75,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             elementNamePattern,
+            groupName: 'group',
           },
           elementName: 'hello',
           modifiers: [],
@@ -92,6 +97,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             elementValuePattern,
+            groupName: 'group',
           },
           elementValue: 'hello',
           elementName: '',
@@ -114,6 +120,7 @@ describe('does-custom-group-match', () => {
         doesCustomGroupMatch({
           customGroup: {
             decoratorNamePattern,
+            groupName: 'group',
           },
           decorators: ['foo', 'hello'],
           elementName: '',

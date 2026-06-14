@@ -138,15 +138,15 @@ type AdditionalSortOptions = object
  * JSON schema generation.
  */
 export let allSelectors = [
+  'function-property',
   'accessor-property',
-  'index-signature',
+  'property',
   'constructor',
-  'static-block',
   'get-method',
   'set-method',
-  'function-property',
-  'property',
   'method',
+  'index-signature',
+  'static-block',
 ] as const
 
 /**
@@ -154,17 +154,17 @@ export let allSelectors = [
  * JSON schema generation.
  */
 export let allModifiers = [
-  'async',
+  'static',
+  'declare',
+  'abstract',
+  'decorated',
+  'override',
+  'readonly',
   'protected',
   'private',
   'public',
-  'static',
-  'abstract',
-  'override',
-  'readonly',
-  'decorated',
-  'declare',
   'optional',
+  'async',
 ] as const
 
 /**
