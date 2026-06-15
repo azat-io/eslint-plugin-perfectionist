@@ -8885,6 +8885,94 @@ describe('sort-modules', () => {
           })
         })
 
+        it('sorts diamond dependencies without an autofix loop (#739)', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { left: 'Independent', right: 'Leaf' },
+                messageId: 'unexpectedModulesOrder',
+              },
+              {
+                data: { left: 'Caller2', right: 'Other' },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            output: dedent`
+              type Leaf = 'leaf';
+              type Caller1 = Leaf;
+              type Other = 'other';
+              type Independent = Other;
+              type Caller2 = Leaf;
+            `,
+            code: dedent`
+              type Caller1 = Leaf;
+              type Independent = Other;
+              type Leaf = 'leaf';
+              type Caller2 = Leaf;
+              type Other = 'other';
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                order: 'desc',
+              },
+            ],
+          })
+        })
+
+        it('keeps a sorted diamond stable with order desc (#739)', async () => {
+          await valid({
+            code: dedent`
+              type Leaf = 'leaf';
+              type Caller1 = Leaf;
+              type Other = 'other';
+              type Independent = Other;
+              type Caller2 = Leaf;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                order: 'desc',
+              },
+            ],
+          })
+        })
+
+        it('orders independent members via fallbackSort with order desc (#739)', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+                data: { right: 'B', left: 'A' },
+              },
+              {
+                messageId: 'unexpectedModulesOrder',
+                data: { right: 'C', left: 'B' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                fallbackSort: { type: 'alphabetical' },
+                useExperimentalDependencyDetection,
+                order: 'desc',
+              },
+            ],
+            output: dedent`
+              type C = 'c';
+              type B = 'b';
+              type A = 'a';
+            `,
+            code: dedent`
+              type A = 'a';
+              type B = 'b';
+              type C = 'c';
+            `,
+          })
+        })
+
         it('detects usages in interface values', async () => {
           await invalid({
             output: dedent`

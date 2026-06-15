@@ -39,7 +39,6 @@ export function buildComparatorByOptionsComputer({
           ignoreEslintDisabledNodes,
           sortingNodes,
           sourceCode,
-          options,
         })
       /* v8 ignore next 2 -- @preserve Exhaustive guard. */
       default:
