@@ -22,7 +22,7 @@ import {
 } from './sort-modules/types'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
   useExperimentalDependencyDetectionJsonSchema,
@@ -123,7 +123,7 @@ export default createEslintRule<Options, MessageId>({
             useExperimentalDependencyDetectionJsonSchema,
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

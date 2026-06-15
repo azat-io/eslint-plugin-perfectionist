@@ -101,5 +101,5 @@ export function getSettings(
     )
   }
 
-  return settings['perfectionist'] as Settings
+  return settings['perfectionist']
 }

@@ -2645,7 +2645,7 @@ describe('sort-object-types', () => {
           options: [
             {
               useConfigurationIf: {
-                declarationMatchesPattern: String.raw`^ignoreMe$`,
+                declarationMatchesPattern: '^ignoreMe$',
               },
               type: 'unsorted',
             },

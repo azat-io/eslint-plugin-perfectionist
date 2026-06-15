@@ -13,7 +13,7 @@ import {
 } from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
@@ -74,7 +74,7 @@ let jsonSchema: JSONSchema4 = {
         },
       }),
       partitionByComment: partitionByCommentJsonSchema,
-      partitionByNewLine: partitionByNewLineJsonSchema,
+      partitionByNewLine: partitionByNewlineJsonSchema,
     },
     required: ['useConfigurationIf'],
     additionalProperties: false,

@@ -35,5 +35,4 @@ declare global {
   var fathom: undefined | Fathom
 }
 
-// eslint-disable-next-line unicorn/require-module-specifiers
 export {}

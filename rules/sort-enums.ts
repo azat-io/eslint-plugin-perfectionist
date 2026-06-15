@@ -25,7 +25,7 @@ import {
 } from '../utils/report-errors'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { defaultOptions, sortEnum } from './sort-enums/sort-enum'
@@ -55,7 +55,7 @@ export default createEslintRule<Options, MessageId>({
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

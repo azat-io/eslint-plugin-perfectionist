@@ -32,7 +32,7 @@ import {
 } from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
@@ -347,7 +347,7 @@ export default createEslintRule<Options, MessageId>({
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
           internalPattern: buildRegexJsonSchema(),
         },
         additionalProperties: false,

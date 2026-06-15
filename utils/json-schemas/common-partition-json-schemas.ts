@@ -40,7 +40,7 @@ export let partitionByCommentJsonSchema: JSONSchema4 = {
  * JSON schema for the partition by new line option. Controls whether to create
  * separate partitions when newlines are encountered.
  */
-export let partitionByNewLineJsonSchema: JSONSchema4 = {
+export let partitionByNewlineJsonSchema: JSONSchema4 = {
   description:
     'Enables the use of newlines to separate the nodes into logical groups.',
   type: 'boolean',

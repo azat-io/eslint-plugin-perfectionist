@@ -21,7 +21,7 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { partitionByNewLineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
+import { partitionByNewlineJsonSchema } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { defaultOptions, sortJsxObject } from './sort-jsx-props/sort-jsx-object'
 import { buildAstListeners } from '../utils/build-ast-listeners'
@@ -43,7 +43,7 @@ export default createEslintRule<Options, MessageId>({
               tagMatchesPattern: buildRegexJsonSchema(),
             },
           }),
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

@@ -1,9 +1,10 @@
 import { transformerNotationDiff } from '@shikijs/transformers'
+import { svgoOptimizer, defineConfig } from 'astro/config'
 import rehypeExternalLinks from 'rehype-external-links'
 import { browserslistToTargets } from 'lightningcss'
+import { unified } from '@astrojs/markdown-remark'
 import svelteSvg from '@poppanator/sveltekit-svg'
 import remarkSectionize from 'remark-sectionize'
-import { defineConfig } from 'astro/config'
 import browserslist from 'browserslist'
 import sitemap from '@astrojs/sitemap'
 import svelte from '@astrojs/svelte'
@@ -15,6 +16,28 @@ import { colorTheme } from './docs/utils/shiki-theme'
 let site = 'https://perfectionist.dev'
 
 export default defineConfig({
+  markdown: {
+    processor: unified({
+      rehypePlugins: [
+        [
+          rehypeExternalLinks,
+          {
+            rel: ['noopener', 'noreferrer'],
+            target: '_blank',
+          },
+        ],
+      ],
+      remarkPlugins: [remarkSectionize, remarkHeadings],
+    }),
+    shikiConfig: {
+      transformers: [
+        transformerNotationDiff({
+          matchAlgorithm: 'v3',
+        }),
+      ],
+      theme: colorTheme,
+    },
+  },
   vite: {
     css: {
       lightningcss: {
@@ -37,26 +60,6 @@ export default defineConfig({
       svelteSvg(),
     ],
   },
-  markdown: {
-    rehypePlugins: [
-      [
-        rehypeExternalLinks,
-        {
-          rel: ['noopener', 'noreferrer'],
-          target: '_blank',
-        },
-      ],
-    ],
-    shikiConfig: {
-      transformers: [
-        transformerNotationDiff({
-          matchAlgorithm: 'v3',
-        }),
-      ],
-      theme: colorTheme,
-    },
-    remarkPlugins: [remarkSectionize, remarkHeadings],
-  },
   integrations: [
     svelte(),
     sitemap({
@@ -64,13 +67,13 @@ export default defineConfig({
     }),
     mdx(),
   ],
+  experimental: {
+    svgOptimizer: svgoOptimizer(),
+    clientPrerender: true,
+  },
   build: {
     inlineStylesheets: 'always',
     format: 'file',
-  },
-  experimental: {
-    clientPrerender: true,
-    svgo: true,
   },
   prefetch: {
     defaultStrategy: 'hover',

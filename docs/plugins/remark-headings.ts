@@ -12,6 +12,7 @@ export let remarkHeadings: Plugin<[], Root> =
         ((node as Heading).depth === 2 || (node as Heading).depth === 3) &&
         typeof index === 'number'
       ) {
+        // eslint-disable-next-line unicorn/better-dom-traversing
         let text = ((node as Heading).children[0] as Literal).value as string
         let id = text
           .replaceAll(/\p{P}/gu, '')

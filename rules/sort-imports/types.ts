@@ -101,8 +101,6 @@ export type SortImportsNode =
   | TSESTree.VariableDeclaration
   | TSESTree.ImportDeclaration
 
-export type CustomTypeOption = 'type-import-first' | TypeOption
-
 /**
  * Union type of all available import selectors. Used to categorize different
  * types of import statements.
@@ -142,6 +140,8 @@ interface CustomGroupMatchOptions {
 interface AdditionalSortOptions {
   sortBy: SortByOption
 }
+
+type CustomTypeOption = 'type-import-first' | TypeOption
 
 /**
  * Complete list of available active import selectors. Used for validation and

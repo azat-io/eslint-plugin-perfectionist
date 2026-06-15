@@ -15,7 +15,7 @@ function handleEntries(entries: IntersectionObserverEntry[]): void {
   for (let entry of entries) {
     let headingFragment = `#${entry.target.id}`
     let tocItem = document.querySelector<HTMLAnchorElement>(
-      `.table-of-content a[href="${headingFragment}"]`,
+      `.table-of-content a[href="${CSS.escape(headingFragment)}"]`,
     )
     if (!tocItem) {
       continue

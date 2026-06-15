@@ -15,7 +15,7 @@ import {
 } from './sort-heritage-clauses/types'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
   MISSED_SPACING_ERROR,
@@ -43,7 +43,7 @@ export default createEslintRule<Options, MessageId>({
               matchesAstSelector: matchesAstSelectorJsonSchema,
             },
           }),
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
         },
         additionalProperties: false,

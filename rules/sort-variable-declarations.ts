@@ -25,7 +25,7 @@ import {
 } from '../utils/report-errors'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
   sortVariableDeclaration,
@@ -53,7 +53,7 @@ export default createEslintRule<Options, MessageId>({
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

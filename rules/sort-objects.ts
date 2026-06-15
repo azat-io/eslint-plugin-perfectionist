@@ -26,7 +26,7 @@ import {
 } from '../utils/report-errors'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
@@ -78,7 +78,7 @@ export default createEslintRule<Options, MessageId>({
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

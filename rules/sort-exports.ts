@@ -15,7 +15,7 @@ import {
 } from '../utils/report-errors'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
@@ -185,7 +185,7 @@ export default createEslintRule<Options, MessageId>({
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

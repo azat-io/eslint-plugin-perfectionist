@@ -26,7 +26,7 @@ import {
 } from '../utils/report-errors'
 import {
   partitionByCommentJsonSchema,
-  partitionByNewLineJsonSchema,
+  partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import {
   buildCommonGroupsJsonSchemas,
@@ -56,7 +56,7 @@ export default createEslintRule<Options, MessageId>({
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
           ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
-          partitionByNewLine: partitionByNewLineJsonSchema,
+          partitionByNewLine: partitionByNewlineJsonSchema,
         },
         additionalProperties: false,
         type: 'object',

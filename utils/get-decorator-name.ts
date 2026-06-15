@@ -48,5 +48,5 @@ export function getDecoratorName({
   if (fullName.startsWith('@')) {
     fullName = fullName.slice(1)
   }
-  return fullName.split('(')[0]!
+  return fullName.split('(', 1)[0]!
 }
