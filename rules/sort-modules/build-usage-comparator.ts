@@ -1,14 +1,13 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { Comparator } from '../../utils/compare/default-comparator-by-options-computer'
-import type { SortModulesSortingNode, SortModulesNode, Options } from './types'
+import type { SortModulesSortingNode, SortModulesNode } from './types'
 
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { isNodeDependentOnOtherNode } from '../../utils/is-node-dependent-on-other-node'
 import { buildSortingNodeByNodeMap } from '../../utils/build-sorting-node-by-node-map'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
-import { computeOrderedValue } from '../../utils/compare/compute-ordered-value'
 import { computeDependencies } from './compute-dependencies'
 
 type PartialSortModulesSortingNode = Pick<
@@ -26,7 +25,6 @@ type PartialSortModulesSortingNode = Pick<
  * @param params.useExperimentalDependencyDetection - Whether to use
  *   experimental dependency detection.
  * @param params.sourceCode - The source code object.
- * @param params.options - The sorting options.
  * @returns A comparator function for sorting module nodes by usage.
  */
 export function buildUsageComparator({
@@ -34,11 +32,9 @@ export function buildUsageComparator({
   ignoreEslintDisabledNodes,
   sortingNodes,
   sourceCode,
-  options,
 }: {
   useExperimentalDependencyDetection: boolean
   sortingNodes: SortModulesSortingNode[]
-  options: Required<Options[number]>
   ignoreEslintDisabledNodes: boolean
   sourceCode: TSESLint.SourceCode
 }): Comparator<SortModulesSortingNode> {
@@ -59,16 +55,18 @@ export function buildUsageComparator({
     let sortedOrderB = orderBySortedNode.get(nodeB)!
     let unsortedOrderB = orderByUnsortedNode.get(nodeB)!
 
-    let sortedOrderedValue = computeOrderedValue(
-      sortedOrderA - sortedOrderB,
-      options.order,
-    )
-    let unsortedOrderedValue = computeOrderedValue(
-      unsortedOrderA - unsortedOrderB,
-      options.order,
-    )
+    /**
+     * The dependency direction must not be flipped by `options.order`: the
+     * unconditional forward-topological post-pass (`sortNodesByDependencies` in
+     * `sort-modules.ts`) owns the dependency direction. Negating the
+     * dependency-resolved index here would fight that post-pass and make the
+     * autofix oscillate forever (see issue #739). Only the sign (direction) of
+     * the index difference matters to a comparator.
+     */
+    let sortedOrderedValue = sortedOrderA - sortedOrderB
+    let unsortedOrderedValue = unsortedOrderA - unsortedOrderB
 
-    if (sortedOrderedValue !== unsortedOrderedValue) {
+    if (Math.sign(sortedOrderedValue) !== Math.sign(unsortedOrderedValue)) {
       return sortedOrderedValue
     }
 
