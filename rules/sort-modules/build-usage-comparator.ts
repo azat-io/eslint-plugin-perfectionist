@@ -55,14 +55,6 @@ export function buildUsageComparator({
     let sortedOrderB = orderBySortedNode.get(nodeB)!
     let unsortedOrderB = orderByUnsortedNode.get(nodeB)!
 
-    /**
-     * The dependency direction must not be flipped by `options.order`: the
-     * unconditional forward-topological post-pass (`sortNodesByDependencies` in
-     * `sort-modules.ts`) owns the dependency direction. Negating the
-     * dependency-resolved index here would fight that post-pass and make the
-     * autofix oscillate forever (see issue #739). Only the sign (direction) of
-     * the index difference matters to a comparator.
-     */
     let sortedOrderedValue = sortedOrderA - sortedOrderB
     let unsortedOrderedValue = unsortedOrderA - unsortedOrderB
 
