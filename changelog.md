@@ -1,5 +1,18 @@
 # Changelog
 
+## v5.9.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.9.0...v5.9.1)
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Prevent usage-sort autofix loop with order desc
+  ([b649b49b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/b649b49b))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.9.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.8.0...v5.9.0)
