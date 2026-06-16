@@ -18,7 +18,8 @@ jobs:
           allowed-endpoints: >
             api.github.com:443 api.netlify.com:443 github.com:443
             registry.npmjs.org:443 release-assets.githubusercontent.com:443
-            telemetry.astro.build:443
+            telemetry.astro.build:443 dl.deno.land:443
+            storage.googleapis.com:443
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -31,20 +32,11 @@ jobs:
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Build Docs
-        run: pnpm run docs:build
-
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
-        with:
-          netlify-config-path: './netlify.toml'
-          publish-dir: './dist'
-          production-branch: main
-          deploy-message: 'deploy from github actions'
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
+        run:
+          pnpm exec netlify deploy --build --prod --message 'deploy from github
+          actions'
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
+        timeout-minutes: 10

@@ -1,4 +1,5 @@
 ---
+import { INSTALL_COMMANDS } from '../data/home'
 import IconSparkle from '../icons/sparkle.svg'
 import Typography from './Typography.astro'
 import Container from './Container.astro'
@@ -11,28 +12,11 @@ import Title from './Title.astro'
     <div>
       <Title align="start">Installation</Title>
       <CodeTabs
-        code={[
-          {
-            source: 'npm install --save-dev eslint-plugin-perfectionist',
-            value: 'npm',
-            name: 'npm',
-          },
-          {
-            source: 'pnpm add --save-dev eslint-plugin-perfectionist',
-            value: 'pnpm',
-            name: 'pnpm',
-          },
-          {
-            source: 'yarn add --dev eslint-plugin-perfectionist',
-            value: 'yarn',
-            name: 'yarn',
-          },
-          {
-            source: 'bun install --dev eslint-plugin-perfectionist',
-            value: 'bun',
-            name: 'bun',
-          },
-        ]}
+        code={INSTALL_COMMANDS.map(item => ({
+          source: item.command,
+          value: item.name,
+          name: item.name,
+        }))}
         type="package-manager"
         client:load
         lang="bash"

@@ -36,7 +36,7 @@ export default async function markdownNegotiation(
     request,
     requestHeaders,
   )
-  if (!isMarkdownResponse(markdownResponse)) {
+  if (!hasMarkdownContentType(markdownResponse)) {
     return response
   }
 
@@ -137,13 +137,6 @@ async function fetchMarkdownResponse(
   )
 }
 
-function isMarkdownResponse(response: Response): boolean {
-  return (
-    response.ok &&
-    response.headers.get('content-type')?.startsWith('text/markdown') === true
-  )
-}
-
 function normalizePathname(pathname: string): string {
   if (pathname === '/' || !pathname.endsWith('/')) {
     return pathname
@@ -152,7 +145,17 @@ function normalizePathname(pathname: string): string {
   return pathname.slice(0, -1)
 }
 
+function hasMarkdownContentType(response: Response): boolean {
+  return (
+    response.headers.get('content-type')?.startsWith('text/markdown') === true
+  )
+}
+
 function hasFileExtension(pathname: string): boolean {
   let lastSegment = pathname.slice(pathname.lastIndexOf('/') + 1)
   return lastSegment.includes('.')
+}
+
+function isMarkdownResponse(response: Response): boolean {
+  return response.ok && hasMarkdownContentType(response)
 }
