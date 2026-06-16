@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro'
 
 import { getCollection } from 'astro:content'
 
+import { escapeTableCell } from '../utils/markdown-response'
+
 export const GET: APIRoute = async () => {
   let rules = await getCollection('rules')
   rules.sort((a, b) => a.id.localeCompare(b.id))
@@ -19,7 +21,9 @@ export const GET: APIRoute = async () => {
     let title =
       rule.data.deprecated ? `${rule.data.title} (deprecated)` : rule.data.title
     let description = escapeTableCell(rule.data.shortDescription)
-    lines.push(`| [${title}](/rules/${rule.id}.md) | ${description} |`)
+    lines.push(
+      `| [${escapeTableCell(title)}](/rules/${rule.id}.md) | ${description} |`,
+    )
   }
 
   return new Response(`${lines.join('\n')}\n`, {
@@ -27,11 +31,4 @@ export const GET: APIRoute = async () => {
       'content-type': 'text/markdown; charset=utf-8',
     },
   })
-}
-
-function escapeTableCell(value: string): string {
-  return value
-    .replaceAll('|', String.raw`\|`)
-    .replaceAll(/\s+/gu, ' ')
-    .trim()
 }

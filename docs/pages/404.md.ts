@@ -15,4 +15,5 @@ export const GET: APIRoute = () =>
     headers: {
       'content-type': 'text/markdown; charset=utf-8',
     },
+    status: 404,
   })

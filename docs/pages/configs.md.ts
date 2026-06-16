@@ -2,9 +2,14 @@ import type { APIRoute } from 'astro'
 
 import { getCollection } from 'astro:content'
 
+import { CONFIG_ORDER, orderIndex } from '../data/collections'
+import { escapeTableCell } from '../utils/markdown-response'
+
 export const GET: APIRoute = async () => {
   let configs = await getCollection('configs')
-  configs.sort((a, b) => a.id.localeCompare(b.id))
+  configs.sort(
+    (a, b) => orderIndex(CONFIG_ORDER, a.id) - orderIndex(CONFIG_ORDER, b.id),
+  )
 
   let lines = [
     '# Configs',
@@ -18,7 +23,7 @@ export const GET: APIRoute = async () => {
   for (let config of configs) {
     let description = escapeTableCell(config.data.shortDescription)
     lines.push(
-      `| [${config.data.title}](/configs/${config.id}.md) | ${description} |`,
+      `| [${escapeTableCell(config.data.title)}](/configs/${config.id}.md) | ${description} |`,
     )
   }
 
@@ -27,11 +32,4 @@ export const GET: APIRoute = async () => {
       'content-type': 'text/markdown; charset=utf-8',
     },
   })
-}
-
-function escapeTableCell(value: string): string {
-  return value
-    .replaceAll('|', String.raw`\|`)
-    .replaceAll(/\s+/gu, ' ')
-    .trim()
 }

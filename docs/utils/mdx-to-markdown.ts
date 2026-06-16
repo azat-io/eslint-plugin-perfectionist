@@ -174,6 +174,8 @@ function resolveStringExpression(
     return expression['value']
   }
   if (expression.type === 'TemplateLiteral') {
+    // Only static parts are kept here; interpolation is not resolved.
+    // Docs attributes never interpolate, so this stays a defensive fallback.
     let templateParts = (expression as TemplateLiteralExpression)[
       AST_TEMPLATE_PARTS_KEY
     ]

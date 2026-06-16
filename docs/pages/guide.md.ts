@@ -2,11 +2,14 @@ import type { APIRoute } from 'astro'
 
 import { getCollection } from 'astro:content'
 
-const GUIDE_ORDER = ['introduction', 'getting-started', 'integrations']
+import { GUIDE_ORDER, orderIndex } from '../data/collections'
+import { escapeTableCell } from '../utils/markdown-response'
 
 export const GET: APIRoute = async () => {
   let guide = await getCollection('guide')
-  guide.sort((a, b) => orderIndex(a.id) - orderIndex(b.id))
+  guide.sort(
+    (a, b) => orderIndex(GUIDE_ORDER, a.id) - orderIndex(GUIDE_ORDER, b.id),
+  )
 
   let lines = [
     '# Guide',
@@ -19,7 +22,7 @@ export const GET: APIRoute = async () => {
   for (let entry of guide) {
     let description = escapeTableCell(entry.data.description)
     lines.push(
-      `| [${entry.data.title}](/guide/${entry.id}.md) | ${description} |`,
+      `| [${escapeTableCell(entry.data.title)}](/guide/${entry.id}.md) | ${description} |`,
     )
   }
 
@@ -28,16 +31,4 @@ export const GET: APIRoute = async () => {
       'content-type': 'text/markdown; charset=utf-8',
     },
   })
-}
-
-function escapeTableCell(value: string): string {
-  return value
-    .replaceAll('|', String.raw`\|`)
-    .replaceAll(/\s+/gu, ' ')
-    .trim()
-}
-
-function orderIndex(id: string): number {
-  let index = GUIDE_ORDER.indexOf(id)
-  return index === -1 ? GUIDE_ORDER.length : index
 }

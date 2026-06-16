@@ -2,29 +2,14 @@ import type { APIRoute } from 'astro'
 
 import { getCollection } from 'astro:content'
 
-const TAGLINE = 'Take Your Code to a Beauty Salon'
-
-const DESCRIPTION =
-  'Automatically sort and organize objects, imports, types, enums, and JSX props. Ensure a clean and maintainable codebase with minimal effort.'
-
-const GUIDE_ORDER = ['introduction', 'getting-started', 'integrations']
-
-const BENEFITS = [
-  'Fixable Rules — Automatically fix all errors safely. No manual intervention needed.',
-  'Code Uniformity — Achieve a consistent code style for better readability and maintenance.',
-  'Easy to Use — Flexible configuration to match your preferences, with seamless editor integration.',
-  `It's Just Beautiful — Enjoy aesthetically pleasing code that looks really awesome.`,
-]
-
-const INSTALL_COMMANDS = [
-  {
-    command: 'npm install --save-dev eslint-plugin-perfectionist',
-    name: 'npm',
-  },
-  { command: 'pnpm add --save-dev eslint-plugin-perfectionist', name: 'pnpm' },
-  { command: 'yarn add --dev eslint-plugin-perfectionist', name: 'yarn' },
-  { command: 'bun install --dev eslint-plugin-perfectionist', name: 'bun' },
-]
+import {
+  INSTALL_COMMANDS,
+  DESCRIPTION,
+  CODE_STYLE,
+  BENEFITS,
+  TAGLINE,
+} from '../data/home'
+import { CONFIG_ORDER, GUIDE_ORDER, orderIndex } from '../data/collections'
 
 const DEMO_LINKS = [
   {
@@ -48,8 +33,12 @@ export const GET: APIRoute = async () => {
     getCollection('configs'),
   ])
 
-  guide.sort((a, b) => orderIndex(a.id) - orderIndex(b.id))
-  configs.sort((a, b) => a.id.localeCompare(b.id))
+  guide.sort(
+    (a, b) => orderIndex(GUIDE_ORDER, a.id) - orderIndex(GUIDE_ORDER, b.id),
+  )
+  configs.sort(
+    (a, b) => orderIndex(CONFIG_ORDER, a.id) - orderIndex(CONFIG_ORDER, b.id),
+  )
 
   let lines = [
     '# Perfectionist',
@@ -63,11 +52,11 @@ export const GET: APIRoute = async () => {
     '',
     '## ESLint Plugin',
     '',
-    'Automatically sort and organize objects, imports, types, enums, and JSX props. Ensure a clean and maintainable codebase with minimal effort.',
+    DESCRIPTION,
     '',
     '### Why teams use it',
     '',
-    ...BENEFITS.map(feature => `- ${feature}`),
+    ...BENEFITS.map(benefit => `- ${benefit.title} — ${benefit.description}`),
     '',
     '## Installation',
     '',
@@ -77,11 +66,11 @@ export const GET: APIRoute = async () => {
     '',
     'For ESLint setup examples and configuration patterns, continue with [Getting Started](/guide/getting-started.md).',
     '',
-    '## Identical Code Style',
+    `## ${CODE_STYLE.title}`,
     '',
-    'Consistent code style fosters collaboration and improves quality. Uniform style makes code readable and manageable, enabling quick understanding and contribution.',
+    CODE_STYLE.paragraphs[0],
     '',
-    'Perfectionist helps enforce these standards, keeping your codebase neat and organized.',
+    CODE_STYLE.paragraphs[1],
     '',
     '## Interactive Demo',
     '',
@@ -131,9 +120,4 @@ function formatInstallCommands(): string[] {
   }
 
   return lines
-}
-
-function orderIndex(id: string): number {
-  let index = GUIDE_ORDER.indexOf(id)
-  return index === -1 ? GUIDE_ORDER.length : index
 }
