@@ -50,7 +50,6 @@ import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-group
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { computeDependencyNames } from './sort-imports/compute-dependency-names'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { computeSpecifierName } from './sort-imports/compute-specifier-name'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -64,16 +63,11 @@ import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
-import { computeGroup } from '../utils/compute-group'
+import { GroupMatcher } from '../utils/group-matcher'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
 import { complete } from '../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedImportsOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedImportsGroupOrder'
@@ -152,6 +146,11 @@ export default createEslintRule<Options, MessageId>({
       : null
 
     let { sourceCode, filename, id } = context
+    let groupMatcher = new GroupMatcher({
+      allSelectors,
+      allModifiers,
+      options,
+    })
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: id,
       sourceCode,
@@ -239,13 +238,17 @@ export default createEslintRule<Options, MessageId>({
         modifiers.push('multiline')
       }
 
-      group ??=
-        computeGroupExceptUnknown({
-          selectors,
-          modifiers,
-          options,
-          name,
-        }) ?? 'unknown'
+      group = groupMatcher.computeGroup({
+        customGroupMatcher: customGroup =>
+          doesCustomGroupMatch({
+            elementName: name,
+            customGroup,
+            selectors,
+            modifiers,
+          }),
+        selectors,
+        modifiers,
+      })
 
       let hasMultipleImportDeclarations =
         node.type === AST_NODE_TYPES.ImportDeclaration &&
@@ -491,39 +494,6 @@ function sortImportNodes({
       }).length > 0
     )
   }
-}
-
-function computeGroupExceptUnknown({
-  selectors,
-  modifiers,
-  options,
-  name,
-}: {
-  options: Required<Options[number]>
-  selectors: Selector[]
-  modifiers: Modifier[]
-  name: string
-}): string | null {
-  let predefinedGroups = generatePredefinedGroups({
-    cache: cachedGroupsByModifiersAndSelectors,
-    selectors,
-    modifiers,
-  })
-  let computedCustomGroup = computeGroup({
-    customGroupMatcher: customGroup =>
-      doesCustomGroupMatch({
-        elementName: name,
-        customGroup,
-        modifiers,
-        selectors,
-      }),
-    predefinedGroups,
-    options,
-  })
-  if (computedCustomGroup === 'unknown') {
-    return null
-  }
-  return computedCustomGroup
 }
 
 let styleExtensions = [

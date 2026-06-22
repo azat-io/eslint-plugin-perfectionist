@@ -15,6 +15,7 @@ import {
   GROUP_ORDER_ERROR_ID,
   ORDER_ERROR_ID,
   allSelectors,
+  allModifiers,
 } from './types'
 import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
@@ -23,7 +24,6 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
@@ -33,17 +33,12 @@ import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeDependencies } from './compute-dependencies'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
@@ -92,10 +87,15 @@ export function sortVariableDeclaration({
   validateNewlinesAndPartitionConfiguration(options)
   validateGroupsConfiguration({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -111,28 +111,23 @@ export function sortVariableDeclaration({
 
       let selector: Selector =
         declaration.init ? 'initialized' : 'uninitialized'
-
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors: [selector],
-        modifiers: [],
-      })
+      let selectors: Selector[] = [selector]
 
       let lastSortingNode = accumulator.at(-1)?.at(-1)
       let sortingNode: Omit<
         SortVariableDeclarationsSortingNode,
         'partitionId'
       > = {
-        group: computeGroup({
+        group: groupMatcher.computeGroup({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
-              selectors: [selector],
               elementName: name,
               modifiers: [],
               customGroup,
+              selectors,
             }),
-          predefinedGroups,
-          options,
+          modifiers: [],
+          selectors,
         }),
         dependencies:
           options.useExperimentalDependencyDetection ?

@@ -41,6 +41,7 @@ export type Options = Partial<
  * union, enabling fine-grained control over sorting.
  */
 export type Selector = (typeof allSelectors)[number]
+export type Modifier = (typeof allModifiers)[number]
 
 /**
  * Match options for a custom group.
@@ -74,6 +75,7 @@ export let allSelectors = [
   'tuple',
   'union',
 ] as const
+export let allModifiers = [] as const
 
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate

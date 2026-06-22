@@ -3,7 +3,13 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortModulesSortingNode, Options } from './sort-modules/types'
+import type {
+  SortModulesSortingNode,
+  AdditionalSortOptions,
+  Modifier,
+  Selector,
+  Options,
+} from './sort-modules/types'
 
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -40,7 +46,6 @@ import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-grou
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeNodeDetails } from './sort-modules/compute-node-details'
@@ -52,15 +57,10 @@ import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupIndex } from '../utils/get-group-index'
 import { assertIsNever } from '../utils/assert-is-never'
-import { computeGroup } from '../utils/compute-group'
+import { GroupMatcher } from '../utils/group-matcher'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { complete } from '../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedModulesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedModulesGroupOrder'
@@ -156,6 +156,11 @@ export default createEslintRule<Options, MessageId>({
     validateNewlinesAndPartitionConfiguration(options)
 
     let { sourceCode, id } = context
+    let groupMatcher = new GroupMatcher({
+      allModifiers,
+      allSelectors,
+      options,
+    })
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: id,
       sourceCode,
@@ -166,6 +171,7 @@ export default createEslintRule<Options, MessageId>({
         analyzeModule({
           eslintDisabledLines,
           module: program,
+          groupMatcher,
           sourceCode,
           options,
           context,
@@ -178,11 +184,13 @@ export default createEslintRule<Options, MessageId>({
 
 function analyzeModule({
   eslintDisabledLines,
+  groupMatcher,
   sourceCode,
   options,
   context,
   module,
 }: {
+  groupMatcher: GroupMatcher<AdditionalSortOptions, Selector, Modifier>
   context: TSESLint.RuleContext<MessageId, Options>
   module: TSESTree.TSModuleBlock | TSESTree.Program
   options: Required<Options[number]>
@@ -260,6 +268,7 @@ function analyzeModule({
         analyzeModule({
           module: details.moduleBlock,
           eslintDisabledLines,
+          groupMatcher,
           sourceCode,
           options,
           context,
@@ -278,22 +287,18 @@ function analyzeModule({
       name,
     } = details.nodeDetails
 
-    let predefinedGroups = generatePredefinedGroups({
-      cache: cachedGroupsByModifiersAndSelectors,
-      selectors: [selector],
-      modifiers,
-    })
-    let group = computeGroup({
+    let selectors = [selector]
+    let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
-          selectors: [selector],
           elementName: name,
           customGroup,
           decorators,
+          selectors,
           modifiers,
         }),
-      predefinedGroups,
-      options,
+      selectors,
+      modifiers,
     })
 
     let sortingNode: Omit<
