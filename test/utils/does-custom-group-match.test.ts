@@ -115,7 +115,7 @@ describe('does-custom-group-match', () => {
           customGroup: {
             decoratorNamePattern,
           },
-          decorators: ['foo', 'hello'],
+          decoratorNames: ['foo', 'hello'],
           elementName: '',
           modifiers: [],
           selectors: [],

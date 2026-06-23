@@ -286,10 +286,10 @@ function analyzeModule({
     let group = computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
+          decoratorNames: decorators,
           selectors: [selector],
           elementName: name,
           customGroup,
-          decorators,
           modifiers,
         }),
       predefinedGroups,

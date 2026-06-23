@@ -20,7 +20,7 @@ interface DoesCustomGroupMatchParameters {
    * Optional list of decorator names applied to the element. Used for matching
    * against decoratorNamePattern in custom groups.
    */
-  decorators?: string[]
+  decoratorNames?: string[]
 
   /**
    * List of modifiers applied to the element (e.g., 'static', 'private',
@@ -100,7 +100,7 @@ interface BaseCustomGroupMatchOptions {
  *   selectors: ['property'],
  *   modifiers: ['static', 'readonly'],
  *   elementValue: null,
- *   decorators: [],
+ *   decoratorNames: [],
  * })
  * // Returns: true
  * ```
@@ -174,20 +174,20 @@ export function doesCustomGroupMatch<
  * @param params.elementValue - Optional value of the element.
  * @param params.selectors - Element's selectors.
  * @param params.modifiers - Element's modifiers.
- * @param params.decorators - Element's decorators.
+ * @param params.decoratorNames - Element's decorator names.
  * @returns True if all specified criteria match, false otherwise.
  */
 function doesSingleCustomGroupMatch({
+  decoratorNames,
   elementValue,
   customGroup,
   elementName,
-  decorators,
   selectors,
   modifiers,
 }: {
   customGroup: BaseCustomGroupMatchOptions
   elementValue?: string | null
-  decorators?: string[]
+  decoratorNames?: string[]
   selectors?: string[]
   modifiers?: string[]
   elementName: string
@@ -229,7 +229,7 @@ function doesSingleCustomGroupMatch({
     customGroup.decoratorNamePattern
   ) {
     let decoratorPattern = customGroup.decoratorNamePattern
-    let matchesDecoratorNamePattern = decorators?.some(decorator =>
+    let matchesDecoratorNamePattern = decoratorNames?.some(decorator =>
       matches(decorator, decoratorPattern),
     )
     if (!matchesDecoratorNamePattern) {
