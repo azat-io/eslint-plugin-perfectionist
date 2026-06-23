@@ -4,7 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options } from './sort-class-constructors/types'
+import type { Options } from './sort-constructor-parameters/types'
 
 import {
   buildUseConfigurationIfJsonSchema,
@@ -21,9 +21,9 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import { sortConstructorParameters } from './sort-constructor-parameters/sort-constructor-parameters'
+import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-constructor-parameters/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-class-constructors/types'
-import { sortClassConstructor } from './sort-class-constructors/sort-class-constructor'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
@@ -32,10 +32,11 @@ import { createEslintRule } from '../utils/create-eslint-rule'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
-const ORDER_ERROR_ID = 'unexpectedClassConstructorsOrder'
-const GROUP_ORDER_ERROR_ID = 'unexpectedClassConstructorsGroupOrder'
-const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenClassConstructorsMembers'
-const MISSED_SPACING_ERROR_ID = 'missedSpacingBetweenClassConstructorsMembers'
+const ORDER_ERROR_ID = 'unexpectedConstructorParametersOrder'
+const GROUP_ORDER_ERROR_ID = 'unexpectedConstructorParametersGroupOrder'
+const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenConstructorParametersMembers'
+const MISSED_SPACING_ERROR_ID =
+  'missedSpacingBetweenConstructorParametersMembers'
 
 type MessageId =
   | typeof MISSED_SPACING_ERROR_ID
@@ -93,8 +94,8 @@ export default createEslintRule<Options, MessageId>({
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
-      url: 'https://perfectionist.dev/rules/sort-class-constructors',
-      description: 'Enforce sorted class constructor parameters.',
+      url: 'https://perfectionist.dev/rules/sort-constructors-parameters',
+      description: 'Enforce sorted constructor parameters parameters.',
       recommended: false,
     },
     schema: jsonSchema,
@@ -107,8 +108,8 @@ export default createEslintRule<Options, MessageId>({
       context,
       sorter,
     }),
+  name: 'sort-constructors-parameters',
   defaultOptions: [defaultOptions],
-  name: 'sort-class-constructors',
 })
 
 function sorter({
@@ -124,7 +125,7 @@ function sorter({
     return
   }
 
-  sortClassConstructor<MessageId>({
+  sortConstructorParameters<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
       extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,

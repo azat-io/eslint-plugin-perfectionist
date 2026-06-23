@@ -4,12 +4,12 @@ import { describe, expect, it } from 'vitest'
 import dedent from 'dedent'
 
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
-import rule from '../../rules/sort-class-constructors'
+import rule from '../../rules/sort-constructor-parameters'
 import { Alphabet } from '../../utils/alphabet'
 
-describe('sort-class-constructors', () => {
+describe('sort-constructors-parameters', () => {
   let { invalid, valid } = createRuleTester({
-    name: 'sort-class-constructors',
+    name: 'sort-constructors-parameters',
     parser: typescriptParser,
     rule,
   })
@@ -54,7 +54,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
@@ -116,7 +116,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -155,7 +155,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aService', left: 'bService' },
           },
         ],
@@ -167,7 +167,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -189,7 +189,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: '{ aaa }', left: '{ bb }' },
           },
         ],
@@ -257,7 +257,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -276,11 +276,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'd' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'e' },
           },
         ],
@@ -338,7 +338,7 @@ describe('sort-class-constructors', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
           {
             data: {
@@ -347,7 +347,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -447,11 +447,11 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -521,7 +521,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -553,7 +553,7 @@ describe('sort-class-constructors', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
           {
             data: {
@@ -562,7 +562,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -622,7 +622,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -729,7 +729,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -888,7 +888,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -914,7 +914,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -954,11 +954,11 @@ describe('sort-class-constructors', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'a' },
           },
         ],
@@ -992,7 +992,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         options: [
@@ -1051,7 +1051,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -1105,7 +1105,7 @@ describe('sort-class-constructors', () => {
                 right: 'helloParam',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsGroupOrder',
+              messageId: 'unexpectedConstructorParametersGroupOrder',
             },
           ],
           output: dedent`
@@ -1152,15 +1152,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'dddd', left: 'ccc' },
           },
         ],
@@ -1213,7 +1213,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
@@ -1261,7 +1261,7 @@ describe('sort-class-constructors', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -1322,7 +1322,7 @@ describe('sort-class-constructors', () => {
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -1423,7 +1423,7 @@ describe('sort-class-constructors', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedClassConstructorsGroupOrder',
+                messageId: 'unexpectedConstructorParametersGroupOrder',
               },
               {
                 data: {
@@ -1432,7 +1432,7 @@ describe('sort-class-constructors', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedClassConstructorsGroupOrder',
+                messageId: 'unexpectedConstructorParametersGroupOrder',
               },
             ],
             output: dedent`
@@ -1480,7 +1480,7 @@ describe('sort-class-constructors', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
             },
           ],
           output: dedent`
@@ -1569,7 +1569,7 @@ describe('sort-class-constructors', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
             },
           ],
           output: dedent`
@@ -1614,7 +1614,7 @@ describe('sort-class-constructors', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
             },
           ],
           output: dedent`
@@ -1660,7 +1660,7 @@ describe('sort-class-constructors', () => {
                 right: 'b',
                 left: 'a',
               },
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
             },
           ],
           output: dedent`
@@ -1733,7 +1733,7 @@ describe('sort-class-constructors', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
             },
           ],
           output: dedent`
@@ -1776,7 +1776,7 @@ describe('sort-class-constructors', () => {
                 right: 'a',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
             },
           ],
           output: dedent`
@@ -1803,15 +1803,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'z' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1858,11 +1858,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'z' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1926,11 +1926,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -1984,15 +1984,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'z', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'y', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'y' },
           },
         ],
@@ -2076,15 +2076,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
@@ -2152,7 +2152,7 @@ describe('sort-class-constructors', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenClassConstructorsMembers',
+              messageId: 'missedSpacingBetweenConstructorParametersMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -2207,7 +2207,7 @@ describe('sort-class-constructors', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenClassConstructorsMembers',
+              messageId: 'extraSpacingBetweenConstructorParametersMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -2309,7 +2309,7 @@ describe('sort-class-constructors', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -2379,7 +2379,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -2410,7 +2410,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
@@ -2472,7 +2472,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -2530,7 +2530,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -2549,11 +2549,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'd' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'e' },
           },
         ],
@@ -2611,7 +2611,7 @@ describe('sort-class-constructors', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
           {
             data: {
@@ -2620,7 +2620,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -2720,11 +2720,11 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -2794,7 +2794,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -2826,7 +2826,7 @@ describe('sort-class-constructors', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
           {
             data: {
@@ -2835,7 +2835,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -2895,7 +2895,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -3002,7 +3002,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -3161,7 +3161,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -3187,7 +3187,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -3219,7 +3219,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         options: [
@@ -3278,7 +3278,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -3332,7 +3332,7 @@ describe('sort-class-constructors', () => {
                 right: 'helloParam',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsGroupOrder',
+              messageId: 'unexpectedConstructorParametersGroupOrder',
             },
           ],
           output: dedent`
@@ -3379,15 +3379,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'dddd', left: 'ccc' },
           },
         ],
@@ -3440,7 +3440,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
@@ -3488,7 +3488,7 @@ describe('sort-class-constructors', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -3549,7 +3549,7 @@ describe('sort-class-constructors', () => {
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -3650,7 +3650,7 @@ describe('sort-class-constructors', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedClassConstructorsGroupOrder',
+                messageId: 'unexpectedConstructorParametersGroupOrder',
               },
               {
                 data: {
@@ -3659,7 +3659,7 @@ describe('sort-class-constructors', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedClassConstructorsGroupOrder',
+                messageId: 'unexpectedConstructorParametersGroupOrder',
               },
             ],
             output: dedent`
@@ -3705,11 +3705,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'y', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'z' },
           },
         ],
@@ -3763,15 +3763,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'z', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'y', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'y' },
           },
         ],
@@ -3855,15 +3855,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
@@ -3931,7 +3931,7 @@ describe('sort-class-constructors', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenClassConstructorsMembers',
+              messageId: 'missedSpacingBetweenConstructorParametersMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -3986,7 +3986,7 @@ describe('sort-class-constructors', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenClassConstructorsMembers',
+              messageId: 'extraSpacingBetweenConstructorParametersMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -4088,7 +4088,7 @@ describe('sort-class-constructors', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -4158,7 +4158,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -4189,7 +4189,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aaa', left: 'c' },
           },
         ],
@@ -4251,7 +4251,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bbbb', left: 'ccc' },
           },
         ],
@@ -4309,7 +4309,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4328,11 +4328,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aaaaa', left: 'dd' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bbbb', left: 'e' },
           },
         ],
@@ -4390,7 +4390,7 @@ describe('sort-class-constructors', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
           {
             data: {
@@ -4399,7 +4399,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -4499,11 +4499,11 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bbb', left: 'd' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'fff', left: 'gg' },
           },
         ],
@@ -4573,7 +4573,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -4605,7 +4605,7 @@ describe('sort-class-constructors', () => {
               right: 'top2',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
           {
             data: {
@@ -4614,7 +4614,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -4674,7 +4674,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4781,7 +4781,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4940,7 +4940,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4966,7 +4966,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'b' },
           },
         ],
@@ -4998,7 +4998,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'c',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         options: [
@@ -5057,7 +5057,7 @@ describe('sort-class-constructors', () => {
               right: 'top1',
               left: 'b',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -5111,7 +5111,7 @@ describe('sort-class-constructors', () => {
                 right: 'helloParam',
                 left: 'b',
               },
-              messageId: 'unexpectedClassConstructorsGroupOrder',
+              messageId: 'unexpectedConstructorParametersGroupOrder',
             },
           ],
           output: dedent`
@@ -5158,15 +5158,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'a' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'ccc', left: 'bb' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'dddd', left: 'ccc' },
           },
         ],
@@ -5219,7 +5219,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'fooBar', left: 'fooZar' },
           },
         ],
@@ -5267,7 +5267,7 @@ describe('sort-class-constructors', () => {
               right: 'top3',
               left: 'm',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -5328,7 +5328,7 @@ describe('sort-class-constructors', () => {
               right: 'bFoo',
               left: 'a',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -5429,7 +5429,7 @@ describe('sort-class-constructors', () => {
                   right: 'g',
                   left: 'b',
                 },
-                messageId: 'unexpectedClassConstructorsGroupOrder',
+                messageId: 'unexpectedConstructorParametersGroupOrder',
               },
               {
                 data: {
@@ -5438,7 +5438,7 @@ describe('sort-class-constructors', () => {
                   right: 'r',
                   left: 'g',
                 },
-                messageId: 'unexpectedClassConstructorsGroupOrder',
+                messageId: 'unexpectedConstructorParametersGroupOrder',
               },
             ],
             output: dedent`
@@ -5488,10 +5488,10 @@ describe('sort-class-constructors', () => {
               left: 'aaaa',
               right: 'yy',
             },
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bbb', left: 'z' },
           },
         ],
@@ -5549,14 +5549,14 @@ describe('sort-class-constructors', () => {
               left: 'aaaa',
               right: 'z',
             },
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'yy', left: 'z' },
           },
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'bbb', left: 'yy' },
           },
         ],
@@ -5640,15 +5640,15 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'b', left: 'a' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'c', left: 'b' },
           },
           {
-            messageId: 'extraSpacingBetweenClassConstructorsMembers',
+            messageId: 'extraSpacingBetweenConstructorParametersMembers',
             data: { right: 'd', left: 'c' },
           },
         ],
@@ -5716,7 +5716,7 @@ describe('sort-class-constructors', () => {
         await invalid({
           errors: [
             {
-              messageId: 'missedSpacingBetweenClassConstructorsMembers',
+              messageId: 'missedSpacingBetweenConstructorParametersMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -5771,7 +5771,7 @@ describe('sort-class-constructors', () => {
         await invalid({
           errors: [
             {
-              messageId: 'extraSpacingBetweenClassConstructorsMembers',
+              messageId: 'extraSpacingBetweenConstructorParametersMembers',
               data: { right: 'b', left: 'a' },
             },
           ],
@@ -5873,7 +5873,7 @@ describe('sort-class-constructors', () => {
               right: 'a',
               left: 'b',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -5943,7 +5943,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'c' },
           },
         ],
@@ -6004,7 +6004,7 @@ describe('sort-class-constructors', () => {
         `,
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'b', left: 'c' },
           },
         ],
@@ -6044,11 +6044,11 @@ describe('sort-class-constructors', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'b' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'a' },
           },
         ],
@@ -6095,11 +6095,11 @@ describe('sort-class-constructors', () => {
         ],
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'bb', left: 'b' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'aa', left: 'a' },
           },
         ],
@@ -6176,7 +6176,7 @@ describe('sort-class-constructors', () => {
               right: 'ba',
               left: 'aa',
             },
-            messageId: 'unexpectedClassConstructorsGroupOrder',
+            messageId: 'unexpectedConstructorParametersGroupOrder',
           },
         ],
         output: dedent`
@@ -6225,7 +6225,7 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'missedSpacingBetweenClassConstructorsMembers',
+            messageId: 'missedSpacingBetweenConstructorParametersMembers',
             data: { right: 'a', left: 'b' },
           },
         ],
@@ -6280,11 +6280,11 @@ describe('sort-class-constructors', () => {
       await invalid({
         errors: [
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'a', left: 'b' },
           },
           {
-            messageId: 'unexpectedClassConstructorsOrder',
+            messageId: 'unexpectedConstructorParametersOrder',
             data: { right: 'c', left: 'd' },
           },
         ],
@@ -6425,7 +6425,7 @@ describe('sort-class-constructors', () => {
           `,
           errors: [
             {
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
@@ -6455,7 +6455,7 @@ describe('sort-class-constructors', () => {
           `,
           errors: [
             {
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
               data: { right: 'b', left: 'c' },
             },
           ],
@@ -6495,7 +6495,7 @@ describe('sort-class-constructors', () => {
           `,
           errors: [
             {
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
               data: { right: 'a', left: 'b' },
             },
           ],
@@ -6510,7 +6510,7 @@ describe('sort-class-constructors', () => {
               constructor(
               b,
               c,
-              // eslint-disable-next-line rule-to-test/sort-class-constructors
+              // eslint-disable-next-line rule-to-test/sort-constructors-parameters
               a,
               ) {}
             }
@@ -6520,14 +6520,14 @@ describe('sort-class-constructors', () => {
               constructor(
               c,
               b,
-              // eslint-disable-next-line rule-to-test/sort-class-constructors
+              // eslint-disable-next-line rule-to-test/sort-constructors-parameters
               a,
               ) {}
             }
           `,
           errors: [
             {
-              messageId: 'unexpectedClassConstructorsOrder',
+              messageId: 'unexpectedConstructorParametersOrder',
               data: { right: 'b', left: 'c' },
             },
           ],

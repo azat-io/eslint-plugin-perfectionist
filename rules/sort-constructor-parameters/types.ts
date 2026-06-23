@@ -6,9 +6,9 @@ import type { AllCommonOptions } from '../../types/all-common-options'
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
- * Configuration options for the sort-class-constructors rule.
+ * Configuration options for the sort-constructors-parameters rule.
  *
- * This rule enforces the sorting of class constructor parameters, ensuring
+ * This rule enforces the sorting of constructor parameters parameters, ensuring
  * consistent ordering for better readability and maintainability.
  */
 export type Options = Partial<

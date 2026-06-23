@@ -1,9 +1,9 @@
 import type { ESLint, Linter } from 'eslint'
 
 import { version as packageVersion, name as packageName } from './package.json'
+import SortConstructorParameters from './rules/sort-constructor-parameters'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
-import sortClassConstructors from './rules/sort-class-constructors'
 import sortImportAttributes from './rules/sort-import-attributes'
 import sortExportAttributes from './rules/sort-export-attributes'
 import sortHeritageClauses from './rules/sort-heritage-clauses'
@@ -73,7 +73,7 @@ let recommendedRules = {
 } as unknown as ESLint.Plugin['rules']
 export let rules = {
   ...recommendedRules,
-  'sort-class-constructors': sortClassConstructors,
+  'sort-constructors-parameters': SortConstructorParameters,
   'sort-arrays': sortArrays,
 } as unknown as ESLint.Plugin['rules']
 
@@ -150,9 +150,9 @@ export default {
   configs,
 } as { configs: PluginConfigs } & ESLint.Plugin
 
+export type { Options as SortConstructorParametersOptions } from './rules/sort-constructor-parameters/types'
 export type { Options as SortVariableDeclarationsOptions } from './rules/sort-variable-declarations/types'
 export type { Options as SortIntersectionTypesOptions } from './rules/sort-intersection-types/types'
-export type { Options as SortClassConstructorsOptions } from './rules/sort-class-constructors/types'
 export type { Options as SortImportAttributesOptions } from './rules/sort-import-attributes/types'
 export type { Options as SortExportAttributesOptions } from './rules/sort-export-attributes/types'
 export type { Options as SortHeritageClausesOptions } from './rules/sort-heritage-clauses/types'

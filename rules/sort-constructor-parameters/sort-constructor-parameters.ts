@@ -27,9 +27,9 @@ import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 import { allSelectors } from './types'
 
-type SortClassConstructorSortingNode = SortingNode<TSESTree.Parameter>
+type SortConstructorParameterSortingNode = SortingNode<TSESTree.Parameter>
 
-export function sortClassConstructor<MessageIds extends string>({
+export function sortConstructorParameters<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
   mustHaveMatchedContextOptions,
   availableMessageIds,
@@ -85,9 +85,9 @@ export function sortClassConstructor<MessageIds extends string>({
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
-  let formattedMembers: SortClassConstructorSortingNode[][] = params.reduce(
+  let formattedMembers: SortConstructorParameterSortingNode[][] = params.reduce(
     (
-      accumulator: SortClassConstructorSortingNode[][],
+      accumulator: SortConstructorParameterSortingNode[][],
       parameter: TSESTree.Parameter,
     ) => {
       if (parameter.type === AST_NODE_TYPES.RestElement) {
@@ -114,7 +114,10 @@ export function sortClassConstructor<MessageIds extends string>({
         options,
       })
 
-      let sortingNode: Omit<SortClassConstructorSortingNode, 'partitionId'> = {
+      let sortingNode: Omit<
+        SortConstructorParameterSortingNode,
+        'partitionId'
+      > = {
         isEslintDisabled: isNodeEslintDisabled(parameter, eslintDisabledLines),
         size: rangeToDiff(parameter, sourceCode),
         node: parameter,
@@ -146,7 +149,7 @@ export function sortClassConstructor<MessageIds extends string>({
 
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortClassConstructorSortingNode[] {
+  ): SortConstructorParameterSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
