@@ -22,6 +22,17 @@ interface GetNodeRangeParameters {
   options?: Pick<CommonPartitionOptions, 'partitionByComment'>
 
   /**
+   * Decorators associated with this node that are not directly accessible via
+   * the AST node's own `decorators` property.
+   *
+   * Used in contexts where decorators are tracked separately from their
+   * decorated node. When provided, these decorators override the node's own
+   * `decorators` in range calculations, ensuring they are included when the
+   * node is moved during sorting fixes.
+   */
+  implicitDecorators?: TSESTree.Decorator[]
+
+  /**
    * Whether to exclude the highest-level block comment from the range. Useful
    * for preserving file-level documentation comments in their original
    * position.
@@ -89,12 +100,19 @@ interface GetNodeRangeParameters {
  */
 export function getNodeRange({
   ignoreHighestBlockComment,
+  implicitDecorators,
   sourceCode,
   options,
   node,
 }: GetNodeRangeParameters): TSESTree.Range {
   let start = node.range.at(0)!
   let end = node.range.at(1)!
+
+  let decorators =
+    implicitDecorators ?? ('decorators' in node ? node.decorators : [])
+  if (decorators[0]) {
+    start = Math.min(start, decorators[0].range[0])
+  }
 
   if (ASTUtils.isParenthesized(node, sourceCode)) {
     let bodyOpeningParen = sourceCode.getTokenBefore(
@@ -107,7 +125,7 @@ export function getNodeRange({
       ASTUtils.isClosingParenToken,
     )!
 
-    start = bodyOpeningParen.range.at(0)!
+    start = Math.min(start, bodyOpeningParen.range.at(0)!)
     end = bodyClosingParen.range.at(1)!
   }
 
@@ -158,7 +176,7 @@ export function getNodeRange({
   }
 
   if (relevantTopComment) {
-    start = relevantTopComment.range.at(0)!
+    start = Math.min(start, relevantTopComment.range.at(0)!)
   }
 
   return [start, end]
