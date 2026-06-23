@@ -3478,34 +3478,46 @@ describe('sort-modules', () => {
         })
       })
 
-      it('ignores decorated then exported classes when sorting', async () => {
+      it('correctly sorts exported classes with decorators', async () => {
         await invalid({
           output: dedent`
-            @B
-            class B {}
-
-            @A
+            @A1
+            @A2
+            // A
             export class A {}
 
-            @C
+            @B1
+            @B2
+            /* B */
+            class B {}
+
+            @C1
+            @C2
+            // C
             class C {}
+          `,
+          code: dedent`
+            @C1
+            @C2
+            // C
+            class C {}
+
+            @A1
+            @A2
+            // A
+            export class A {}
+
+            @B1
+            @B2
+            /* B */
+            class B {}
           `,
           errors: [
             {
               messageId: 'unexpectedModulesOrder',
-              data: { right: 'B', left: 'C' },
+              data: { right: 'A', left: 'C' },
             },
           ],
-          code: dedent`
-            @C
-            class C {}
-
-            @A
-            export class A {}
-
-            @B
-            class B {}
-          `,
           options: [
             {
               ...options,
@@ -3516,29 +3528,41 @@ describe('sort-modules', () => {
 
         await invalid({
           output: dedent`
-            @B
-            class B {}
-
-            @A
+            @A1
+            @A2
+            // A
             export default class A {}
 
-            @C
+            @B1
+            @B2
+            /* B */
+            class B {}
+
+            @C1
+            @C2
+            // C
             class C {}
           `,
           code: dedent`
-            @C
+            @C1
+            @C2
+            // C
             class C {}
 
-            @A
+            @A1
+            @A2
+            // A
             export default class A {}
 
-            @B
+            @B1
+            @B2
+            /* B */
             class B {}
           `,
           errors: [
             {
               messageId: 'unexpectedModulesOrder',
-              data: { right: 'B', left: 'C' },
+              data: { right: 'A', left: 'C' },
             },
           ],
           options: [
@@ -5931,34 +5955,40 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores exported decorated classes when sorting', async () => {
+    it('correctly sorts exported classes with decorators', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
         output: dedent`
-          @B
-          class B {}
-
-          @A
+          @A1
+          @A2
           export class A {}
 
-          @C
+          @B1
+          @B2
+          class B {}
+
+          @C1
+          @C2
           class C {}
         `,
         code: dedent`
-          @C
+          @C1
+          @C2
           class C {}
 
-          @A
+          @A1
+          @A2
           export class A {}
 
-          @B
+          @B1
+          @B2
           class B {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'C' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -8311,34 +8341,40 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores exported decorated classes when sorting', async () => {
+    it('correctly sorts exported classes with decorators', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'BB', left: 'C' },
-          },
-        ],
         output: dedent`
-          @B
-          class BB {}
-
-          @A
+          @A1
+          @A2
           export class AAA {}
 
-          @C
+          @B1
+          @B2
+          class BB {}
+
+          @C1
+          @C2
           class C {}
         `,
         code: dedent`
-          @C
+          @C1
+          @C2
           class C {}
 
-          @A
+          @A1
+          @A2
           export class AAA {}
 
-          @B
+          @B1
+          @B2
           class BB {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'AAA', left: 'C' },
+          },
+        ],
         options: [
           {
             ...options,
