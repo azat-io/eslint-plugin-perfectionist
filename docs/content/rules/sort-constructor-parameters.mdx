@@ -1,10 +1,10 @@
 ---
-title: sort-class-constructors
+title: sort-constructor-parameters
 description: Ensure your class constructor parameters are sorted based on custom conditions. Improve readability and maintain consistent code with this ESLint rule
 shortDescription: Enforce sorted class constructor parameters based on custom conditions
 keywords:
   - eslint
-  - sort class constructors
+  - sort class constructor parameters
   - eslint rule
   - coding standards
   - code quality
@@ -297,7 +297,7 @@ To avoid unexpected behavior, do not use `:exit` or `:enter` pseudo-selectors.
 Example configuration: only sort constructors of Angular components, services, and pipes.
 ```ts
 {
-  'perfectionist/sort-class-constructors': [
+  'perfectionist/sort-constructor-parameters': [
     'error',
     {
       useConfigurationIf: {
@@ -459,7 +459,7 @@ Custom groups have a higher priority than any predefined group.
               perfectionist,
             },
             rules: {
-              'perfectionist/sort-class-constructors': [
+              'perfectionist/sort-constructor-parameters': [
                 'error',
                 {
                   type: 'alphabetical',
@@ -492,7 +492,7 @@ Custom groups have a higher priority than any predefined group.
             'perfectionist',
           ],
           rules: {
-            'perfectionist/sort-class-constructors': [
+            'perfectionist/sort-constructor-parameters': [
               'error',
               {
                 type: 'alphabetical',
@@ -528,5 +528,5 @@ This rule was introduced in [v5.10.0](https://github.com/azat-io/eslint-plugin-p
 
 ## Resources
 
-- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-class-constructors.ts)
-- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-class-constructors.test.ts)
+- [Rule source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/rules/sort-constructor-parameters.ts)
+- [Test source](https://github.com/azat-io/eslint-plugin-perfectionist/blob/main/test/rules/sort-constructor-parameters.test.ts)
