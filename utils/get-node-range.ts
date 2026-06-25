@@ -129,20 +129,35 @@ export function getNodeRange({
     end = bodyClosingParen.range.at(1)!
   }
 
-  let comments = getCommentsBefore({
-    sourceCode,
-    node,
+  let topCommentStart = computeHighestCommentStart({
+    comments: getCommentsBefore({ sourceCode, node }),
+    anchorLine: node.loc.start.line,
+    ignoreHighestBlockComment,
+    options,
   })
-  let highestBlockComment = comments.find(comment => comment.type === 'Block')
+  if (topCommentStart !== undefined) {
+    start = Math.min(start, topCommentStart)
+  }
 
-  /**
-   * Iterate on all comments starting from the bottom until we reach the last of
-   * the comments, a newline between comments, a partition comment, or a
-   * eslint-disable comment.
-   */
-  let relevantTopComment: TSESTree.Comment | undefined
+  return [start, end]
+}
+
+function computeHighestCommentStart({
+  ignoreHighestBlockComment,
+  anchorLine,
+  comments,
+  options,
+}: Pick<GetNodeRangeParameters, 'ignoreHighestBlockComment' | 'options'> & {
+  comments: TSESTree.Comment[]
+  anchorLine: number
+}): undefined | number {
+  let highestBlockComment = comments.find(comment => comment.type === 'Block')
+  let highestCommentStart: undefined | number
   for (let i = comments.length - 1; i >= 0; i--) {
     let comment = comments[i]!
+    if (ignoreHighestBlockComment && comment === highestBlockComment) {
+      break
+    }
 
     let eslintDisabledRules = getEslintDisabledRules(comment.value)
     if (
@@ -160,24 +175,13 @@ export function getNodeRange({
      * Check for newlines between comments or between the first comment and the
      * node.
      */
-    let previousCommentOrNodeStartLine =
-      i === comments.length - 1 ?
-        node.loc.start.line
-      : comments[i + 1]!.loc.start.line
-    if (comment.loc.end.line !== previousCommentOrNodeStartLine - 1) {
+    let previousCommentOrAnchorLine =
+      i === comments.length - 1 ? anchorLine : comments[i + 1]!.loc.start.line
+    if (comment.loc.end.line !== previousCommentOrAnchorLine - 1) {
       break
     }
 
-    if (ignoreHighestBlockComment && comment === highestBlockComment) {
-      break
-    }
-
-    relevantTopComment = comment
+    highestCommentStart = comment.range.at(0)
   }
-
-  if (relevantTopComment) {
-    start = Math.min(start, relevantTopComment.range.at(0)!)
-  }
-
-  return [start, end]
+  return highestCommentStart
 }
