@@ -3573,6 +3573,70 @@ describe('sort-modules', () => {
           ],
         })
       })
+
+      it('keeps a line comment attached to its exported decorated class', async () => {
+        await invalid({
+          output: dedent`
+            // doc for A1
+            @A
+            // doc for A2
+            export class A {}
+
+            // doc for B1
+            @B
+            // doc for B2
+            class B {}
+          `,
+          code: dedent`
+            // doc for B1
+            @B
+            // doc for B2
+            class B {}
+
+            // doc for A1
+            @A
+            // doc for A2
+            export class A {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [{ ...options, groups: ['unknown'] }],
+        })
+      })
+
+      it('keeps a JSDoc block comment attached to its exported decorated class', async () => {
+        await invalid({
+          output: dedent`
+            /** doc for A */
+            @A
+            export class A {}
+
+            /** doc for B */
+            @B
+            class B {}
+          `,
+          code: dedent`
+            /** doc for B */
+            @B
+            class B {}
+
+            /** doc for A */
+            @A
+            export class A {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [{ ...options, groups: ['unknown'] }],
+        })
+      })
     })
   })
 

@@ -112,6 +112,16 @@ export function getNodeRange({
     implicitDecorators ?? ('decorators' in node ? node.decorators : [])
   if (decorators[0]) {
     start = Math.min(start, decorators[0].range[0])
+
+    let decoratorTopCommentStart = computeHighestCommentStart({
+      comments: getCommentsBefore({ node: decorators[0], sourceCode }),
+      anchorLine: decorators[0].loc.start.line,
+      ignoreHighestBlockComment,
+      options,
+    })
+    if (decoratorTopCommentStart !== undefined) {
+      start = Math.min(start, decoratorTopCommentStart)
+    }
   }
 
   if (ASTUtils.isParenthesized(node, sourceCode)) {
