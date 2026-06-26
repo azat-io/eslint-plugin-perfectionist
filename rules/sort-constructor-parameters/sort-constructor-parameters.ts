@@ -22,6 +22,7 @@ import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
+import { computeParameterModifiers } from './compute-parameter-modifiers'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
@@ -30,8 +31,8 @@ import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
+import { allSelectors, allModifiers } from './types'
 import { complete } from '../../utils/complete'
-import { allSelectors } from './types'
 
 export function sortConstructorParameters<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
@@ -79,7 +80,7 @@ export function sortConstructorParameters<MessageIds extends string>({
   validateCustomSortConfiguration(options)
   validateGroupsConfiguration({
     selectors: allSelectors,
-    modifiers: [],
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfiguration(options)
@@ -103,18 +104,19 @@ export function sortConstructorParameters<MessageIds extends string>({
 
         let name = computeNodeName({ node: parameter, sourceCode })
         let selector: Selector = 'parameter'
+        let modifiers = computeParameterModifiers(parameter)
         let predefinedGroups = generatePredefinedGroups({
           cache: cachedGroupsByModifiersAndSelectors,
           selectors: [selector],
-          modifiers: [],
+          modifiers,
         })
         let group = computeGroup({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
               selectors: [selector],
               elementName: name,
-              modifiers: [],
               customGroup,
+              modifiers,
             }),
           predefinedGroups,
           options,

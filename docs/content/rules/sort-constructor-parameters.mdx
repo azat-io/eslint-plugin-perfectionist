@@ -348,6 +348,37 @@ Predefined groups are characterized by a selector.
 
 **Note:** Rest elements (`...args`) are not sorted and act as partition boundaries. This ensures the original order of rest elements is preserved.
 
+##### Modifiers
+
+Modifiers are listed below by importance, from most to least important:
+
+- `'decorated'` — Matches parameters with at least one decorator.
+- `'override'` — Matches parameters declared with the `override` keyword.
+- `'readonly'` — Matches parameters declared with the `readonly` keyword.
+- `'protected'` — Matches parameters declared with the `protected` keyword.
+- `'private'` — Matches parameters declared with the `private` keyword.
+- `'public'` — Matches parameters declared with the `public` keyword, or without visibility keyword.
+- `'optional'` — Matches optional parameters.
+
+Example: `decorated-readonly-public-parameter`.
+
+#### Important notes
+
+##### Scope of the `public` modifier
+
+Parameters that are neither `protected` nor `private` are matched with the `public` modifier, even if the keyword is absent. This includes plain parameters that are not parameter properties.
+
+##### The `unknown` group
+
+Parameters that don't fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option, the parameters will remain in their original order.
+
+##### Behavior when multiple groups match a parameter
+
+The list of modifiers above is sorted by importance, from most to least important. When several groups match a parameter, the following rules apply:
+
+1. The group with the most matching modifiers is selected.
+2. If the number of matching modifiers is the same, the group is chosen based on modifier importance as listed above.
+
 #### Group with overridden settings
 
 You may directly override options for a specific group by using an object with the `group` property and other option overrides.
