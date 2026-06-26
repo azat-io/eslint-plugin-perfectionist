@@ -2386,6 +2386,80 @@ describe('sort-constructors-parameters', () => {
         options: partitionOptions,
       })
     })
+
+    it('sorts decorators correctly', async () => {
+      await invalid({
+        output: dedent`
+          class Foo {
+            constructor(
+              @A(a)
+              private readonly a,
+
+              @B b
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              @B b,
+
+              @A(a)
+              private readonly a
+            ) {}
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [options],
+      })
+
+      await invalid({
+        output: dedent`
+          class Foo {
+            constructor(
+              // Comment above @A
+              @A
+              /* Comment below @A */
+              private readonly a,
+
+              /* Comment
+               * above
+               * @B
+               */
+              @B b,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              /* Comment
+               * above
+               * @B
+               */
+              @B b,
+
+              // Comment above @A
+              @A
+              /* Comment below @A */
+              private readonly a,
+            ) {}
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [options],
+      })
+    })
   })
 
   describe('natural', () => {
