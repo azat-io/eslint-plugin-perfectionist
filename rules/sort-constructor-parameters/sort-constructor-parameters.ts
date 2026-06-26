@@ -3,8 +3,11 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { SortingNode } from '../../types/sorting-node'
-import type { Selector, Options } from './types'
+import type {
+  SortConstructorParametersSortingNode,
+  Selector,
+  Options,
+} from './types'
 
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
@@ -26,8 +29,6 @@ import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 import { allSelectors } from './types'
-
-type SortConstructorParameterSortingNode = SortingNode<TSESTree.Parameter>
 
 export function sortConstructorParameters<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
@@ -85,71 +86,75 @@ export function sortConstructorParameters<MessageIds extends string>({
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
-  let formattedMembers: SortConstructorParameterSortingNode[][] = params.reduce(
-    (
-      accumulator: SortConstructorParameterSortingNode[][],
-      parameter: TSESTree.Parameter,
-    ) => {
-      if (parameter.type === AST_NODE_TYPES.RestElement) {
-        accumulator.push([])
-        return accumulator
-      }
+  let formattedMembers: SortConstructorParametersSortingNode[][] =
+    params.reduce(
+      (
+        accumulator: SortConstructorParametersSortingNode[][],
+        parameter: TSESTree.Parameter,
+      ) => {
+        if (parameter.type === AST_NODE_TYPES.RestElement) {
+          accumulator.push([])
+          return accumulator
+        }
 
-      let name = computeNodeName({ node: parameter, sourceCode })
-      let selector: Selector = 'parameter'
-      let predefinedGroups = generatePredefinedGroups({
-        cache: cachedGroupsByModifiersAndSelectors,
-        selectors: [selector],
-        modifiers: [],
-      })
-      let group = computeGroup({
-        customGroupMatcher: customGroup =>
-          doesCustomGroupMatch({
-            selectors: [selector],
-            elementName: name,
-            modifiers: [],
-            customGroup,
-          }),
-        predefinedGroups,
-        options,
-      })
-
-      let sortingNode: Omit<
-        SortConstructorParameterSortingNode,
-        'partitionId'
-      > = {
-        isEslintDisabled: isNodeEslintDisabled(parameter, eslintDisabledLines),
-        size: rangeToDiff(parameter, sourceCode),
-        node: parameter,
-        group,
-        name,
-      }
-
-      let lastSortingNode = accumulator.at(-1)?.at(-1)
-      if (
-        shouldPartition({
-          lastSortingNode,
-          sortingNode,
-          sourceCode,
+        let name = computeNodeName({ node: parameter, sourceCode })
+        let selector: Selector = 'parameter'
+        let predefinedGroups = generatePredefinedGroups({
+          cache: cachedGroupsByModifiersAndSelectors,
+          selectors: [selector],
+          modifiers: [],
+        })
+        let group = computeGroup({
+          customGroupMatcher: customGroup =>
+            doesCustomGroupMatch({
+              selectors: [selector],
+              elementName: name,
+              modifiers: [],
+              customGroup,
+            }),
+          predefinedGroups,
           options,
         })
-      ) {
-        accumulator.push([])
-      }
 
-      accumulator.at(-1)!.push({
-        ...sortingNode,
-        partitionId: accumulator.length,
-      })
+        let sortingNode: Omit<
+          SortConstructorParametersSortingNode,
+          'partitionId'
+        > = {
+          isEslintDisabled: isNodeEslintDisabled(
+            parameter,
+            eslintDisabledLines,
+          ),
+          size: rangeToDiff(parameter, sourceCode),
+          node: parameter,
+          group,
+          name,
+        }
 
-      return accumulator
-    },
-    [[]],
-  )
+        let lastSortingNode = accumulator.at(-1)?.at(-1)
+        if (
+          shouldPartition({
+            lastSortingNode,
+            sortingNode,
+            sourceCode,
+            options,
+          })
+        ) {
+          accumulator.push([])
+        }
+
+        accumulator.at(-1)!.push({
+          ...sortingNode,
+          partitionId: accumulator.length,
+        })
+
+        return accumulator
+      },
+      [[]],
+    )
 
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
-  ): SortConstructorParameterSortingNode[] {
+  ): SortConstructorParametersSortingNode[] {
     return formattedMembers.flatMap(nodes =>
       sortNodesByGroups({
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
