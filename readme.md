@@ -191,8 +191,8 @@ module.exports = {
 | :----------------------------------------------------------------------------------------- | :--------------------------------------------------------------------- | :-- | :-- |
 | [sort-arrays](https://perfectionist.dev/rules/sort-arrays)                                 | Enforce sorted arrays based on custom conditions                       | 🔧  |     |
 | [sort-array-includes](https://perfectionist.dev/rules/sort-array-includes)                 | Enforce sorted arrays before include method                            | 🔧  | ✅  |
-| [sort-constructor-parameters](https://perfectionist.dev/rules/sort-constructor-parameters) | Enforce sorted class constructor parameters based on custom conditions | 🔧  |     |
 | [sort-classes](https://perfectionist.dev/rules/sort-classes)                               | Enforce sorted classes                                                 | 🔧  | ✅  |
+| [sort-constructor-parameters](https://perfectionist.dev/rules/sort-constructor-parameters) | Enforce sorted class constructor parameters based on custom conditions | 🔧  |     |
 | [sort-decorators](https://perfectionist.dev/rules/sort-decorators)                         | Enforce sorted decorators                                              | 🔧  | ✅  |
 | [sort-enums](https://perfectionist.dev/rules/sort-enums)                                   | Enforce sorted TypeScript enums                                        | 🔧  | ✅  |
 | [sort-export-attributes](https://perfectionist.dev/rules/sort-export-attributes)           | Enforce sorted export attributes                                       | 🔧  | ✅  |
