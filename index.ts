@@ -1,6 +1,7 @@
 import type { ESLint, Linter } from 'eslint'
 
 import { version as packageVersion, name as packageName } from './package.json'
+import SortConstructorParameters from './rules/sort-constructor-parameters'
 import sortVariableDeclarations from './rules/sort-variable-declarations'
 import sortIntersectionTypes from './rules/sort-intersection-types'
 import sortImportAttributes from './rules/sort-import-attributes'
@@ -72,6 +73,7 @@ let recommendedRules = {
 } as unknown as ESLint.Plugin['rules']
 export let rules = {
   ...recommendedRules,
+  'sort-constructor-parameters': SortConstructorParameters,
   'sort-arrays': sortArrays,
 } as unknown as ESLint.Plugin['rules']
 
@@ -148,6 +150,7 @@ export default {
   configs,
 } as { configs: PluginConfigs } & ESLint.Plugin
 
+export type { Options as SortConstructorParametersOptions } from './rules/sort-constructor-parameters/types'
 export type { Options as SortVariableDeclarationsOptions } from './rules/sort-variable-declarations/types'
 export type { Options as SortIntersectionTypesOptions } from './rules/sort-intersection-types/types'
 export type { Options as SortImportAttributesOptions } from './rules/sort-import-attributes/types'
