@@ -77,12 +77,12 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
-            e,
-            ...other
+              a,
+              b,
+              c,
+              d,
+              e,
+              ...other
             ) {}
           }
         `,
@@ -93,24 +93,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
-            e,
-            ...other
+              a,
+              b,
+              c,
+              d,
+              e,
+              ...other
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            c,
-            b,
-            d,
-            e,
-            ...other
+              a,
+              c,
+              b,
+              d,
+              e,
+              ...other
             ) {}
           }
         `,
@@ -287,26 +287,26 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
-            d,
+              a,
+              d,
 
-            c,
+              c,
 
-            b,
-            e,
+              b,
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            d,
-            a,
+              d,
+              a,
 
-            c,
+              c,
 
-            e,
-            b,
+              e,
+              b,
             ) {}
           }
         `,
@@ -353,22 +353,22 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            c,
+              top2,
+              c,
 
-            top1,
-            a,
+              top1,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top2,
+              c,
+              top2,
 
-            a,
-            top1,
+              a,
+              top1,
             ) {}
           }
         `,
@@ -388,11 +388,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
 
-            c,
-            d,
+              c,
+              d,
             ) {}
           }
         `,
@@ -412,36 +412,36 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            // Part: A
-            // Not partition comment
-            bbb,
-            cc,
-            d,
-            // Part: B
-            aaaa,
-            e,
-            // Part: C
-            // Not partition comment
-            fff,
-            gg,
+              // Part: A
+              // Not partition comment
+              bbb,
+              cc,
+              d,
+              // Part: B
+              aaaa,
+              e,
+              // Part: C
+              // Not partition comment
+              fff,
+              gg,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            // Part: A
-            cc,
-            d,
-            // Not partition comment
-            bbb,
-            // Part: B
-            aaaa,
-            e,
-            // Part: C
-            gg,
-            // Not partition comment
-            fff,
+              // Part: A
+              cc,
+              d,
+              // Not partition comment
+              bbb,
+              // Part: B
+              aaaa,
+              e,
+              // Part: C
+              gg,
+              // Not partition comment
+              fff,
             ) {}
           }
         `,
@@ -464,10 +464,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            // Comment
-            bb,
-            // Other comment
-            a,
+              // Comment
+              bb,
+              // Other comment
+              a,
             ) {}
           }
         `,
@@ -492,30 +492,30 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            /* Partition Comment */
-            // Part: A
-            d,
-            // Part: B
-            aaa,
-            bb,
-            c,
-            /* Other */
-            e,
+              /* Partition Comment */
+              // Part: A
+              d,
+              // Part: B
+              aaa,
+              bb,
+              c,
+              /* Other */
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            /* Partition Comment */
-            // Part: A
-            d,
-            // Part: B
-            aaa,
-            c,
-            bb,
-            /* Other */
-            e,
+              /* Partition Comment */
+              // Part: A
+              d,
+              // Part: B
+              aaa,
+              c,
+              bb,
+              /* Other */
+              e,
             ) {}
           }
         `,
@@ -568,22 +568,22 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            c,
-            // Part: 1
-            top1,
-            a,
+              top2,
+              c,
+              // Part: 1
+              top1,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top2,
-            // Part: 1
-            a,
-            top1,
+              c,
+              top2,
+              // Part: 1
+              a,
+              top1,
             ) {}
           }
         `,
@@ -605,18 +605,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            /* Comment */
-            a,
-            b,
+              /* Comment */
+              a,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* Comment */
-            a,
+              b,
+              /* Comment */
+              a,
             ) {}
           }
         `,
@@ -635,9 +635,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // Comment
-            a,
+              b,
+              // Comment
+              a,
             ) {}
           }
         `,
@@ -657,11 +657,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            c,
-            // b
-            b,
-            // a
-            a,
+              c,
+              // b
+              b,
+              // a
+              a,
             ) {}
           }
         `,
@@ -681,9 +681,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // I am a partition comment because I don't have f o o
-            a,
+              b,
+              // I am a partition comment because I don't have f o o
+              a,
             ) {}
           }
         `,
@@ -712,18 +712,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            // Comment
-            a,
-            b,
+              // Comment
+              a,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // Comment
-            a,
+              b,
+              // Comment
+              a,
             ) {}
           }
         `,
@@ -742,9 +742,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* Comment */
-            a,
+              b,
+              /* Comment */
+              a,
             ) {}
           }
         `,
@@ -764,11 +764,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            c,
-            /* b */
-            b,
-            /* a */
-            a,
+              c,
+              /* b */
+              b,
+              /* a */
+              a,
             ) {}
           }
         `,
@@ -788,9 +788,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* I am a partition comment because I don't have f o o */
-            a,
+              b,
+              /* I am a partition comment because I don't have f o o */
+              a,
             ) {}
           }
         `,
@@ -810,11 +810,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            e,
-            f,
-            // I am a partition comment because I don't have f o o
-            a,
-            b,
+              e,
+              f,
+              // I am a partition comment because I don't have f o o
+              a,
+              b,
             ) {}
           }
         `,
@@ -832,9 +832,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            $a,
-            b,
-            $c,
+              $a,
+              b,
+              $c,
             ) {}
           }
         `,
@@ -852,8 +852,8 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            ab,
-            a$c,
+              ab,
+              a$c,
             ) {}
           }
         `,
@@ -871,12 +871,12 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            你好,
-            世界,
-            a,
-            A,
-            b,
-            B,
+              你好,
+              世界,
+              a,
+              A,
+              b,
+              B,
             ) {}
           }
         `,
@@ -895,14 +895,14 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, b,
+              a, b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b, a,
+              b, a,
             ) {}
           }
         `,
@@ -921,14 +921,14 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, b,
+              a, b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b, a,
+              b, a,
             ) {}
           }
         `,
@@ -965,17 +965,17 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            b,
+              b,
 
-            a,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
             ) {}
           }
         `,
@@ -1010,18 +1010,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top1,
-            a,
-            c,
+              top1,
+              a,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top1,
-            a,
+              c,
+              top1,
+              a,
             ) {}
           }
         `,
@@ -1057,16 +1057,16 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top1,
-            b,
+              top1,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            top1,
+              b,
+              top1,
             ) {}
           }
         `,
@@ -1111,18 +1111,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              helloParam,
-              a,
-              b,
+                helloParam,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
-              helloParam,
+                a,
+                b,
+                helloParam,
               ) {}
             }
           `,
@@ -1220,16 +1220,16 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            fooBar,
-            fooZar,
+              fooBar,
+              fooZar,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            fooZar,
-            fooBar,
+              fooZar,
+              fooBar,
             ) {}
           }
         `,
@@ -1267,24 +1267,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            top1,
-            top4,
-            top5,
-            top3,
-            m,
+              top2,
+              top1,
+              top4,
+              top5,
+              top3,
+              m,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            top2,
-            top1,
-            top4,
-            top5,
-            m,
-            top3,
+              top2,
+              top1,
+              top4,
+              top5,
+              m,
+              top3,
             ) {}
           }
         `,
@@ -1328,18 +1328,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            bFoo,
-            cFoo,
-            a,
+              bFoo,
+              cFoo,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            bFoo,
-            cFoo,
+              a,
+              bFoo,
+              cFoo,
             ) {}
           }
         `,
@@ -1365,10 +1365,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            iHaveFooInMyName,
-            meTooIHaveFoo,
-            a,
-            b,
+              iHaveFooInMyName,
+              meTooIHaveFoo,
+              a,
+              b,
             ) {}
           }
         `,
@@ -1381,18 +1381,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              b,
-              a = b,
-              c,
+                b,
+                a = b,
+                c,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              c,
-              b,
-              a = b,
+                c,
+                b,
+                a = b,
               ) {}
             }
           `,
@@ -1415,18 +1415,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              c,
-              a = c,
-              b,
+                c,
+                a = c,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a = c,
-              b,
-              c,
+                a = c,
+                b,
+                c,
               ) {}
             }
           `,
@@ -1439,8 +1439,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = \`\${b}\`,
+                b,
+                a = \`\${b}\`,
               ) {}
             }
           `,
@@ -1453,8 +1453,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = f({ key: b }),
+                b,
+                a = f({ key: b }),
               ) {}
             }
           `,
@@ -1465,8 +1465,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = f({ [b]: 1 }),
+                b,
+                a = f({ [b]: 1 }),
               ) {}
             }
           `,
@@ -1479,8 +1479,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = [b][0],
+                b,
+                a = [b][0],
               ) {}
             }
           `,
@@ -1491,8 +1491,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = [...[b]][0],
+                b,
+                a = [...[b]][0],
               ) {}
             }
           `,
@@ -1505,8 +1505,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = Math.max(b, 0),
+                b,
+                a = Math.max(b, 0),
               ) {}
             }
           `,
@@ -1519,8 +1519,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = condition ? b : 0,
+                b,
+                a = condition ? b : 0,
               ) {}
             }
           `,
@@ -1531,8 +1531,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = condition ? 0 : b,
+                b,
+                a = condition ? 0 : b,
               ) {}
             }
           `,
@@ -1545,24 +1545,24 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b = f,
-              c,
-              d = b,
-              e,
-              f = d,
+                a,
+                b = f,
+                c,
+                d = b,
+                e,
+                f = d,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b = f,
-              a,
-              c,
-              d = b,
-              e,
-              f = d,
+                b = f,
+                a,
+                c,
+                d = b,
+                e,
+                f = d,
               ) {}
             }
           `,
@@ -1587,18 +1587,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              // Part: 1
-              b = a,
+                a,
+                // Part: 1
+                b = a,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b = a,
-              // Part: 1
-              a,
+                b = a,
+                // Part: 1
+                a,
               ) {}
             }
           `,
@@ -1622,18 +1622,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b = a,
+                b = a,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b = a,
+                b = a,
 
-              a,
+                a,
               ) {}
             }
           `,
@@ -1667,8 +1667,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a = b,
+                b,
+                a = b,
               ) {}
             }
           `,
@@ -1739,18 +1739,18 @@ describe('sort-constructors-parameters', () => {
             output: dedent`
               class Foo {
                 constructor(
-                r,
-                g,
-                b,
+                  r,
+                  g,
+                  b,
                 ) {}
               }
             `,
             code: dedent`
               class Foo {
                 constructor(
-                b,
-                g,
-                r,
+                  b,
+                  g,
+                  r,
                 ) {}
               }
             `,
@@ -1787,16 +1787,16 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -1817,8 +1817,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -1837,8 +1837,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -1876,16 +1876,16 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -1921,16 +1921,16 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -1967,16 +1967,16 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -2004,8 +2004,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -2040,16 +2040,16 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -2083,16 +2083,16 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              b,
-              a,
+                b,
+                a,
               ) {}
             }
           `,
@@ -2132,23 +2132,23 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           y,
-          z,
+             y,
+            z,
 
-              b,
+                b,
             ) {}
           }
         `,
         output: dedent`
           class Foo {
             constructor(
-            a,
-           b,
-          y,
-              z,
+              a,
+             b,
+            y,
+                z,
             ) {}
           }
         `,
@@ -2183,25 +2183,25 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           b,
-          y,
-              z,
+             b,
+            y,
+                z,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           y,
-          z,
+             y,
+            z,
 
-              b,
+                b,
             ) {}
           }
         `,
@@ -2238,24 +2238,24 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           y,
-          z,
+             y,
+            z,
 
-              b,
+                b,
             ) {}
           }
         `,
         output: dedent`
           class Foo {
             constructor(
-            a,
-           b,
-          y,
+              a,
+             b,
+            y,
 
-              z,
+                z,
             ) {}
           }
         `,
@@ -2300,24 +2300,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-           y,
-          z,
+             y,
+            z,
 
-              b,
+                b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           z,
-          y,
-              b,
+             z,
+            y,
+                b,
             ) {}
           }
         `,
@@ -2392,31 +2392,31 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            b,
+              b,
 
-            c,
-            d,
+              c,
+              d,
 
 
-            e,
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
 
 
-            c,
+              c,
 
-            d,
+              d,
 
 
-            e,
+              e,
             ) {}
           }
         `,
@@ -2460,18 +2460,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
 
-              b,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -2515,17 +2515,17 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b,
+                b,
               ) {}
             }
           `,
@@ -2562,9 +2562,9 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b,
+                b,
               ) {}
             }
           `,
@@ -2575,8 +2575,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -2616,20 +2616,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, // Comment after
+              a, // Comment after
 
-            b,
-            c,
+              b,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            a, // Comment after
+              b,
+              a, // Comment after
 
-            c,
+              c,
             ) {}
           }
         `,
@@ -2657,24 +2657,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            // Partition comment
+              // Partition comment
 
-            b,
-            c,
+              b,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            // Partition comment
+              // Partition comment
 
-            c,
-            b,
+              c,
+              b,
             ) {}
           }
         `,
@@ -2808,12 +2808,12 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
-            e,
-            ...other
+              a,
+              b,
+              c,
+              d,
+              e,
+              ...other
             ) {}
           }
         `,
@@ -2824,24 +2824,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
-            e,
-            ...other
+              a,
+              b,
+              c,
+              d,
+              e,
+              ...other
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            c,
-            b,
-            d,
-            e,
-            ...other
+              a,
+              c,
+              b,
+              d,
+              e,
+              ...other
             ) {}
           }
         `,
@@ -2935,26 +2935,26 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
-            d,
+              a,
+              d,
 
-            c,
+              c,
 
-            b,
-            e,
+              b,
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            d,
-            a,
+              d,
+              a,
 
-            c,
+              c,
 
-            e,
-            b,
+              e,
+              b,
             ) {}
           }
         `,
@@ -3001,22 +3001,22 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            c,
+              top2,
+              c,
 
-            top1,
-            a,
+              top1,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top2,
+              c,
+              top2,
 
-            a,
-            top1,
+              a,
+              top1,
             ) {}
           }
         `,
@@ -3036,11 +3036,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
 
-            c,
-            d,
+              c,
+              d,
             ) {}
           }
         `,
@@ -3060,36 +3060,36 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            // Part: A
-            // Not partition comment
-            bbb,
-            cc,
-            d,
-            // Part: B
-            aaaa,
-            e,
-            // Part: C
-            // Not partition comment
-            fff,
-            gg,
+              // Part: A
+              // Not partition comment
+              bbb,
+              cc,
+              d,
+              // Part: B
+              aaaa,
+              e,
+              // Part: C
+              // Not partition comment
+              fff,
+              gg,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            // Part: A
-            cc,
-            d,
-            // Not partition comment
-            bbb,
-            // Part: B
-            aaaa,
-            e,
-            // Part: C
-            gg,
-            // Not partition comment
-            fff,
+              // Part: A
+              cc,
+              d,
+              // Not partition comment
+              bbb,
+              // Part: B
+              aaaa,
+              e,
+              // Part: C
+              gg,
+              // Not partition comment
+              fff,
             ) {}
           }
         `,
@@ -3112,10 +3112,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            // Comment
-            bb,
-            // Other comment
-            a,
+              // Comment
+              bb,
+              // Other comment
+              a,
             ) {}
           }
         `,
@@ -3140,30 +3140,30 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            /* Partition Comment */
-            // Part: A
-            d,
-            // Part: B
-            aaa,
-            bb,
-            c,
-            /* Other */
-            e,
+              /* Partition Comment */
+              // Part: A
+              d,
+              // Part: B
+              aaa,
+              bb,
+              c,
+              /* Other */
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            /* Partition Comment */
-            // Part: A
-            d,
-            // Part: B
-            aaa,
-            c,
-            bb,
-            /* Other */
-            e,
+              /* Partition Comment */
+              // Part: A
+              d,
+              // Part: B
+              aaa,
+              c,
+              bb,
+              /* Other */
+              e,
             ) {}
           }
         `,
@@ -3216,22 +3216,22 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            c,
-            // Part: 1
-            top1,
-            a,
+              top2,
+              c,
+              // Part: 1
+              top1,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top2,
-            // Part: 1
-            a,
-            top1,
+              c,
+              top2,
+              // Part: 1
+              a,
+              top1,
             ) {}
           }
         `,
@@ -3253,18 +3253,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            /* Comment */
-            a,
-            b,
+              /* Comment */
+              a,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* Comment */
-            a,
+              b,
+              /* Comment */
+              a,
             ) {}
           }
         `,
@@ -3283,9 +3283,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // Comment
-            a,
+              b,
+              // Comment
+              a,
             ) {}
           }
         `,
@@ -3305,11 +3305,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            c,
-            // b
-            b,
-            // a
-            a,
+              c,
+              // b
+              b,
+              // a
+              a,
             ) {}
           }
         `,
@@ -3329,9 +3329,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // I am a partition comment because I don't have f o o
-            a,
+              b,
+              // I am a partition comment because I don't have f o o
+              a,
             ) {}
           }
         `,
@@ -3360,18 +3360,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            // Comment
-            a,
-            b,
+              // Comment
+              a,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // Comment
-            a,
+              b,
+              // Comment
+              a,
             ) {}
           }
         `,
@@ -3390,9 +3390,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* Comment */
-            a,
+              b,
+              /* Comment */
+              a,
             ) {}
           }
         `,
@@ -3412,11 +3412,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            c,
-            /* b */
-            b,
-            /* a */
-            a,
+              c,
+              /* b */
+              b,
+              /* a */
+              a,
             ) {}
           }
         `,
@@ -3436,9 +3436,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* I am a partition comment because I don't have f o o */
-            a,
+              b,
+              /* I am a partition comment because I don't have f o o */
+              a,
             ) {}
           }
         `,
@@ -3458,11 +3458,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            e,
-            f,
-            // I am a partition comment because I don't have f o o
-            a,
-            b,
+              e,
+              f,
+              // I am a partition comment because I don't have f o o
+              a,
+              b,
             ) {}
           }
         `,
@@ -3480,9 +3480,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            $a,
-            b,
-            $c,
+              $a,
+              b,
+              $c,
             ) {}
           }
         `,
@@ -3500,8 +3500,8 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            ab,
-            a$c,
+              ab,
+              a$c,
             ) {}
           }
         `,
@@ -3519,12 +3519,12 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            你好,
-            世界,
-            a,
-            A,
-            b,
-            B,
+              你好,
+              世界,
+              a,
+              A,
+              b,
+              B,
             ) {}
           }
         `,
@@ -3543,14 +3543,14 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, b,
+              a, b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b, a,
+              b, a,
             ) {}
           }
         `,
@@ -3569,14 +3569,14 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, b,
+              a, b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b, a,
+              b, a,
             ) {}
           }
         `,
@@ -3612,18 +3612,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top1,
-            a,
-            c,
+              top1,
+              a,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top1,
-            a,
+              c,
+              top1,
+              a,
             ) {}
           }
         `,
@@ -3659,16 +3659,16 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top1,
-            b,
+              top1,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            top1,
+              b,
+              top1,
             ) {}
           }
         `,
@@ -3713,18 +3713,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              helloParam,
-              a,
-              b,
+                helloParam,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
-              helloParam,
+                a,
+                b,
+                helloParam,
               ) {}
             }
           `,
@@ -3822,16 +3822,16 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            fooBar,
-            fooZar,
+              fooBar,
+              fooZar,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            fooZar,
-            fooBar,
+              fooZar,
+              fooBar,
             ) {}
           }
         `,
@@ -3869,24 +3869,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            top1,
-            top4,
-            top5,
-            top3,
-            m,
+              top2,
+              top1,
+              top4,
+              top5,
+              top3,
+              m,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            top2,
-            top1,
-            top4,
-            top5,
-            m,
-            top3,
+              top2,
+              top1,
+              top4,
+              top5,
+              m,
+              top3,
             ) {}
           }
         `,
@@ -3930,18 +3930,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            bFoo,
-            cFoo,
-            a,
+              bFoo,
+              cFoo,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            bFoo,
-            cFoo,
+              a,
+              bFoo,
+              cFoo,
             ) {}
           }
         `,
@@ -3967,10 +3967,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            iHaveFooInMyName,
-            meTooIHaveFoo,
-            a,
-            b,
+              iHaveFooInMyName,
+              meTooIHaveFoo,
+              a,
+              b,
             ) {}
           }
         `,
@@ -4040,18 +4040,18 @@ describe('sort-constructors-parameters', () => {
             output: dedent`
               class Foo {
                 constructor(
-                r,
-                g,
-                b,
+                  r,
+                  g,
+                  b,
                 ) {}
               }
             `,
             code: dedent`
               class Foo {
                 constructor(
-                b,
-                g,
-                r,
+                  b,
+                  g,
+                  r,
                 ) {}
               }
             `,
@@ -4091,24 +4091,24 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           y,
-          z,
+             y,
+            z,
 
-              b,
+                b,
             ) {}
           }
         `,
         output: dedent`
           class Foo {
             constructor(
-            a,
-           b,
-          y,
+              a,
+             b,
+            y,
 
-              z,
+                z,
             ) {}
           }
         `,
@@ -4153,24 +4153,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-           y,
-          z,
+             y,
+            z,
 
-              b,
+                b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
 
-           z,
-          y,
-              b,
+             z,
+            y,
+                b,
             ) {}
           }
         `,
@@ -4245,31 +4245,31 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            b,
+              b,
 
-            c,
-            d,
+              c,
+              d,
 
 
-            e,
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
 
 
-            c,
+              c,
 
-            d,
+              d,
 
 
-            e,
+              e,
             ) {}
           }
         `,
@@ -4313,18 +4313,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
 
-              b,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -4368,17 +4368,17 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b,
+                b,
               ) {}
             }
           `,
@@ -4415,9 +4415,9 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b,
+                b,
               ) {}
             }
           `,
@@ -4428,8 +4428,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -4469,20 +4469,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, // Comment after
+              a, // Comment after
 
-            b,
-            c,
+              b,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            a, // Comment after
+              b,
+              a, // Comment after
 
-            c,
+              c,
             ) {}
           }
         `,
@@ -4510,24 +4510,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            // Partition comment
+              // Partition comment
 
-            b,
-            c,
+              b,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            // Partition comment
+              // Partition comment
 
-            c,
-            b,
+              c,
+              b,
             ) {}
           }
         `,
@@ -4587,12 +4587,12 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            aaaaa,
-            bbbb,
-            ccc,
-            dd,
-            e,
-            ...other
+              aaaaa,
+              bbbb,
+              ccc,
+              dd,
+              e,
+              ...other
             ) {}
           }
         `,
@@ -4603,24 +4603,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aaaaa,
-            bbbb,
-            ccc,
-            dd,
-            e,
-            ...other
+              aaaaa,
+              bbbb,
+              ccc,
+              dd,
+              e,
+              ...other
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            aaaaa,
-            ccc,
-            bbbb,
-            dd,
-            e,
-            ...other
+              aaaaa,
+              ccc,
+              bbbb,
+              dd,
+              e,
+              ...other
             ) {}
           }
         `,
@@ -4714,26 +4714,26 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aaaaa,
-            dd,
+              aaaaa,
+              dd,
 
-            ccc,
+              ccc,
 
-            bbbb,
-            e,
+              bbbb,
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            dd,
-            aaaaa,
+              dd,
+              aaaaa,
 
-            ccc,
+              ccc,
 
-            e,
-            bbbb,
+              e,
+              bbbb,
             ) {}
           }
         `,
@@ -4780,22 +4780,22 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            c,
+              top2,
+              c,
 
-            top1,
-            a,
+              top1,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top2,
+              c,
+              top2,
 
-            a,
-            top1,
+              a,
+              top1,
             ) {}
           }
         `,
@@ -4815,11 +4815,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
 
-            c,
-            d,
+              c,
+              d,
             ) {}
           }
         `,
@@ -4839,36 +4839,36 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            // Part: A
-            // Not partition comment
-            bbb,
-            cc,
-            d,
-            // Part: B
-            aaaa,
-            e,
-            // Part: C
-            // Not partition comment
-            fff,
-            gg,
+              // Part: A
+              // Not partition comment
+              bbb,
+              cc,
+              d,
+              // Part: B
+              aaaa,
+              e,
+              // Part: C
+              // Not partition comment
+              fff,
+              gg,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            // Part: A
-            cc,
-            d,
-            // Not partition comment
-            bbb,
-            // Part: B
-            aaaa,
-            e,
-            // Part: C
-            gg,
-            // Not partition comment
-            fff,
+              // Part: A
+              cc,
+              d,
+              // Not partition comment
+              bbb,
+              // Part: B
+              aaaa,
+              e,
+              // Part: C
+              gg,
+              // Not partition comment
+              fff,
             ) {}
           }
         `,
@@ -4891,10 +4891,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            // Comment
-            bb,
-            // Other comment
-            a,
+              // Comment
+              bb,
+              // Other comment
+              a,
             ) {}
           }
         `,
@@ -4919,30 +4919,30 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            /* Partition Comment */
-            // Part: A
-            d,
-            // Part: B
-            aaa,
-            bb,
-            c,
-            /* Other */
-            e,
+              /* Partition Comment */
+              // Part: A
+              d,
+              // Part: B
+              aaa,
+              bb,
+              c,
+              /* Other */
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            /* Partition Comment */
-            // Part: A
-            d,
-            // Part: B
-            aaa,
-            c,
-            bb,
-            /* Other */
-            e,
+              /* Partition Comment */
+              // Part: A
+              d,
+              // Part: B
+              aaa,
+              c,
+              bb,
+              /* Other */
+              e,
             ) {}
           }
         `,
@@ -4995,22 +4995,22 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            c,
-            // Part: 1
-            top1,
-            a,
+              top2,
+              c,
+              // Part: 1
+              top1,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top2,
-            // Part: 1
-            a,
-            top1,
+              c,
+              top2,
+              // Part: 1
+              a,
+              top1,
             ) {}
           }
         `,
@@ -5032,18 +5032,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            /* Comment */
-            aa,
-            b,
+              /* Comment */
+              aa,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* Comment */
-            aa,
+              b,
+              /* Comment */
+              aa,
             ) {}
           }
         `,
@@ -5062,9 +5062,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // Comment
-            a,
+              b,
+              // Comment
+              a,
             ) {}
           }
         `,
@@ -5084,11 +5084,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            c,
-            // b
-            b,
-            // a
-            a,
+              c,
+              // b
+              b,
+              // a
+              a,
             ) {}
           }
         `,
@@ -5108,9 +5108,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // I am a partition comment because I don't have f o o
-            a,
+              b,
+              // I am a partition comment because I don't have f o o
+              a,
             ) {}
           }
         `,
@@ -5139,18 +5139,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            // Comment
-            aa,
-            b,
+              // Comment
+              aa,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            // Comment
-            aa,
+              b,
+              // Comment
+              aa,
             ) {}
           }
         `,
@@ -5169,9 +5169,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* Comment */
-            a,
+              b,
+              /* Comment */
+              a,
             ) {}
           }
         `,
@@ -5191,11 +5191,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            c,
-            /* b */
-            b,
-            /* a */
-            a,
+              c,
+              /* b */
+              b,
+              /* a */
+              a,
             ) {}
           }
         `,
@@ -5215,9 +5215,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            /* I am a partition comment because I don't have f o o */
-            a,
+              b,
+              /* I am a partition comment because I don't have f o o */
+              a,
             ) {}
           }
         `,
@@ -5237,11 +5237,11 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            e,
-            f,
-            // I am a partition comment because I don't have f o o
-            a,
-            b,
+              e,
+              f,
+              // I am a partition comment because I don't have f o o
+              a,
+              b,
             ) {}
           }
         `,
@@ -5259,9 +5259,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            $aa,
-            bb,
-            $c,
+              $aa,
+              bb,
+              $c,
             ) {}
           }
         `,
@@ -5279,8 +5279,8 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            abc,
-            a$c,
+              abc,
+              a$c,
             ) {}
           }
         `,
@@ -5298,12 +5298,12 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            你好,
-            世界,
-            a,
-            A,
-            b,
-            B,
+              你好,
+              世界,
+              a,
+              A,
+              b,
+              B,
             ) {}
           }
         `,
@@ -5322,14 +5322,14 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aa, b,
+              aa, b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b, aa,
+              b, aa,
             ) {}
           }
         `,
@@ -5348,14 +5348,14 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aa, b,
+              aa, b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b, aa,
+              b, aa,
             ) {}
           }
         `,
@@ -5391,18 +5391,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top1,
-            aa,
-            c,
+              top1,
+              aa,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            c,
-            top1,
-            aa,
+              c,
+              top1,
+              aa,
             ) {}
           }
         `,
@@ -5438,16 +5438,16 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top1,
-            b,
+              top1,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            top1,
+              b,
+              top1,
             ) {}
           }
         `,
@@ -5492,18 +5492,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              helloParam,
-              a,
-              b,
+                helloParam,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
-              helloParam,
+                a,
+                b,
+                helloParam,
               ) {}
             }
           `,
@@ -5601,16 +5601,16 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            fooBar,
-            fooZar,
+              fooBar,
+              fooZar,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            fooZar,
-            fooBar,
+              fooZar,
+              fooBar,
             ) {}
           }
         `,
@@ -5648,24 +5648,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            top2,
-            top1,
-            top4,
-            top5,
-            top3,
-            m,
+              top2,
+              top1,
+              top4,
+              top5,
+              top3,
+              m,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            top2,
-            top1,
-            top4,
-            top5,
-            m,
-            top3,
+              top2,
+              top1,
+              top4,
+              top5,
+              m,
+              top3,
             ) {}
           }
         `,
@@ -5709,18 +5709,18 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            bFoo,
-            cFoo,
-            a,
+              bFoo,
+              cFoo,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            bFoo,
-            cFoo,
+              a,
+              bFoo,
+              cFoo,
             ) {}
           }
         `,
@@ -5746,10 +5746,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            iHaveFooInMyName,
-            meTooIHaveFoo,
-            a,
-            b,
+              iHaveFooInMyName,
+              meTooIHaveFoo,
+              a,
+              b,
             ) {}
           }
         `,
@@ -5819,18 +5819,18 @@ describe('sort-constructors-parameters', () => {
             output: dedent`
               class Foo {
                 constructor(
-                r,
-                g,
-                b,
+                  r,
+                  g,
+                  b,
                 ) {}
               }
             `,
             code: dedent`
               class Foo {
                 constructor(
-                b,
-                g,
-                r,
+                  b,
+                  g,
+                  r,
                 ) {}
               }
             `,
@@ -5873,24 +5873,24 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            aaaa,
+              aaaa,
 
 
-           yy,
-          z,
+             yy,
+            z,
 
-              bbb,
+                bbb,
             ) {}
           }
         `,
         output: dedent`
           class Foo {
             constructor(
-            aaaa,
-           bbb,
-          yy,
+              aaaa,
+             bbb,
+            yy,
 
-              z,
+                z,
             ) {}
           }
         `,
@@ -5938,24 +5938,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aaaa,
+              aaaa,
 
-           yy,
-          z,
+             yy,
+            z,
 
-              bbb,
+                bbb,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            aaaa,
+              aaaa,
 
 
-           z,
-          yy,
-              bbb,
+             z,
+            yy,
+                bbb,
             ) {}
           }
         `,
@@ -6030,31 +6030,31 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
+              a,
 
-            b,
+              b,
 
-            c,
-            d,
+              c,
+              d,
 
 
-            e,
+              e,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
+              a,
+              b,
 
 
-            c,
+              c,
 
-            d,
+              d,
 
 
-            e,
+              e,
             ) {}
           }
         `,
@@ -6098,18 +6098,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
 
-              b,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -6153,17 +6153,17 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b,
+                b,
               ) {}
             }
           `,
@@ -6200,9 +6200,9 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              a,
+                a,
 
-              b,
+                b,
               ) {}
             }
           `,
@@ -6213,8 +6213,8 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              a,
-              b,
+                a,
+                b,
               ) {}
             }
           `,
@@ -6254,20 +6254,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a, // Comment after
+              a, // Comment after
 
-            b,
-            c,
+              b,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            a, // Comment after
+              b,
+              a, // Comment after
 
-            c,
+              c,
             ) {}
           }
         `,
@@ -6295,24 +6295,24 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aaa,
+              aaa,
 
-            // Partition comment
+              // Partition comment
 
-            bb,
-            c,
+              bb,
+              c,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            aaa,
+              aaa,
 
-            // Partition comment
+              // Partition comment
 
-            c,
-            bb,
+              c,
+              bb,
             ) {}
           }
         `,
@@ -6346,10 +6346,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
+              a,
+              b,
+              c,
+              d,
             ) {}
           }
         `,
@@ -6360,20 +6360,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
+              a,
+              b,
+              c,
+              d,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            a,
-            c,
-            b,
-            d,
+              a,
+              c,
+              b,
+              d,
             ) {}
           }
         `,
@@ -6430,20 +6430,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aa,
-            bb,
-            a,
-            b,
+              aa,
+              bb,
+              a,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            bb,
-            a,
-            aa,
+              b,
+              bb,
+              a,
+              aa,
             ) {}
           }
         `,
@@ -6481,20 +6481,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            aa,
-            bb,
-            a,
-            b,
+              aa,
+              bb,
+              a,
+              b,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            bb,
-            a,
-            aa,
+              b,
+              bb,
+              a,
+              aa,
             ) {}
           }
         `,
@@ -6514,9 +6514,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            b,
-            c,
-            a,
+              b,
+              c,
+              a,
             ) {}
           }
         `,
@@ -6557,20 +6557,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            ba,
-            bb,
-            ab,
-            aa,
+              ba,
+              bb,
+              ab,
+              aa,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            ab,
-            aa,
-            ba,
-            bb,
+              ab,
+              aa,
+              ba,
+              bb,
             ) {}
           }
         `,
@@ -6607,17 +6607,17 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            b,
+              b,
 
-            a,
+              a,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            a,
+              b,
+              a,
             ) {}
           }
         `,
@@ -6642,10 +6642,10 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
+              a,
+              b,
+              c,
+              d,
             ) {}
           }
         `,
@@ -6666,20 +6666,20 @@ describe('sort-constructors-parameters', () => {
         output: dedent`
           class Foo {
             constructor(
-            a,
-            b,
-            c,
-            d,
+              a,
+              b,
+              c,
+              d,
             ) {}
           }
         `,
         code: dedent`
           class Foo {
             constructor(
-            b,
-            a,
-            d,
-            c,
+              b,
+              a,
+              d,
+              c,
             ) {}
           }
         `,
@@ -6730,9 +6730,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            ccc,
-            bb,
-            a,
+              ccc,
+              bb,
+              a,
             ) {}
           }
         `,
@@ -6744,9 +6744,9 @@ describe('sort-constructors-parameters', () => {
         code: dedent`
           class Foo {
             constructor(
-            a,
-            bb,
-            ccc,
+              a,
+              bb,
+              ccc,
             ) {}
           }
         `,
@@ -6767,10 +6767,10 @@ describe('sort-constructors-parameters', () => {
           code: dedent`
             class Foo {
               constructor(
-              b,
-              c,
-              // eslint-disable-next-line
-              a,
+                b,
+                c,
+                // eslint-disable-next-line
+                a,
               ) {}
             }
           `,
@@ -6781,20 +6781,20 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              b,
-              c,
-              // eslint-disable-next-line
-              a,
+                b,
+                c,
+                // eslint-disable-next-line
+                a,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              c,
-              b,
-              // eslint-disable-next-line
-              a,
+                c,
+                b,
+                // eslint-disable-next-line
+                a,
               ) {}
             }
           `,
@@ -6813,18 +6813,18 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              b,
-              c,
-              a, // eslint-disable-line
+                b,
+                c,
+                a, // eslint-disable-line
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              c,
-              b,
-              a, // eslint-disable-line
+                c,
+                b,
+                a, // eslint-disable-line
               ) {}
             }
           `,
@@ -6843,28 +6843,28 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              a,
-              d,
-              /* eslint-disable */
-              c,
-              b,
-              // Shouldn't move
-              /* eslint-enable */
-              e,
+                a,
+                d,
+                /* eslint-disable */
+                c,
+                b,
+                // Shouldn't move
+                /* eslint-enable */
+                e,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              d,
-              e,
-              /* eslint-disable */
-              c,
-              b,
-              // Shouldn't move
-              /* eslint-enable */
-              a,
+                d,
+                e,
+                /* eslint-disable */
+                c,
+                b,
+                // Shouldn't move
+                /* eslint-enable */
+                a,
               ) {}
             }
           `,
@@ -6883,20 +6883,20 @@ describe('sort-constructors-parameters', () => {
           output: dedent`
             class Foo {
               constructor(
-              b,
-              c,
-              // eslint-disable-next-line rule-to-test/sort-constructors-parameters
-              a,
+                b,
+                c,
+                // eslint-disable-next-line rule-to-test/sort-constructors-parameters
+                a,
               ) {}
             }
           `,
           code: dedent`
             class Foo {
               constructor(
-              c,
-              b,
-              // eslint-disable-next-line rule-to-test/sort-constructors-parameters
-              a,
+                c,
+                b,
+                // eslint-disable-next-line rule-to-test/sort-constructors-parameters
+                a,
               ) {}
             }
           `,
