@@ -5980,10 +5980,12 @@ describe('sort-arrays', () => {
 
     it('handles empty arrays and single-element arrays', async () => {
       await valid({
+        options: [options],
         code: '[]',
       })
 
       await valid({
+        options: [options],
         code: "['a']",
       })
     })
