@@ -87,6 +87,7 @@ let jsonSchema: JSONSchema4 = {
   },
   uniqueItems: true,
   type: 'array',
+  minItems: 1,
 }
 
 export default createEslintRule<Options, MessageId>({
