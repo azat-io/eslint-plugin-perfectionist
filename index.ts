@@ -73,7 +73,7 @@ let recommendedRules = {
 } as unknown as ESLint.Plugin['rules']
 export let rules = {
   ...recommendedRules,
-  'sort-constructors-parameters': SortConstructorParameters,
+  'sort-constructor-parameters': SortConstructorParameters,
   'sort-arrays': sortArrays,
 } as unknown as ESLint.Plugin['rules']
 

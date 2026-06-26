@@ -11,7 +11,7 @@ import {
 } from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
- * Configuration options for the sort-constructors-parameters rule.
+ * Configuration options for the sort-constructor-parameters rule.
  *
  * This rule enforces the sorting of constructor parameters, ensuring consistent
  * ordering for better readability and maintainability.
