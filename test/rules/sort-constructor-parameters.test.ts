@@ -7,9 +7,9 @@ import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import rule from '../../rules/sort-constructor-parameters'
 import { Alphabet } from '../../utils/alphabet'
 
-describe('sort-constructors-parameters', () => {
+describe('sort-constructor-parameters', () => {
   let { invalid, valid } = createRuleTester({
-    name: 'sort-constructors-parameters',
+    name: 'sort-constructor-parameters',
     parser: typescriptParser,
     rule,
   })
@@ -7052,7 +7052,7 @@ describe('sort-constructors-parameters', () => {
               constructor(
                 b,
                 c,
-                // eslint-disable-next-line rule-to-test/sort-constructors-parameters
+                // eslint-disable-next-line rule-to-test/sort-constructor-parameters
                 a,
               ) {}
             }
@@ -7062,7 +7062,7 @@ describe('sort-constructors-parameters', () => {
               constructor(
                 c,
                 b,
-                // eslint-disable-next-line rule-to-test/sort-constructors-parameters
+                // eslint-disable-next-line rule-to-test/sort-constructor-parameters
                 a,
               ) {}
             }

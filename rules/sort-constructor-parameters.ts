@@ -99,7 +99,7 @@ export default createEslintRule<Options, MessageId>({
       [ORDER_ERROR_ID]: ORDER_ERROR,
     },
     docs: {
-      url: 'https://perfectionist.dev/rules/sort-constructors-parameters',
+      url: 'https://perfectionist.dev/rules/sort-constructor-parameters',
       description: 'Enforce sorted constructor parameters parameters.',
       recommended: false,
     },
@@ -113,7 +113,7 @@ export default createEslintRule<Options, MessageId>({
       context,
       sorter,
     }),
-  name: 'sort-constructors-parameters',
+  name: 'sort-constructor-parameters',
   defaultOptions: [defaultOptions],
 })
 
