@@ -9,12 +9,15 @@ import type {
   Options,
 } from './types'
 
+import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
+import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
+import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -42,6 +45,7 @@ export function sortConstructorParameters<MessageIds extends string>({
   availableMessageIds: {
     missedSpacingBetweenMembers: MessageIds
     extraSpacingBetweenMembers: MessageIds
+    unexpectedDependencyOrder: MessageIds
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
@@ -86,7 +90,7 @@ export function sortConstructorParameters<MessageIds extends string>({
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
-  let formattedMembers: SortConstructorParametersSortingNode[][] =
+  let sortingNodeGroups: SortConstructorParametersSortingNode[][] =
     params.reduce(
       (
         accumulator: SortConstructorParametersSortingNode[][],
@@ -125,6 +129,8 @@ export function sortConstructorParameters<MessageIds extends string>({
             eslintDisabledLines,
           ),
           size: rangeToDiff(parameter, sourceCode),
+          dependencyNames: [name],
+          dependencies: [],
           node: parameter,
           group,
           name,
@@ -152,10 +158,19 @@ export function sortConstructorParameters<MessageIds extends string>({
       [[]],
     )
 
+  let dependenciesBySortingNode = computeDependenciesBySortingNode({
+    sortingNodes: sortingNodeGroups.flat(),
+    sourceCode,
+  })
+  sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
+    dependenciesBySortingNode,
+    sortingNodeGroups,
+  })
+
   function sortNodesExcludingEslintDisabled(
     ignoreEslintDisabledNodes: boolean,
   ): SortConstructorParametersSortingNode[] {
-    return formattedMembers.flatMap(nodes =>
+    let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
       sortNodesByGroups({
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
         optionsByGroupIndexComputer,
@@ -164,14 +179,19 @@ export function sortConstructorParameters<MessageIds extends string>({
         nodes,
       }),
     )
+
+    return sortNodesByDependencies(nodesSortedByGroups, {
+      ignoreEslintDisabledNodes,
+    })
   }
 
-  let nodes = formattedMembers.flat()
+  let sortingNodes = sortingNodeGroups.flat()
+
   reportAllErrors<MessageIds>({
     sortNodesExcludingEslintDisabled,
     availableMessageIds,
+    nodes: sortingNodes,
     options,
     context,
-    nodes,
   })
 }

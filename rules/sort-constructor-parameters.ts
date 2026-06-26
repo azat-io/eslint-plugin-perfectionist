@@ -12,15 +12,16 @@ import {
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
-  partitionByCommentJsonSchema,
-  partitionByNewlineJsonSchema,
-} from '../utils/json-schemas/common-partition-json-schemas'
-import {
+  DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  partitionByCommentJsonSchema,
+  partitionByNewlineJsonSchema,
+} from '../utils/json-schemas/common-partition-json-schemas'
 import { sortConstructorParameters } from './sort-constructor-parameters/sort-constructor-parameters'
 import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-constructor-parameters/types'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
@@ -37,8 +38,11 @@ const GROUP_ORDER_ERROR_ID = 'unexpectedConstructorParametersGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenConstructorParametersMembers'
 const MISSED_SPACING_ERROR_ID =
   'missedSpacingBetweenConstructorParametersMembers'
+const DEPENDENCY_ORDER_ERROR_ID =
+  'unexpectedConstructorParametersDependencyOrder'
 
 type MessageId =
+  | typeof DEPENDENCY_ORDER_ERROR_ID
   | typeof MISSED_SPACING_ERROR_ID
   | typeof EXTRA_SPACING_ERROR_ID
   | typeof GROUP_ORDER_ERROR_ID
@@ -88,6 +92,7 @@ let jsonSchema: JSONSchema4 = {
 export default createEslintRule<Options, MessageId>({
   meta: {
     messages: {
+      [DEPENDENCY_ORDER_ERROR_ID]: DEPENDENCY_ORDER_ERROR,
       [MISSED_SPACING_ERROR_ID]: MISSED_SPACING_ERROR,
       [EXTRA_SPACING_ERROR_ID]: EXTRA_SPACING_ERROR,
       [GROUP_ORDER_ERROR_ID]: GROUP_ORDER_ERROR,
@@ -128,6 +133,7 @@ function sorter({
   sortConstructorParameters<MessageId>({
     availableMessageIds: {
       missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+      unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
       extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,

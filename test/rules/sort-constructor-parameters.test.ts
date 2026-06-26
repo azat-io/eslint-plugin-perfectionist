@@ -1375,6 +1375,307 @@ describe('sort-constructors-parameters', () => {
       })
     })
 
+    describe('dependency detection', () => {
+      it('detects dependencies between constructor parameters', async () => {
+        await invalid({
+          output: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = b,
+              c,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+              c,
+              b,
+              a = b,
+              ) {}
+            }
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
+          options: [options],
+        })
+
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersDependencyOrder',
+              data: { nodeDependentOnRight: 'a', right: 'c' },
+            },
+          ],
+          output: dedent`
+            class Foo {
+              constructor(
+              c,
+              a = c,
+              b,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+              a = c,
+              b,
+              c,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies in template literal expressions', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = \`\${b}\`,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies in objects', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = f({ key: b }),
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = f({ [b]: 1 }),
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies in arrays', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = [b][0],
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = [...[b]][0],
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies in function calls', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = Math.max(b, 0),
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies in conditional expressions', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = condition ? b : 0,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = condition ? 0 : b,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('ignores circular dependencies when sorting', async () => {
+        await invalid({
+          output: dedent`
+            class Foo {
+              constructor(
+              a,
+              b = f,
+              c,
+              d = b,
+              e,
+              f = d,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+              b = f,
+              a,
+              c,
+              d = b,
+              e,
+              f = d,
+              ) {}
+            }
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [options],
+        })
+      })
+
+      it('prioritizes dependencies over partition comments', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersDependencyOrder',
+              data: { nodeDependentOnRight: 'b', right: 'a' },
+            },
+          ],
+          output: dedent`
+            class Foo {
+              constructor(
+              a,
+              // Part: 1
+              b = a,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+              b = a,
+              // Part: 1
+              a,
+              ) {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: '^Part',
+            },
+          ],
+        })
+      })
+
+      it('prioritizes dependencies over partition by new line', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersDependencyOrder',
+              data: { nodeDependentOnRight: 'b', right: 'a' },
+            },
+          ],
+          output: dedent`
+            class Foo {
+              constructor(
+              a,
+
+              b = a,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+              b = a,
+
+              a,
+              ) {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByNewLine: true,
+            },
+          ],
+        })
+      })
+
+      it('prioritizes dependencies over custom groups', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  groupName: 'parametersStartingWithA',
+                  elementNamePattern: 'a',
+                },
+                {
+                  groupName: 'parametersStartingWithB',
+                  elementNamePattern: 'b',
+                },
+              ],
+              groups: ['parametersStartingWithA', 'parametersStartingWithB'],
+            },
+          ],
+          code: dedent`
+            class Foo {
+              constructor(
+              b,
+              a = b,
+              ) {}
+            }
+          `,
+        })
+      })
+    })
+
     describe('useConfigurationIf.allNamesMatchPattern', () => {
       it.each([
         ['string pattern', 'foo'],

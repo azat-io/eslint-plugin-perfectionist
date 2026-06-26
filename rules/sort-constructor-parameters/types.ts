@@ -1,9 +1,9 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
+import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
-import type { SortingNode } from '../../types/sorting-node'
 
 import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
 
@@ -38,7 +38,7 @@ export type Options = Partial<
 >[]
 
 export type SortConstructorParametersSortingNode =
-  SortingNode<TSESTree.Parameter>
+  SortingNodeWithDependencies<TSESTree.Parameter>
 
 /**
  * Represents the type of constructor parameter selector. Note: Rest elements
