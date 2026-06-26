@@ -2761,6 +2761,173 @@ describe('sort-constructors-parameters', () => {
         options: [options],
       })
     })
+
+    describe('modifiers', () => {
+      it('adds the public modifier when the parameter has no explicit visibility', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'public-parameter',
+                leftGroup: 'parameter',
+                right: 'z',
+                left: 'a',
+              },
+              messageId: 'unexpectedConstructorParametersGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Foo extends Bar {
+              constructor(
+                readonly z,
+                private a,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo extends Bar {
+              constructor(
+                private a,
+                readonly z,
+              ) {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['public-parameter', 'parameter'],
+            },
+          ],
+        })
+      })
+
+      it('prioritizes decorated over override', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'decorated-parameter',
+                leftGroup: 'parameter',
+                right: 'z',
+                left: 'a',
+              },
+              messageId: 'unexpectedConstructorParametersGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: [
+                'decorated-parameter',
+                'parameter',
+                'override-parameter',
+              ],
+            },
+          ],
+          output: dedent`
+            class Foo extends Bar {
+              constructor(
+                @Z() public override z,
+                a,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo extends Bar {
+              constructor(
+                a,
+                @Z() public override z,
+              ) {}
+            }
+          `,
+        })
+      })
+
+      it('prioritizes override over readonly', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'override-parameter',
+                leftGroup: 'parameter',
+                right: 'z',
+                left: 'a',
+              },
+              messageId: 'unexpectedConstructorParametersGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Foo extends Bar {
+              constructor(
+                public override readonly z,
+                a,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo extends Bar {
+              constructor(
+                a,
+                public override readonly z,
+              ) {}
+            }
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['override-parameter', 'parameter', 'readonly-parameter'],
+            },
+          ],
+        })
+      })
+
+      it.each([
+        ['protected', 'protected'],
+        ['private', 'private'],
+      ])(
+        'prioritizes %s accessibility over optional',
+        async (_name, accessibilityModifier) => {
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: `${accessibilityModifier}-parameter`,
+                  leftGroup: 'optional-parameter',
+                  right: 'z',
+                  left: 'a',
+                },
+                messageId: 'unexpectedConstructorParametersGroupOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                groups: [
+                  `${accessibilityModifier}-parameter`,
+                  'optional-parameter',
+                ],
+              },
+            ],
+            output: dedent`
+              class Foo {
+                constructor(
+                  ${accessibilityModifier} z?,
+                  a?,
+                ) {}
+              }
+            `,
+            code: dedent`
+              class Foo {
+                constructor(
+                  a?,
+                  ${accessibilityModifier} z?,
+                ) {}
+              }
+            `,
+          })
+        },
+      )
+    })
   })
 
   describe('natural', () => {

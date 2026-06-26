@@ -5,13 +5,16 @@ import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-depe
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
 
-import { buildCustomGroupSelectorJsonSchema } from '../../utils/json-schemas/common-groups-json-schemas'
+import {
+  buildCustomGroupModifiersJsonSchema,
+  buildCustomGroupSelectorJsonSchema,
+} from '../../utils/json-schemas/common-groups-json-schemas'
 
 /**
  * Configuration options for the sort-constructors-parameters rule.
  *
- * This rule enforces the sorting of constructor parameters parameters, ensuring
- * consistent ordering for better readability and maintainability.
+ * This rule enforces the sorting of constructor parameters, ensuring consistent
+ * ordering for better readability and maintainability.
  */
 export type Options = Partial<
   {
@@ -47,6 +50,11 @@ export type SortConstructorParametersSortingNode =
 export type Selector = (typeof allSelectors)[number]
 
 /**
+ * Union type of all available constructor parameter modifiers.
+ */
+export type Modifier = (typeof allModifiers)[number]
+
+/**
  * Additional configuration for a single custom group.
  *
  * Custom groups allow fine-grained control over how constructor parameters are
@@ -61,6 +69,12 @@ export type Selector = (typeof allSelectors)[number]
  * ```
  */
 interface CustomGroupMatchOptions {
+  /**
+   * List of modifiers that constructor parameters must have to be included in
+   * this group.
+   */
+  modifiers?: Modifier[]
+
   /**
    * Specifies the type of constructor parameters to include in this group. Only
    * 'parameter' is available since rest elements create partition boundaries
@@ -78,6 +92,20 @@ type AdditionalSortOptions = object
 export let allSelectors = ['parameter'] as const
 
 /**
+ * Complete list of available constructor parameter modifiers. Used for
+ * validation and JSON schema generation.
+ */
+export let allModifiers = [
+  'decorated',
+  'override',
+  'readonly',
+  'protected',
+  'private',
+  'public',
+  'optional',
+] as const
+
+/**
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.
  */
@@ -85,5 +113,6 @@ export let additionalCustomGroupMatchOptionsJsonSchema: Record<
   string,
   JSONSchema4
 > = {
+  modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
 }
