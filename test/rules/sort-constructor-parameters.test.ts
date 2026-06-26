@@ -6878,10 +6878,12 @@ describe('sort-constructor-parameters', () => {
     it('handles empty constructors and single-parameter constructors', async () => {
       await valid({
         code: 'class Foo { constructor() {} }',
+        options: [options],
       })
 
       await valid({
         code: 'class Foo { constructor(a) {} }',
+        options: [options],
       })
     })
 
