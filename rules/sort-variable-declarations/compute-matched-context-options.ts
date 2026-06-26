@@ -2,7 +2,7 @@ import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { Options } from './types'
+import type { MessageId, Options } from './types'
 
 import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
@@ -20,13 +20,13 @@ import { computeNodeName } from './compute-node-name'
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
-export function computeMatchedContextOptions<MessageIds extends string>({
+export function computeMatchedContextOptions({
   matchedAstSelectors,
   sourceCode,
   context,
   node,
 }: {
-  context: Readonly<RuleContext<MessageIds, Options>>
+  context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.VariableDeclaration
   sourceCode: TSESLint.SourceCode

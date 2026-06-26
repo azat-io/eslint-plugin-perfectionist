@@ -97,7 +97,7 @@ export function makeOrderFixes({
   for (let max = nodes.length, i = 0; i < max; i++) {
     let sortingNode = nodes.at(i)!
     let sortedSortingNode = sortedNodes.at(i)!
-    let { node } = sortingNode
+    let { implicitDecorators, node } = sortingNode
     let { addSafetySemicolonWhenInline, node: sortedNode } = sortedSortingNode
     let isNodeFirstNode = node === nodes.at(0)!.node
     let isSortedNodeFirstNode = sortedNode === nodes.at(0)!.node
@@ -110,6 +110,7 @@ export function makeOrderFixes({
       ...getNodeRange({
         ignoreHighestBlockComment:
           ignoreFirstNodeHighestBlockComment && isSortedNodeFirstNode,
+        implicitDecorators: sortedSortingNode.implicitDecorators,
         node: sortedNode,
         sourceCode,
         options,
@@ -141,6 +142,7 @@ export function makeOrderFixes({
         getNodeRange({
           ignoreHighestBlockComment:
             ignoreFirstNodeHighestBlockComment && isNodeFirstNode,
+          implicitDecorators,
           sourceCode,
           options,
           node,

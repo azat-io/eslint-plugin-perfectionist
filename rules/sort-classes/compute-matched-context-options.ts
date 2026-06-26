@@ -3,7 +3,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
-import type { Options } from './types'
+import type { MessageId, Options } from './types'
 
 import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { computeMethodOrPropertyNameDetails } from './node-info/compute-method-or-property-name-details'
@@ -18,12 +18,12 @@ import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast
  * @param params.context - The rule context.
  * @returns The matched context options or undefined if none match.
  */
-export function computeMatchedContextOptions<MessageIds extends string>({
+export function computeMatchedContextOptions({
   matchedAstSelectors,
   classElements,
   context,
 }: {
-  context: Readonly<RuleContext<MessageIds, Options>>
+  context: Readonly<RuleContext<MessageId, Options>>
   matchedAstSelectors: ReadonlySet<string>
   classElements: TSESTree.ClassElement[]
 }): Options[number] | undefined {

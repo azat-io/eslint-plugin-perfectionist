@@ -48,6 +48,7 @@ import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
+import { getDecoratorName } from '../utils/get-decorator-name'
 import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupIndex } from '../utils/get-group-index'
@@ -248,7 +249,6 @@ function analyzeModule({
     let details = computeNodeDetails({
       useExperimentalDependencyDetection:
         options.useExperimentalDependencyDetection,
-      sourceCode,
       node,
     })
 
@@ -283,13 +283,19 @@ function analyzeModule({
       selectors: [selector],
       modifiers,
     })
+    let decoratorNames = decorators.map(decorator =>
+      getDecoratorName({
+        sourceCode,
+        decorator,
+      }),
+    )
     let group = computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           selectors: [selector],
           elementName: name,
+          decoratorNames,
           customGroup,
-          decorators,
           modifiers,
         }),
       predefinedGroups,
@@ -302,6 +308,7 @@ function analyzeModule({
     > = {
       isEslintDisabled: isNodeEslintDisabled(node, eslintDisabledLines),
       size: rangeToDiff(node, sourceCode),
+      implicitDecorators: decorators,
       addSafetySemicolonWhenInline,
       dependencyNames: [name],
       dependencyDetection,

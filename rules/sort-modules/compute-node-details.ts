@@ -1,5 +1,4 @@
 import type { TSESTree } from '@typescript-eslint/types'
-import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
@@ -12,7 +11,6 @@ import type {
 
 import { isPropertyOrAccessorNode } from './is-property-or-accessor-node'
 import { getNodeDecorators } from '../../utils/get-node-decorators'
-import { getDecoratorName } from '../../utils/get-decorator-name'
 import { isArrowFunctionNode } from './is-arrow-function-node'
 import { computeDependencies } from './compute-dependencies'
 
@@ -20,9 +18,9 @@ interface ParsableNodeDetails {
   nodeDetails: {
     dependencyDetection: DependencyDetection
     addSafetySemicolonWhenInline: boolean
+    decorators: TSESTree.Decorator[]
     dependencies: string[]
     modifiers: Modifier[]
-    decorators: string[]
     selector: Selector
     name: string
   }
@@ -40,7 +38,6 @@ type Details = NonParsableNodeDetails | ParsableNodeDetails
  * Compute details about a module-related node.
  *
  * @param params - The parameters object.
- * @param params.sourceCode - The source code object.
  * @param params.node - The AST node to compute details for.
  * @param params.useExperimentalDependencyDetection - Whether to use
  *   experimental dependency detection.
@@ -49,31 +46,24 @@ type Details = NonParsableNodeDetails | ParsableNodeDetails
  */
 export function computeNodeDetails({
   useExperimentalDependencyDetection,
-  sourceCode,
   node,
 }: {
   useExperimentalDependencyDetection: boolean
-  sourceCode: TSESLint.SourceCode
   node: SortModulesNode
 }): Details {
   let selector: undefined | Selector
   let name: undefined | string
   let modifiers: Modifier[] = []
   let dependencies: string[] = []
-  let decorators: string[] = []
+  let decorators: TSESTree.Decorator[] = []
   let addSafetySemicolonWhenInline: boolean = false
   let moduleBlock: TSESTree.TSModuleBlock | null = null
   let shouldPartitionAfterNode: boolean = false
-  let ignoredDueToDecoratorBeforeExportClass: boolean = false
   let dependencyDetection: DependencyDetection = 'soft'
-  let exportNode:
-    | TSESTree.ExportDefaultDeclaration
-    | TSESTree.ExportNamedDeclaration
 
   parseNode(node)
 
-  // eslint-disable-next-line typescript/no-unnecessary-condition
-  if (!selector || !name || ignoredDueToDecoratorBeforeExportClass) {
+  if (!selector || !name) {
     return {
       shouldPartitionAfterNode,
       moduleBlock,
@@ -103,13 +93,17 @@ export function computeNodeDetails({
     }
     switch (nodeToParse.type) {
       case AST_NODE_TYPES.ExportDefaultDeclaration:
-        exportNode = nodeToParse
         modifiers.push('default', 'export')
+        if ('decorators' in nodeToParse.declaration) {
+          decorators = getNodeDecorators(nodeToParse.declaration)
+        }
         parseNode(nodeToParse.declaration)
         break
       case AST_NODE_TYPES.ExportNamedDeclaration:
-        exportNode = nodeToParse
         if (nodeToParse.declaration) {
+          if ('decorators' in nodeToParse.declaration) {
+            decorators = getNodeDecorators(nodeToParse.declaration)
+          }
           parseNode(nodeToParse.declaration)
         }
         modifiers.push('export')
@@ -159,17 +153,8 @@ export function computeNodeDetails({
         let nodeDecorators = getNodeDecorators(nodeToParse)
         if (nodeDecorators[0]) {
           modifiers.push('decorated')
-          ignoredDueToDecoratorBeforeExportClass = isExportAfterDecorators({
-            firstDecorator: nodeDecorators[0],
-            exportNode,
-          })
         }
-        decorators = nodeDecorators.map(decorator =>
-          getDecoratorName({
-            sourceCode,
-            decorator,
-          }),
-        )
+        decorators = nodeDecorators
         dependencyDetection = 'hard'
         dependencies.push(
           ...extractDependencies(
@@ -221,21 +206,4 @@ function extractDependencies(
     searchStaticMethodsAndFunctionProperties,
     type: 'hard',
   })
-}
-
-function isExportAfterDecorators({
-  firstDecorator,
-  exportNode,
-}: {
-  exportNode:
-    | TSESTree.ExportDefaultDeclaration
-    | TSESTree.ExportNamedDeclaration
-    | undefined
-  firstDecorator: TSESTree.Decorator
-}): boolean {
-  if (!exportNode) {
-    return false
-  }
-
-  return exportNode.range[0] > firstDecorator.range[0]
 }

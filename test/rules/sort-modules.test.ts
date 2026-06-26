@@ -689,121 +689,164 @@ describe('sort-modules', () => {
       },
     )
 
-    it.each([
-      ['string pattern', 'Hello'],
-      ['array with string pattern', ['noMatch', 'Hello']],
-      ['case-insensitive regex object', { pattern: 'HELLO', flags: 'i' }],
-      [
-        'array with regex object',
-        ['noMatch', { pattern: 'HELLO', flags: 'i' }],
-      ],
-    ])(
-      'filters classes by decorator name pattern - %s',
-      async (_description, decoratorNamePattern) => {
+    describe('decoratorNamePattern', () => {
+      it.each([
+        ['string pattern', 'Hello'],
+        ['array with string pattern', ['noMatch', 'Hello']],
+        ['case-insensitive regex object', { pattern: 'HELLO', flags: 'i' }],
+        [
+          'array with regex object',
+          ['noMatch', { pattern: 'HELLO', flags: 'i' }],
+        ],
+      ])(
+        'filters classes by decorator name pattern - %s',
+        async (_description, decoratorNamePattern) => {
+          await invalid({
+            errors: [
+              {
+                data: {
+                  rightGroup: 'classesWithDecoratorStartingWithHello',
+                  leftGroup: 'unknown',
+                  left: 'func',
+                  right: 'C',
+                },
+                messageId: 'unexpectedModulesGroupOrder',
+              },
+              {
+                data: { right: 'AnotherClass', left: 'C' },
+                messageId: 'unexpectedModulesOrder',
+              },
+            ],
+            options: [
+              {
+                customGroups: [
+                  {
+                    groupName: 'classesWithDecoratorStartingWithHello',
+                    decoratorNamePattern,
+                    selector: 'class',
+                  },
+                ],
+                groups: ['classesWithDecoratorStartingWithHello', 'unknown'],
+              },
+            ],
+            output: dedent`
+              @HelloDecorator()
+              class AnotherClass {}
+
+              @HelloDecorator
+              class C {}
+
+              @Decorator
+              class A {}
+
+              class B {}
+
+              function func() {}
+            `,
+            code: dedent`
+              @Decorator
+              class A {}
+
+              class B {}
+
+              function func() {}
+
+              @HelloDecorator
+              class C {}
+
+              @HelloDecorator()
+              class AnotherClass {}
+            `,
+          })
+        },
+      )
+
+      it('filters elements using complex decorator name patterns', async () => {
         await invalid({
+          options: [
+            {
+              customGroups: [
+                {
+                  decoratorNamePattern: 'B',
+                  groupName: 'B',
+                },
+                {
+                  decoratorNamePattern: 'A',
+                  groupName: 'A',
+                },
+              ],
+              type: 'alphabetical',
+              groups: ['B', 'A'],
+              order: 'asc',
+            },
+          ],
           errors: [
             {
               data: {
-                rightGroup: 'classesWithDecoratorStartingWithHello',
+                rightGroup: 'B',
+                leftGroup: 'A',
+                right: 'B',
+                left: 'A',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
+          output: dedent`
+            @B.B()
+            class B {}
+
+            @A.A.A(() => A)
+            class A {}
+          `,
+          code: dedent`
+            @A.A.A(() => A)
+            class A {}
+
+            @B.B()
+            class B {}
+          `,
+        })
+      })
+
+      it('matches an exported decorated class by decoratorNamePattern', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  groupName: 'classesWithHelloDecorator',
+                  decoratorNamePattern: 'Hello',
+                  selector: 'class',
+                },
+              ],
+              groups: ['classesWithHelloDecorator', 'unknown'],
+            },
+          ],
+          errors: [
+            {
+              data: {
+                rightGroup: 'classesWithHelloDecorator',
                 leftGroup: 'unknown',
                 left: 'func',
                 right: 'C',
               },
               messageId: 'unexpectedModulesGroupOrder',
             },
-            {
-              data: { right: 'AnotherClass', left: 'C' },
-              messageId: 'unexpectedModulesOrder',
-            },
-          ],
-          options: [
-            {
-              customGroups: [
-                {
-                  groupName: 'classesWithDecoratorStartingWithHello',
-                  decoratorNamePattern,
-                  selector: 'class',
-                },
-              ],
-              groups: ['classesWithDecoratorStartingWithHello', 'unknown'],
-            },
           ],
           output: dedent`
-            @HelloDecorator()
-            class AnotherClass {}
-
             @HelloDecorator
-            class C {}
-
-            @Decorator
-            class A {}
-
-            class B {}
+            export class C {}
 
             function func() {}
           `,
           code: dedent`
-            @Decorator
-            class A {}
-
-            class B {}
-
             function func() {}
 
             @HelloDecorator
-            class C {}
-
-            @HelloDecorator()
-            class AnotherClass {}
+            export class C {}
           `,
         })
-      },
-    )
-
-    it('filters elements using complex decorator name patterns', async () => {
-      await invalid({
-        options: [
-          {
-            customGroups: [
-              {
-                decoratorNamePattern: 'B',
-                groupName: 'B',
-              },
-              {
-                decoratorNamePattern: 'A',
-                groupName: 'A',
-              },
-            ],
-            type: 'alphabetical',
-            groups: ['B', 'A'],
-            order: 'asc',
-          },
-        ],
-        errors: [
-          {
-            data: {
-              rightGroup: 'B',
-              leftGroup: 'A',
-              right: 'B',
-              left: 'A',
-            },
-            messageId: 'unexpectedModulesGroupOrder',
-          },
-        ],
-        output: dedent`
-          @B.B()
-          class B {}
-
-          @A.A.A(() => A)
-          class A {}
-        `,
-        code: dedent`
-          @A.A.A(() => A)
-          class A {}
-
-          @B.B()
-          class B {}
-        `,
       })
     })
 
@@ -3406,6 +3449,19 @@ describe('sort-modules', () => {
     })
 
     describe('exported decorated classes', () => {
+      it('accepts already sorted decorated exports', async () => {
+        await valid({
+          code: dedent`
+            @A
+            export class A {}
+
+            @B
+            class B {}
+          `,
+          options: [{ ...options, groups: ['unknown'] }],
+        })
+      })
+
       it('allows exported then decorated classes to be sorted', async () => {
         await invalid({
           output: dedent`
@@ -3478,34 +3534,46 @@ describe('sort-modules', () => {
         })
       })
 
-      it('ignores decorated then exported classes when sorting', async () => {
+      it('correctly sorts exported classes with decorators', async () => {
         await invalid({
           output: dedent`
-            @B
-            class B {}
-
-            @A
+            @A1
+            @A2
+            // A
             export class A {}
 
-            @C
+            @B1
+            @B2
+            /* B */
+            class B {}
+
+            @C1
+            @C2
+            // C
             class C {}
+          `,
+          code: dedent`
+            @C1
+            @C2
+            // C
+            class C {}
+
+            @A1
+            @A2
+            // A
+            export class A {}
+
+            @B1
+            @B2
+            /* B */
+            class B {}
           `,
           errors: [
             {
               messageId: 'unexpectedModulesOrder',
-              data: { right: 'B', left: 'C' },
+              data: { right: 'A', left: 'C' },
             },
           ],
-          code: dedent`
-            @C
-            class C {}
-
-            @A
-            export class A {}
-
-            @B
-            class B {}
-          `,
           options: [
             {
               ...options,
@@ -3516,29 +3584,41 @@ describe('sort-modules', () => {
 
         await invalid({
           output: dedent`
-            @B
-            class B {}
-
-            @A
+            @A1
+            @A2
+            // A
             export default class A {}
 
-            @C
+            @B1
+            @B2
+            /* B */
+            class B {}
+
+            @C1
+            @C2
+            // C
             class C {}
           `,
           code: dedent`
-            @C
+            @C1
+            @C2
+            // C
             class C {}
 
-            @A
+            @A1
+            @A2
+            // A
             export default class A {}
 
-            @B
+            @B1
+            @B2
+            /* B */
             class B {}
           `,
           errors: [
             {
               messageId: 'unexpectedModulesOrder',
-              data: { right: 'B', left: 'C' },
+              data: { right: 'A', left: 'C' },
             },
           ],
           options: [
@@ -3547,6 +3627,70 @@ describe('sort-modules', () => {
               groups: ['unknown'],
             },
           ],
+        })
+      })
+
+      it('keeps a line comment attached to its exported decorated class', async () => {
+        await invalid({
+          output: dedent`
+            // doc for A1
+            @A
+            // doc for A2
+            export class A {}
+
+            // doc for B1
+            @B
+            // doc for B2
+            class B {}
+          `,
+          code: dedent`
+            // doc for B1
+            @B
+            // doc for B2
+            class B {}
+
+            // doc for A1
+            @A
+            // doc for A2
+            export class A {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [{ ...options, groups: ['unknown'] }],
+        })
+      })
+
+      it('keeps a JSDoc block comment attached to its exported decorated class', async () => {
+        await invalid({
+          output: dedent`
+            /** doc for A */
+            @A
+            export class A {}
+
+            /** doc for B */
+            @B
+            class B {}
+          `,
+          code: dedent`
+            /** doc for B */
+            @B
+            class B {}
+
+            /** doc for A */
+            @A
+            export class A {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [{ ...options, groups: ['unknown'] }],
         })
       })
     })
@@ -5931,34 +6075,40 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores exported decorated classes when sorting', async () => {
+    it('correctly sorts exported classes with decorators', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'B', left: 'C' },
-          },
-        ],
         output: dedent`
-          @B
-          class B {}
-
-          @A
+          @A1
+          @A2
           export class A {}
 
-          @C
+          @B1
+          @B2
+          class B {}
+
+          @C1
+          @C2
           class C {}
         `,
         code: dedent`
-          @C
+          @C1
+          @C2
           class C {}
 
-          @A
+          @A1
+          @A2
           export class A {}
 
-          @B
+          @B1
+          @B2
           class B {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'C' },
+          },
+        ],
         options: [
           {
             ...options,
@@ -8311,34 +8461,40 @@ describe('sort-modules', () => {
       })
     })
 
-    it('ignores exported decorated classes when sorting', async () => {
+    it('correctly sorts exported classes with decorators', async () => {
       await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedModulesOrder',
-            data: { right: 'BB', left: 'C' },
-          },
-        ],
         output: dedent`
-          @B
-          class BB {}
-
-          @A
+          @A1
+          @A2
           export class AAA {}
 
-          @C
+          @B1
+          @B2
+          class BB {}
+
+          @C1
+          @C2
           class C {}
         `,
         code: dedent`
-          @C
+          @C1
+          @C2
           class C {}
 
-          @A
+          @A1
+          @A2
           export class AAA {}
 
-          @B
+          @B1
+          @B2
           class BB {}
         `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'AAA', left: 'C' },
+          },
+        ],
         options: [
           {
             ...options,
