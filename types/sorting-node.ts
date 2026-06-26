@@ -17,6 +17,17 @@ import type { TSESTree } from '@typescript-eslint/types'
  */
 export interface SortingNode<Node extends TSESTree.Node = TSESTree.Node> {
   /**
+   * Decorators associated with this node that are not directly accessible via
+   * the AST node's own `decorators` property.
+   *
+   * Used in contexts where decorators are tracked separately from their
+   * decorated node. When provided, these decorators override the node's own
+   * `decorators` in range calculations, ensuring they are included when the
+   * node is moved during sorting fixes.
+   */
+  implicitDecorators?: TSESTree.Decorator[]
+
+  /**
    * Indicates whether a safety semicolon should be added when the node is moved
    * inline.
    *

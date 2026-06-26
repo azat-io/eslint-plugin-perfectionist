@@ -161,13 +161,13 @@ export function sortClass({
       let dependencies: string[] = []
 
       let isDecorated = false
-      let decorators: string[] = []
+      let decoratorNames: string[] = []
 
       if ('decorators' in member) {
-        decorators = getNodeDecorators(member).map(decorator =>
+        decoratorNames = getNodeDecorators(member).map(decorator =>
           getDecoratorName({ sourceCode, decorator }),
         )
-        isDecorated = decorators.length > 0
+        isDecorated = decoratorNames.length > 0
       }
 
       let addSafetySemicolonWhenInline: boolean
@@ -271,8 +271,8 @@ export function sortClass({
           doesCustomGroupMatch({
             elementValue: memberValue,
             elementName: name,
+            decoratorNames,
             customGroup,
-            decorators,
             modifiers,
             selectors,
           }),
