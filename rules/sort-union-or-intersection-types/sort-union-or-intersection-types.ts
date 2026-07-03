@@ -5,13 +5,13 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { Options } from '../sort-intersection-types/types'
 
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
-import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import {
   type SortUnionOrIntersectionSortingNode,
   type Selector,
   allSelectors,
-} from './types'
+} from '../sort-union-types/types'
+import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
+import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'

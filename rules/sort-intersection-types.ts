@@ -11,10 +11,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { sortUnionOrIntersectionTypes } from './sort-union-types/sort-union-or-intersection-types'
+import { sortUnionOrIntersectionTypes } from './sort-union-or-intersection-types/sort-union-or-intersection-types'
+import { buildJsonSchema } from './sort-union-or-intersection-types/build-json-schema'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { buildJsonSchema } from './sort-union-types'
 
 /**
  * Cache computed groups by modifiers and selectors for performance.
