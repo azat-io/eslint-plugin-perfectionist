@@ -60,7 +60,11 @@ let defaultOptions: Required<Options[number]> = {
   groups: [],
 }
 
-export function buildJsonSchema(): JSONSchema4 {
+export function buildJsonSchema({
+  ignoreCallableTypes,
+}: {
+  ignoreCallableTypes: boolean
+}): JSONSchema4 {
   return {
     items: {
       properties: {
@@ -76,6 +80,9 @@ export function buildJsonSchema(): JSONSchema4 {
         }),
         partitionByComment: partitionByCommentJsonSchema,
         partitionByNewLine: partitionByNewlineJsonSchema,
+        ...(ignoreCallableTypes ?
+          { ignoreCallableTypes: { type: 'boolean' } }
+        : {}),
       },
       additionalProperties: false,
       type: 'object',
@@ -98,7 +105,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted union types.',
       recommended: true,
     },
-    schema: buildJsonSchema(),
+    schema: buildJsonSchema({ ignoreCallableTypes: false }),
     type: 'suggestion',
     fixable: 'code',
   },
@@ -128,10 +135,13 @@ function sortUnionType({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
+    defaultOptions: {
+      ...defaultOptions,
+      ignoreCallableTypes: false,
+    },
     cachedGroupsByModifiersAndSelectors,
     tokenValueToIgnoreBefore: '|',
     matchedAstSelectors,
-    defaultOptions,
     context,
     node,
   })

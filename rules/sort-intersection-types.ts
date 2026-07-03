@@ -35,6 +35,7 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  ignoreCallableTypes: false,
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByComment: false,
@@ -62,7 +63,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted intersection types.',
       recommended: true,
     },
-    schema: buildJsonSchema(),
+    schema: buildJsonSchema({ ignoreCallableTypes: true }),
     type: 'suggestion',
     fixable: 'code',
   },
