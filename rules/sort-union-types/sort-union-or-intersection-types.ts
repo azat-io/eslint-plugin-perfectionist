@@ -204,22 +204,6 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     )
 
   for (let nodes of formattedMembers) {
-    function createSortNodesExcludingEslintDisabled(
-      sortingNodes: SortUnionOrIntersectionSortingNode[],
-    ) {
-      return function (
-        ignoreEslintDisabledNodes: boolean,
-      ): SortUnionOrIntersectionSortingNode[] {
-        return sortNodesByGroups({
-          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-          optionsByGroupIndexComputer,
-          ignoreEslintDisabledNodes,
-          groups: options.groups,
-          nodes: sortingNodes,
-        })
-      }
-    }
-
     reportAllErrors<MessageIds>({
       sortNodesExcludingEslintDisabled:
         createSortNodesExcludingEslintDisabled(nodes),
@@ -228,5 +212,21 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
       context,
       nodes,
     })
+  }
+
+  function createSortNodesExcludingEslintDisabled(
+    sortingNodes: SortUnionOrIntersectionSortingNode[],
+  ) {
+    return function (
+      ignoreEslintDisabledNodes: boolean,
+    ): SortUnionOrIntersectionSortingNode[] {
+      return sortNodesByGroups({
+        comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+        optionsByGroupIndexComputer,
+        ignoreEslintDisabledNodes,
+        groups: options.groups,
+        nodes: sortingNodes,
+      })
+    }
   }
 }
