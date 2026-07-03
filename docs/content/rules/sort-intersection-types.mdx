@@ -164,6 +164,28 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
+### ignoreCallableTypes
+
+<sub>default: `false`</sub>
+
+When `true`, the rule will not sort inline intersection type members if any member is a callable type.
+
+This preserves TypeScript's overload resolution order, which depends on the left-to-right order of callable members in an intersection.
+
+<Important title="Named type references">
+Named type references (e.g. `MyFunction`) are not detected as callable. Only inline callable types are recognized.
+
+- `true` — Leave callable intersections unsorted to preserve overload semantics.
+- `false` — Sort all intersection type members regardless of whether they are callable.
+
+```ts
+// Left untouched with `ignoreCallableTypes: true`
+type Overloaded =
+  & ((x: string) => string)
+  & ((x: any) => any)
+```
+</Important>
+
 ### partitionByComment
 
 <sub>default: `false`</sub>
@@ -550,6 +572,7 @@ Custom groups have a higher priority than any predefined group.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
+                  ignoreCallableTypes: false,
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
@@ -582,6 +605,7 @@ Custom groups have a higher priority than any predefined group.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
+                ignoreCallableTypes: false,
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
