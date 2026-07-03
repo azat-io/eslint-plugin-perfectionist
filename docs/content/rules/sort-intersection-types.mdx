@@ -166,7 +166,7 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 
 ### ignoreCallableTypes
 
-<sub>default: `false`</sub>
+<sub>default: `true`</sub>
 
 When `true`, the rule will not sort inline intersection type members if any member is a callable type.
 
@@ -572,7 +572,7 @@ Custom groups have a higher priority than any predefined group.
                   fallbackSort: { type: 'unsorted' },
                   ignoreCase: true,
                   specialCharacters: 'keep',
-                  ignoreCallableTypes: false,
+                  ignoreCallableTypes: true,
                   partitionByComment: false,
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
@@ -605,7 +605,7 @@ Custom groups have a higher priority than any predefined group.
                 fallbackSort: { type: 'unsorted' },
                 ignoreCase: true,
                 specialCharacters: 'keep',
-                ignoreCallableTypes: false,
+                ignoreCallableTypes: true,
                 partitionByComment: false,
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',

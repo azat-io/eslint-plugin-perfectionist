@@ -190,7 +190,12 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
-        options: [options],
+        options: [
+          {
+            ...options,
+            ignoreCallableTypes: false,
+          },
+        ],
       })
     })
 
@@ -263,6 +268,7 @@ describe('sort-intersection-types', () => {
               'union',
               'nullish',
             ],
+            ignoreCallableTypes: false,
           },
         ],
       })
@@ -843,6 +849,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesBetween: 0,
           },
         ],
@@ -882,6 +889,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 0,
           },
         ],
@@ -926,6 +934,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
@@ -984,6 +993,7 @@ describe('sort-intersection-types', () => {
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
+            ignoreCallableTypes: false,
             newlinesBetween: 1,
           },
         ],
@@ -1959,22 +1969,8 @@ describe('sort-intersection-types', () => {
     })
 
     describe('ignoreCallableTypes', () => {
-      it('sorts function type intersections by default', async () => {
-        await invalid({
-          errors: [
-            {
-              data: {
-                left: '(x: string) => string',
-                right: '(x: any) => any',
-              },
-              messageId: 'unexpectedIntersectionTypesOrder',
-            },
-          ],
-          output: dedent`
-            type T =
-              & ((x: any) => any)
-              & ((x: string) => string)
-          `,
+      it("doesn't sort function type intersections by default", async () => {
+        await valid({
           code: dedent`
             type T =
               & ((x: string) => string)
@@ -2316,7 +2312,12 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
-        options: [options],
+        options: [
+          {
+            ...options,
+            ignoreCallableTypes: false,
+          },
+        ],
       })
     })
 
@@ -2385,6 +2386,7 @@ describe('sort-intersection-types', () => {
               'union',
               'nullish',
             ],
+            ignoreCallableTypes: false,
           },
         ],
       })
@@ -2961,6 +2963,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
@@ -3019,6 +3022,7 @@ describe('sort-intersection-types', () => {
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
+            ignoreCallableTypes: false,
             newlinesBetween: 1,
           },
         ],
@@ -3884,7 +3888,12 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
-        options: [options],
+        options: [
+          {
+            ...options,
+            ignoreCallableTypes: false,
+          },
+        ],
       })
     })
 
@@ -3953,6 +3962,7 @@ describe('sort-intersection-types', () => {
               'union',
               'nullish',
             ],
+            ignoreCallableTypes: false,
           },
         ],
       })
@@ -4529,6 +4539,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
@@ -4587,6 +4598,7 @@ describe('sort-intersection-types', () => {
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
+            ignoreCallableTypes: false,
             newlinesBetween: 1,
           },
         ],
