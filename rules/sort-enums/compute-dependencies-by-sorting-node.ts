@@ -64,7 +64,21 @@ function computeMemberExpressionIdentifiers(
     consecutiveOnly: true,
     node: identifier,
   })
-    .map(node => node.property)
-    .filter(property => property.type === AST_NODE_TYPES.Identifier)
-    .map(property => property.name)
+    .map(node => computeMemberExpressionPropertyName(node.property))
+    .filter(name => name !== null)
+}
+
+function computeMemberExpressionPropertyName(
+  property: TSESTree.MemberExpression['property'],
+): string | null {
+  if (property.type === AST_NODE_TYPES.Identifier) {
+    return property.name
+  }
+  if (
+    property.type === AST_NODE_TYPES.Literal &&
+    typeof property.value === 'string'
+  ) {
+    return property.value
+  }
+  return null
 }

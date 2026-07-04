@@ -25,10 +25,16 @@ export function computeDependencies(
       case AST_NODE_TYPES.MemberExpression:
         if (
           node.object.type === AST_NODE_TYPES.Identifier &&
-          node.object.name === enumName &&
-          node.property.type === AST_NODE_TYPES.Identifier
+          node.object.name === enumName
         ) {
-          dependencies.push(node.property.name)
+          if (node.property.type === AST_NODE_TYPES.Identifier) {
+            dependencies.push(node.property.name)
+          } else if (
+            node.property.type === AST_NODE_TYPES.Literal &&
+            typeof node.property.value === 'string'
+          ) {
+            dependencies.push(node.property.value)
+          }
         }
         break
       case AST_NODE_TYPES.Identifier:
@@ -46,6 +52,9 @@ export function computeDependencies(
     }
     if ('arguments' in node) {
       stack.push(...node.arguments)
+    }
+    if ('callee' in node) {
+      stack.push(node.callee)
     }
     if ('consequent' in node) {
       /* v8 ignore if -- @preserve Unsure if we can reach it. */

@@ -7,6 +7,7 @@ import type { ShouldIgnoreIdentifierComputer } from './compute-dependencies-by-s
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
+import { isFunctionImmediatelyExecuted } from './is-function-immediately-executed'
 import { computeParentNodesWithTypes } from './compute-parent-nodes-with-types'
 
 export function computeDependenciesOutsideFunctionsBySortingNode<
@@ -27,7 +28,7 @@ export function computeDependenciesOutsideFunctionsBySortingNode<
 
   function buildShouldIgnoreIdentifierComputer(): ShouldIgnoreIdentifierComputer<T> {
     return ({ referencingSortingNode, identifier }) => {
-      let ignoredParentNodes = computeParentNodesWithTypes({
+      let functionParentNodes = computeParentNodesWithTypes({
         allowedTypes: [
           AST_NODE_TYPES.FunctionExpression,
           AST_NODE_TYPES.ArrowFunctionExpression,
@@ -37,7 +38,10 @@ export function computeDependenciesOutsideFunctionsBySortingNode<
         node: identifier,
       })
 
-      return ignoredParentNodes.length > 0
+      return functionParentNodes.some(
+        functionParentNode =>
+          !isFunctionImmediatelyExecuted(functionParentNode),
+      )
     }
   }
 }

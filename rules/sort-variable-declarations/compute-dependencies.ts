@@ -4,6 +4,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SortVariableDeclarationsNode } from './types'
 
+import { isNodeImmediatelyCalled } from '../../utils/is-function-immediately-executed'
+
 /**
  * Computes the dependencies of a variable declaration node.
  *
@@ -33,15 +35,25 @@ function computeExpressionDependencies(
   function checkNode(node: TSESTree.Node): void {
     switch (node.type) {
       /**
-       * No need to check the body of functions and arrow functions.
+       * No need to check the body of functions and arrow functions, unless they
+       * are immediately called.
        */
       case AST_NODE_TYPES.ArrowFunctionExpression:
       case AST_NODE_TYPES.FunctionExpression:
+        if (!isNodeImmediatelyCalled(node)) {
+          return
+        }
+        checkNode(node.body)
         return
       case AST_NODE_TYPES.ConditionalExpression:
         checkNode(node.test)
         checkNode(node.consequent)
         checkNode(node.alternate)
+        break
+      case AST_NODE_TYPES.BlockStatement:
+        for (let statement of node.body) {
+          checkNode(statement)
+        }
         break
       case AST_NODE_TYPES.Identifier:
         dependencies.push(node.name)

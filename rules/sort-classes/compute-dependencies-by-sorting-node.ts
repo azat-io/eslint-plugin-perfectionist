@@ -212,15 +212,15 @@ function shouldIgnoreDependencyComputation(
     case AST_NODE_TYPES.StaticBlock:
       return false
     case AST_NODE_TYPES.TSAbstractAccessorProperty:
-    case AST_NODE_TYPES.AccessorProperty:
-    case AST_NODE_TYPES.MethodDefinition:
-    case AST_NODE_TYPES.TSIndexSignature:
-      return true
     case AST_NODE_TYPES.PropertyDefinition:
+    case AST_NODE_TYPES.AccessorProperty:
       return (
         node.value?.type === AST_NODE_TYPES.ArrowFunctionExpression ||
         node.value?.type === AST_NODE_TYPES.FunctionExpression
       )
+    case AST_NODE_TYPES.MethodDefinition:
+    case AST_NODE_TYPES.TSIndexSignature:
+      return true
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)
