@@ -1012,6 +1012,40 @@ describe('sort-switch-case', () => {
         options: [{}],
       })
     })
+
+    it('keeps autofix even when reordered cases may match the same value', async () => {
+      await invalid({
+        output: dedent`
+          const bb = 1
+          const aaa = 1
+          function f(x) {
+            switch (x) {
+              case aaa: return 'a'
+              case bb: return 'b'
+              default: return 'd'
+            }
+          }
+        `,
+        code: dedent`
+          const bb = 1
+          const aaa = 1
+          function f(x) {
+            switch (x) {
+              case bb: return 'b'
+              case aaa: return 'a'
+              default: return 'd'
+            }
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
+          },
+        ],
+        options: [options],
+      })
+    })
   })
 
   describe('natural', () => {
@@ -1998,6 +2032,40 @@ describe('sort-switch-case', () => {
           }
         `,
         options: [{}],
+      })
+    })
+
+    it('keeps autofix even when reordered cases may match the same value', async () => {
+      await invalid({
+        output: dedent`
+          const bb = 1
+          const aaa = 1
+          function f(x) {
+            switch (x) {
+              case aaa: return 'a'
+              case bb: return 'b'
+              default: return 'd'
+            }
+          }
+        `,
+        code: dedent`
+          const bb = 1
+          const aaa = 1
+          function f(x) {
+            switch (x) {
+              case bb: return 'b'
+              case aaa: return 'a'
+              default: return 'd'
+            }
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
+          },
+        ],
+        options: [options],
       })
     })
   })
@@ -2988,6 +3056,100 @@ describe('sort-switch-case', () => {
         options: [{}],
       })
     })
+
+    it('keeps autofix even when reordered cases may match the same value', async () => {
+      await invalid({
+        output: dedent`
+          const bb = 1
+          const aaa = 1
+          function f(x) {
+            switch (x) {
+              case aaa: return 'a'
+              case bb: return 'b'
+              default: return 'd'
+            }
+          }
+        `,
+        code: dedent`
+          const bb = 1
+          const aaa = 1
+          function f(x) {
+            switch (x) {
+              case bb: return 'b'
+              case aaa: return 'a'
+              default: return 'd'
+            }
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'aaa', left: 'bb' },
+          },
+        ],
+        options: [options],
+      })
+    })
+
+    it('keeps autofix even when literals share the same runtime value', async () => {
+      await invalid({
+        output: dedent`
+          switch (x) {
+            case 0x61:
+              break
+            case 97:
+              break
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: '97', left: '97' },
+          },
+        ],
+        code: dedent`
+          switch (x) {
+            case 97:
+              break
+            case 0x61:
+              break
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('keeps autofix for unary numeric literal cases', async () => {
+      await invalid({
+        output: dedent`
+          switch (x) {
+            case -2:
+              break
+            case +3:
+              break
+            case 1:
+              break
+          }
+        `,
+        code: dedent`
+          switch (x) {
+            case 1:
+              break
+            case -2:
+              break
+            case +3:
+              break
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: '-2', left: '1' },
+          },
+        ],
+        options: [options],
+      })
+    })
   })
 
   describe('custom', () => {
@@ -3270,6 +3432,106 @@ describe('sort-switch-case', () => {
         `,
         options: [{ type: 'alphabetical', order: 'asc' }],
         settings,
+      })
+    })
+
+    describe('condition-shaped switches', () => {
+      it('not works if discriminant and case tests are comparisons', async () => {
+        await valid({
+          code: dedent`
+            const b = 10
+            const a = 2
+            function f(x) {
+              switch (x > 0) {
+                case b > 5: return 'b'
+                case a > 1: return 'a'
+                default: return 'd'
+              }
+            }
+          `,
+        })
+      })
+
+      it('not works if discriminant is a boolean literal, negation or equality check', async () => {
+        await valid({
+          code: dedent`
+            switch (false) {
+              case name === 'bb':
+                return 'b'
+              case name === 'aaa':
+                return 'a'
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (!!x) {
+              case b > 5:
+                return 'b'
+              case a > 1:
+                return 'a'
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (x === y) {
+              case 'b':
+                return 'b'
+              case 'a':
+                return 'a'
+            }
+          `,
+        })
+      })
+
+      it('not works if case tests are conditions', async () => {
+        await valid({
+          code: dedent`
+            switch (someBool) {
+              case b > 5: return 'b'
+              case a > 1: return 'a'
+              default: return 'd'
+            }
+          `,
+        })
+      })
+
+      it('not works if discriminant is a logical or relational expression', async () => {
+        await valid({
+          code: dedent`
+            switch (a && b) {
+              case 'b':
+                return 'b'
+              case 'a':
+                return 'a'
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (key in object) {
+              case 'b':
+                return 'b'
+              case 'a':
+                return 'a'
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (value instanceof Error) {
+              case 'b':
+                return 'b'
+              case 'a':
+                return 'a'
+            }
+          `,
+        })
       })
     })
 

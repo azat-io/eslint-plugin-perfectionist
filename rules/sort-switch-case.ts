@@ -29,6 +29,19 @@ const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
 
 type MessageId = typeof ORDER_ERROR_ID
 
+let conditionOperators = new Set<string>([
+  'instanceof',
+  '===',
+  '!==',
+  '==',
+  '!=',
+  '<=',
+  '>=',
+  'in',
+  '<',
+  '>',
+])
+
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   specialCharacters: 'keep',
@@ -54,10 +67,13 @@ export default createEslintRule<Options, MessageId>({
       validateCustomSortConfiguration(options)
 
       let { sourceCode } = context
-      let isDiscriminantTrue =
-        switchNode.discriminant.type === AST_NODE_TYPES.Literal &&
-        switchNode.discriminant.value === true
-      if (isDiscriminantTrue) {
+      let isConditionCaseSwitch =
+        isConditionExpression(switchNode.discriminant) ||
+        switchNode.cases.some(
+          caseNode =>
+            caseNode.test !== null && isConditionExpression(caseNode.test),
+        )
+      if (isConditionCaseSwitch) {
         return
       }
 
@@ -322,6 +338,32 @@ function reduceCaseSortingNodes(
     },
     [[]],
   )
+}
+
+/**
+ * Checks if an expression is condition-shaped.
+ *
+ * Condition-shaped expressions produce boolean values: boolean literals,
+ * logical negations, comparison binary expressions and logical expressions.
+ * Switch statements built on such expressions (e.g. `switch (true)`) encode
+ * their program logic in the case order, so sorting them is unsafe.
+ *
+ * @param node - The expression AST node to check.
+ * @returns True if the expression is condition-shaped.
+ */
+function isConditionExpression(node: TSESTree.Expression): boolean {
+  switch (node.type) {
+    case AST_NODE_TYPES.LogicalExpression:
+      return true
+    case AST_NODE_TYPES.BinaryExpression:
+      return conditionOperators.has(node.operator)
+    case AST_NODE_TYPES.UnaryExpression:
+      return node.operator === '!'
+    case AST_NODE_TYPES.Literal:
+      return typeof node.value === 'boolean'
+    default:
+      return false
+  }
 }
 
 /**
