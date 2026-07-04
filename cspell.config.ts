@@ -25,6 +25,7 @@ export default defineConfig({
     'pcss',
     'playform',
     'poppanator',
+    'quasis',
     'rehype',
     'renminbi',
     'shiki',

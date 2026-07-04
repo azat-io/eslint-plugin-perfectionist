@@ -27,6 +27,8 @@ import { computePropertyOrVariableDeclaratorName } from './compute-property-or-v
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { restoreCollidingNodesOrder } from '../../utils/restore-colliding-nodes-order'
+import { computeObjectsCollidingNodeGroups } from './compute-colliding-node-groups'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
@@ -261,8 +263,21 @@ export function sortObject({
       }),
     )
 
-    return sortNodesByDependencies(nodesSortedByGroups, {
+    let sortedNodes = sortNodesByDependencies(nodesSortedByGroups, {
       ignoreEslintDisabledNodes,
+    })
+
+    if (isDestructuredObject) {
+      return sortedNodes
+    }
+
+    return restoreCollidingNodesOrder({
+      collidingNodeGroups: computeObjectsCollidingNodeGroups({
+        ignoreEslintDisabledNodes,
+        nodes: sortingNodes,
+        sourceCode,
+      }),
+      sortedNodes,
     })
   }
 }

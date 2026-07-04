@@ -1747,6 +1747,62 @@ describe('sort-jsx-props', () => {
         })
       })
     })
+
+    describe('duplicate props', () => {
+      it('preserves source order of duplicate props', async () => {
+        await valid({
+          code: dedent`
+            let v = 2; let x = <A a={v} a />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+
+      it('keeps duplicate props in source order while sorting other props', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'bb', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let v = 2; let x = <A b={v} bb b />
+          `,
+          code: dedent`
+            let v = 2; let x = <A b={v} b bb />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+
+      it('sorts duplicate props split by a spread element independently', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'a', left: 'c' },
+            },
+          ],
+          output: dedent`
+            let x = <A a c {...s} c />
+          `,
+          code: dedent`
+            let x = <A c a {...s} c />
+          `,
+          options: [options],
+        })
+      })
+
+      it('preserves source order of duplicate namespaced props', async () => {
+        await valid({
+          code: dedent`
+            let v = 2; let x = <A ns:a={v} ns:a />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2998,6 +3054,62 @@ describe('sort-jsx-props', () => {
         })
       },
     )
+
+    describe('duplicate props', () => {
+      it('preserves source order of duplicate props', async () => {
+        await valid({
+          code: dedent`
+            let v = 2; let x = <A a={v} a />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+
+      it('keeps duplicate props in source order while sorting other props', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'bb', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let v = 2; let x = <A b={v} bb b />
+          `,
+          code: dedent`
+            let v = 2; let x = <A b={v} b bb />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+
+      it('sorts duplicate props split by a spread element independently', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'a', left: 'c' },
+            },
+          ],
+          output: dedent`
+            let x = <A a c {...s} c />
+          `,
+          code: dedent`
+            let x = <A c a {...s} c />
+          `,
+          options: [options],
+        })
+      })
+
+      it('preserves source order of duplicate namespaced props', async () => {
+        await valid({
+          code: dedent`
+            let v = 2; let x = <A ns:a={v} ns:a />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4252,6 +4364,62 @@ describe('sort-jsx-props', () => {
         })
       },
     )
+
+    describe('duplicate props', () => {
+      it('preserves source order of duplicate props', async () => {
+        await valid({
+          code: dedent`
+            let long = 2; let x = <A a a={long} />
+          `,
+          options: [options],
+        })
+      })
+
+      it('keeps duplicate props in source order while sorting other props', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'bb', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let v = 2; let x = <A bb b={v} b />
+          `,
+          code: dedent`
+            let v = 2; let x = <A b={v} b bb />
+          `,
+          options: [{ ...options, groups: ['shorthand-prop', 'unknown'] }],
+        })
+      })
+
+      it('sorts duplicate props split by a spread element independently', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedJSXPropsOrder',
+              data: { right: 'aa', left: 'c' },
+            },
+          ],
+          output: dedent`
+            let x = <A aa c {...s} c />
+          `,
+          code: dedent`
+            let x = <A c aa {...s} c />
+          `,
+          options: [options],
+        })
+      })
+
+      it('preserves source order of duplicate namespaced props', async () => {
+        await valid({
+          code: dedent`
+            let v = 2; let x = <A ns:a ns:a={v} />
+          `,
+          options: [options],
+        })
+      })
+    })
   })
 
   describe('custom', () => {

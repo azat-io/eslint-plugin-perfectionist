@@ -1843,6 +1843,103 @@ describe('sort-maps', () => {
         })
       })
     })
+
+    describe('duplicate runtime keys', () => {
+      it('keeps source order for numeric keys with equal runtime values', async () => {
+        await valid({
+          code: "let m = new Map([[16, 'sixteen'], [0x10, 'hex']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-1, 'aa'], [-0x1, 'b']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[16n, 'bb'], [0x10n, 'a']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-16n, 'bb'], [-0x10n, 'a']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[1, 'xxxxxxxxxx'], [+1, 'y']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for entries with omitted keys', async () => {
+        await valid({
+          code: "new Map([[void 0, 'x'], [, 'y']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for undefined keys spelled differently', async () => {
+        await valid({
+          code: "new Map([[void 0, 'xxxxxxxxxx'], [undefined, 'y']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[void x, 'xxxxxxxxxx'], [undefined, 'y']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for string and template keys with equal cooked values', async () => {
+        await valid({
+          code: "new Map([[`a`, 'tpl'], ['a', 'str']])",
+          options: [options],
+        })
+      })
+
+      it('sorts remaining entries around keys with equal runtime values', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { left: '0x10', right: '1' },
+            },
+          ],
+          output: "new Map([[16, 'a'], [1, 'b'], [0x10, 'c']])",
+          code: "new Map([[16, 'a'], [0x10, 'c'], [1, 'b']])",
+          options: [options],
+        })
+      })
+
+      it('distinguishes numeric keys from string keys with the same text', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { right: "'16'", left: '16' },
+            },
+          ],
+          output: "new Map([['16', 'a'], [16, 'b']])",
+          code: "new Map([[16, 'b'], ['16', 'a']])",
+          options: [options],
+        })
+      })
+
+      it('sorts elements that are not key-value pairs', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: 'new Map([a, b])',
+          code: 'new Map([b, a])',
+          options: [options],
+        })
+      })
+    })
   })
 
   describe('natural', () => {
@@ -3185,6 +3282,103 @@ describe('sort-maps', () => {
         })
       },
     )
+
+    describe('duplicate runtime keys', () => {
+      it('keeps source order for numeric keys with equal runtime values', async () => {
+        await valid({
+          options: [{ ...options, fallbackSort: { type: 'alphabetical' } }],
+          code: "let m = new Map([[16, 'sixteen'], [0x10, 'hex']])",
+        })
+
+        await valid({
+          code: "new Map([[-0x1, 'b'], [-1, 'aa']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[16n, 'bb'], [0x10n, 'a']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-0x10n, 'a'], [-16n, 'bb']])",
+          options: [options],
+        })
+
+        await valid({
+          options: [{ ...options, fallbackSort: { type: 'alphabetical' } }],
+          code: "new Map([[1, 'xxxxxxxxxx'], [+1, 'y']])",
+        })
+      })
+
+      it('keeps source order for entries with omitted keys', async () => {
+        await valid({
+          code: "new Map([[void 0, 'x'], [, 'y']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for undefined keys spelled differently', async () => {
+        await valid({
+          code: "new Map([[void 0, 'xxxxxxxxxx'], [undefined, 'y']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[void x, 'xxxxxxxxxx'], [undefined, 'y']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for string and template keys with equal cooked values', async () => {
+        await valid({
+          code: "new Map([[`a`, 'tpl'], ['a', 'str']])",
+          options: [options],
+        })
+      })
+
+      it('sorts remaining entries around keys with equal runtime values', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { left: '0x10n', right: '1n' },
+            },
+          ],
+          output: "new Map([[16n, 'a'], [1n, 'b'], [0x10n, 'c']])",
+          code: "new Map([[16n, 'a'], [0x10n, 'c'], [1n, 'b']])",
+          options: [options],
+        })
+      })
+
+      it('distinguishes numeric keys from string keys with the same text', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { left: "'16'", right: '16' },
+            },
+          ],
+          output: "new Map([[16, 'b'], ['16', 'a']])",
+          code: "new Map([['16', 'a'], [16, 'b']])",
+          options: [options],
+        })
+      })
+
+      it('sorts elements that are not key-value pairs', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: 'new Map([a, b])',
+          code: 'new Map([b, a])',
+          options: [options],
+        })
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4530,6 +4724,176 @@ describe('sort-maps', () => {
         })
       },
     )
+
+    describe('duplicate runtime keys', () => {
+      it('keeps source order for numeric keys with equal runtime values', async () => {
+        await valid({
+          code: "let m = new Map([[16, 'a'], [0x10, 'sixteen']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-1, 'b'], [-0x1, 'aa']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[16n, 'a'], [0x10n, 'bb']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-16n, 'a'], [-0x10n, 'bb']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[1, 'y'], [+1, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for entries with omitted keys', async () => {
+        await valid({
+          code: "new Map([[, 'y'], [, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[void 0, 'y'], [, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for undefined keys spelled differently', async () => {
+        await valid({
+          code: "new Map([[void 0, 'y'], [void 0, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[void 0, 'y'], [undefined, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[void x, 'y'], [undefined, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for string and template keys with equal cooked values', async () => {
+        await valid({
+          code: "new Map([[`a`, 'y'], ['a', 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([['a', 'y'], ['a', 'xxxxxxxxxx']])",
+          options: [options],
+        })
+      })
+
+      it('keeps source order for dynamic keys with identical source text', async () => {
+        await valid({
+          code: "new Map([[key, 'y'], [key, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[/a/, 'y'], [/a/, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[null, 'y'], [null, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          // eslint-disable-next-line no-template-curly-in-string
+          code: "new Map([[`a${x}`, 'y'], [`a${x}`, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-'a', 'y'], [-'a', 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[+'a', 'y'], [+'a', 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[-x, 'y'], [-x, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[+x, 'y'], [+x, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[~1, 'y'], [~1, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[a.b, 'y'], [a.b, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+
+        await valid({
+          code: "new Map([[...x, 'y'], [...x, 'xxxxxxxxxx']])",
+          options: [options],
+        })
+      })
+
+      it('sorts remaining entries around keys with equal runtime values', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { left: '0x10', right: '1' },
+            },
+          ],
+          output: "new Map([[1, 'bbbbbbbb'], [16, 'a'], [0x10, 'ccc']])",
+          code: "new Map([[16, 'a'], [0x10, 'ccc'], [1, 'bbbbbbbb']])",
+          options: [options],
+        })
+      })
+
+      it('distinguishes numeric keys from string keys with the same text', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { left: "'16'", right: '16' },
+            },
+          ],
+          output: "new Map([[16, 'bbbbbb'], ['16', 'a']])",
+          code: "new Map([['16', 'a'], [16, 'bbbbbb']])",
+          options: [options],
+        })
+      })
+
+      it('sorts elements that are not key-value pairs', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedMapElementsOrder',
+              data: { right: 'aa', left: 'b' },
+            },
+          ],
+          output: 'new Map([aa, b])',
+          code: 'new Map([b, aa])',
+          options: [options],
+        })
+      })
+    })
   })
 
   describe('custom', () => {

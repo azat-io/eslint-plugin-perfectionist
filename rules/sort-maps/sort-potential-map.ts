@@ -16,6 +16,8 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { computeCollidingNodeGroups } from '../../utils/compute-colliding-node-groups'
+import { restoreCollidingNodesOrder } from '../../utils/restore-colliding-nodes-order'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -23,6 +25,7 @@ import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
+import { computeCollisionKey } from './compute-collision-key'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
@@ -158,12 +161,23 @@ export function sortPotentialMap({
         sortingNodes: SortingNode[],
       ) {
         return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
-          return sortNodesByGroups({
-            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-            optionsByGroupIndexComputer,
-            ignoreEslintDisabledNodes,
-            groups: options.groups,
-            nodes: sortingNodes,
+          return restoreCollidingNodesOrder({
+            collidingNodeGroups: computeCollidingNodeGroups({
+              computeCollisionKey: sortingNode =>
+                computeCollisionKey({
+                  node: sortingNode.node as TSESTree.Expression,
+                  sourceCode,
+                }),
+              ignoreEslintDisabledNodes,
+              nodes: sortingNodes,
+            }),
+            sortedNodes: sortNodesByGroups({
+              comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+              optionsByGroupIndexComputer,
+              ignoreEslintDisabledNodes,
+              groups: options.groups,
+              nodes: sortingNodes,
+            }),
           })
         }
       }

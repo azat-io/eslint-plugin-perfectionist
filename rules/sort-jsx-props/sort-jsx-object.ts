@@ -19,6 +19,8 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { computeCollidingNodeGroups } from '../../utils/compute-colliding-node-groups'
+import { restoreCollidingNodesOrder } from '../../utils/restore-colliding-nodes-order'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
@@ -172,12 +174,19 @@ export function sortJsxObject({
   for (let currentNodes of formattedMembers) {
     function createSortNodesExcludingEslintDisabled(nodes: SortingNode[]) {
       return function (ignoreEslintDisabledNodes: boolean): SortingNode[] {
-        return sortNodesByGroups({
-          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-          optionsByGroupIndexComputer,
-          ignoreEslintDisabledNodes,
-          groups: options.groups,
-          nodes,
+        return restoreCollidingNodesOrder({
+          sortedNodes: sortNodesByGroups({
+            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            optionsByGroupIndexComputer,
+            ignoreEslintDisabledNodes,
+            groups: options.groups,
+            nodes,
+          }),
+          collidingNodeGroups: computeCollidingNodeGroups({
+            computeCollisionKey: ({ name }) => name,
+            ignoreEslintDisabledNodes,
+            nodes,
+          }),
         })
       }
     }

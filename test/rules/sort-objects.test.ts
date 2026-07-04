@@ -5163,16 +5163,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
@@ -5198,16 +5192,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
@@ -5234,17 +5222,137 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
+            let { a: x = 'b', a: y = 'a' } = obj
+          `,
+        })
+      })
+    })
+
+    describe('duplicate runtime keys', () => {
+      it('keeps colliding property and method in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('sorts non-colliding members around pinned colliding members', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'property',
+                leftGroup: 'method',
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
+          output: dedent`
+            let obj = { b: 1, a: 0, b() {} }
+          `,
+          code: dedent`
+            let obj = { b: 1, b() {}, a: 0 }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('treats computed literal keys as colliding with matching plain keys', async () => {
+        await valid({
+          code: dedent`
+            let obj = { ['b']: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { [\`b\`]: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('treats numeric and string keys with the same name as colliding', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+            },
+          ],
+          code: dedent`
+            let obj = { 1: 'b', '1': 'a' }
+          `,
+        })
+      })
+
+      it('treats identical computed keys as colliding', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+            },
+          ],
+          code: dedent`
+            let obj = { [x]: 'b', [x]: 'a' }
+          `,
+        })
+      })
+
+      it('treats unary plus keys as colliding with plain numeric keys', async () => {
+        await valid({
+          code: dedent`
+            let obj = { 1: 'x', [+1]: 'y' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('treats undefined keys spelled differently as colliding', async () => {
+        await valid({
+          code: dedent`
+            let obj = { [void 0]: 'x', undefined: 'y' }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { [void 0]: 'x', [undefined]: 'y' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('keeps colliding accessor and data property in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b: 1, get b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('excludes eslint-disabled members from collision groups', async () => {
+        await valid({
+          code: dedent`
             let obj = {
-              a: 'b',
-              a: 'a',
+              b: 1,
+              b() {},
+              // eslint-disable-next-line
+              a: 0,
             }
           `,
+          options: [{ ...options, groups: ['method', 'property'] }],
         })
       })
     })
@@ -8014,16 +8122,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
@@ -8049,16 +8151,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
@@ -8085,17 +8181,142 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
+            let { a: x = 'b', a: y = 'a' } = obj
+          `,
+        })
+      })
+    })
+
+    describe('duplicate runtime keys', () => {
+      it('keeps colliding property and method in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('sorts non-colliding members around pinned colliding members', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'property',
+                leftGroup: 'method',
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
+          output: dedent`
+            let obj = { b: 1, a: 0, b() {} }
+          `,
+          code: dedent`
+            let obj = { b: 1, b() {}, a: 0 }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('treats computed literal keys as colliding with matching plain keys', async () => {
+        await valid({
+          code: dedent`
+            let obj = { ['b']: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { [\`b\`]: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('treats numeric and string keys with the same name as colliding', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+            },
+          ],
+          code: dedent`
+            let obj = { 1: 'b', '1': 'a' }
+          `,
+        })
+      })
+
+      it('treats identical computed keys as colliding', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+            },
+          ],
+          code: dedent`
+            let obj = { [x]: 'b', [x]: 'a' }
+          `,
+        })
+      })
+
+      it('treats unary plus keys as colliding with plain numeric keys', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+            },
+          ],
+          code: dedent`
+            let obj = { 1: 'b', [+1]: 'a' }
+          `,
+        })
+      })
+
+      it('treats undefined keys spelled differently as colliding', async () => {
+        await valid({
+          code: dedent`
+            let obj = { [void 0]: 'x', undefined: 'y' }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { [void 0]: 'x', [undefined]: 'y' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('keeps colliding accessor and data property in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b: 1, get b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('excludes eslint-disabled members from collision groups', async () => {
+        await valid({
+          code: dedent`
             let obj = {
-              a: 'b',
-              a: 'a',
+              b: 1,
+              b() {},
+              // eslint-disable-next-line
+              a: 0,
             }
           `,
+          options: [{ ...options, groups: ['method', 'property'] }],
         })
       })
     })
@@ -10777,6 +10998,163 @@ describe('sort-objects', () => {
         ],
       })
     })
+
+    describe('duplicate runtime keys', () => {
+      it('keeps colliding property and method in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('sorts non-colliding members around pinned colliding members', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'property',
+                leftGroup: 'method',
+                right: 'aaa',
+                left: 'b',
+              },
+              messageId: 'unexpectedObjectsGroupOrder',
+            },
+          ],
+          output: dedent`
+            let obj = { b: 1, aaa: 0, b() {} }
+          `,
+          code: dedent`
+            let obj = { b: 1, b() {}, aaa: 0 }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('treats computed literal keys as colliding with matching plain keys', async () => {
+        await valid({
+          code: dedent`
+            let obj = { ['b']: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { [\`b\`]: 1, b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('treats numeric and string keys with the same name as colliding', async () => {
+        await valid({
+          code: dedent`
+            let obj = { 1: 'a', '1': 'bbb' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('treats identical computed keys as colliding', async () => {
+        await valid({
+          code: dedent`
+            let obj = { [x]: 'a', [x]: 'bbb' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('treats unary plus keys as colliding with plain numeric keys', async () => {
+        await valid({
+          code: dedent`
+            let obj = { 1: 'y', [+1]: 'xxxxxxxxxx' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('treats undefined keys spelled differently as colliding', async () => {
+        await valid({
+          code: dedent`
+            let obj = { undefined: 'y', [void 0]: 'xxxxxxxxxx' }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { [undefined]: 'y', [void 0]: 'xxxxxxxxxx' }
+          `,
+          options: [options],
+        })
+      })
+
+      it('sorts a lone get and set pair', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'b', left: 'b' },
+            },
+          ],
+          output: dedent`
+            let obj = { get b() { return 1 }, set b(v) {} }
+          `,
+          code: dedent`
+            let obj = { set b(v) {}, get b() { return 1 } }
+          `,
+          options: [options],
+        })
+      })
+
+      it('keeps colliding accessor and data property in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b: 1, get b() { return 2 } }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+
+      it('keeps colliding accessors in source order', async () => {
+        await valid({
+          code: dedent`
+            let obj = { b() {}, get b() { return 1 } }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { get b() {}, get b() { return 1 } }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            let obj = { set b(v) {}, set b(v) { let c = v } }
+          `,
+          options: [options],
+        })
+      })
+
+      it('excludes eslint-disabled members from collision groups', async () => {
+        await valid({
+          code: dedent`
+            let obj = {
+              b: 1,
+              b() {},
+              // eslint-disable-next-line
+              aaa: 0,
+            }
+          `,
+          options: [{ ...options, groups: ['method', 'property'] }],
+        })
+      })
+    })
   })
 
   describe('custom', () => {
@@ -10949,16 +11327,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
@@ -10984,16 +11356,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
@@ -11020,16 +11386,10 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            let obj = {
-              a: 'a',
-              a: 'b',
-            }
+            let { a: y = 'a', a: x = 'b' } = obj
           `,
           code: dedent`
-            let obj = {
-              a: 'b',
-              a: 'a',
-            }
+            let { a: x = 'b', a: y = 'a' } = obj
           `,
         })
       })
