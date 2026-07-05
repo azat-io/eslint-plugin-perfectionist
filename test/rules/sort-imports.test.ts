@@ -468,6 +468,28 @@ describe('sort-imports', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import a from 'a' /* comment
+          */
+          import b from 'b'
+        `,
+        code: dedent`
+          import b from 'b' /* comment
+          */
+          import a from 'a'
+        `,
+        options: [options],
+      })
+    })
+
     it('ignores comments when calculating spacing between imports', async () => {
       await valid({
         code: dedent`
@@ -4078,6 +4100,28 @@ describe('sort-imports', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import a from 'a' /* comment
+          */
+          import b from 'b'
+        `,
+        code: dedent`
+          import b from 'b' /* comment
+          */
+          import a from 'a'
+        `,
+        options: [options],
+      })
+    })
+
     it('ignores comments when calculating spacing between imports', async () => {
       await valid({
         code: dedent`
@@ -7423,6 +7467,28 @@ describe('sort-imports', () => {
           import { b1, b2 } from 'b' // Comment
           import { a } from 'a'
           import { c } from 'c'
+        `,
+        options: [options],
+      })
+    })
+
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'aaa', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import aaa from 'aaa' /* comment
+          */
+          import b from 'b'
+        `,
+        code: dedent`
+          import b from 'b' /* comment
+          */
+          import aaa from 'aaa'
         `,
         options: [options],
       })
