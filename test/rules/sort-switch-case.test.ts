@@ -1013,7 +1013,7 @@ describe('sort-switch-case', () => {
       })
     })
 
-    it('keeps autofix even when reordered cases may match the same value', async () => {
+    it('sorts even when reordered cases may match the same value', async () => {
       await invalid({
         output: dedent`
           const bb = 1
@@ -2035,7 +2035,7 @@ describe('sort-switch-case', () => {
       })
     })
 
-    it('keeps autofix even when reordered cases may match the same value', async () => {
+    it('sorts even when reordered cases may match the same value', async () => {
       await invalid({
         output: dedent`
           const bb = 1
@@ -3057,7 +3057,7 @@ describe('sort-switch-case', () => {
       })
     })
 
-    it('keeps autofix even when reordered cases may match the same value', async () => {
+    it('sorts even when reordered cases may match the same value', async () => {
       await invalid({
         output: dedent`
           const bb = 1
@@ -3091,7 +3091,7 @@ describe('sort-switch-case', () => {
       })
     })
 
-    it('keeps autofix even when literals share the same runtime value', async () => {
+    it('sorts even when literals share the same runtime value', async () => {
       await invalid({
         output: dedent`
           switch (x) {
@@ -3119,7 +3119,7 @@ describe('sort-switch-case', () => {
       })
     })
 
-    it('keeps autofix for unary numeric literal cases', async () => {
+    it('sorts unary numeric literal cases', async () => {
       await invalid({
         output: dedent`
           switch (x) {
@@ -3436,7 +3436,7 @@ describe('sort-switch-case', () => {
     })
 
     describe('condition-shaped switches', () => {
-      it('not works if discriminant and case tests are comparisons', async () => {
+      it('does not sort switches where discriminant and case tests are comparisons', async () => {
         await valid({
           code: dedent`
             const b = 10
@@ -3452,7 +3452,7 @@ describe('sort-switch-case', () => {
         })
       })
 
-      it('not works if discriminant is a boolean literal, negation or equality check', async () => {
+      it('does not sort switches where discriminant is a boolean literal, negation or equality check', async () => {
         await valid({
           code: dedent`
             switch (false) {
@@ -3487,7 +3487,7 @@ describe('sort-switch-case', () => {
         })
       })
 
-      it('not works if case tests are conditions', async () => {
+      it('does not sort switches where case tests are conditions', async () => {
         await valid({
           code: dedent`
             switch (someBool) {
@@ -3499,7 +3499,7 @@ describe('sort-switch-case', () => {
         })
       })
 
-      it('not works if discriminant is a logical or relational expression', async () => {
+      it('does not sort switches where discriminant is a logical or binary expression', async () => {
         await valid({
           code: dedent`
             switch (a && b) {
@@ -3525,6 +3525,17 @@ describe('sort-switch-case', () => {
         await valid({
           code: dedent`
             switch (value instanceof Error) {
+              case 'b':
+                return 'b'
+              case 'a':
+                return 'a'
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (a + b) {
               case 'b':
                 return 'b'
               case 'a':

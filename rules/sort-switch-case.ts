@@ -10,6 +10,7 @@ import { defaultComparatorByOptionsComputer } from '../utils/compare/default-com
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
+import { isConditionExpression } from './sort-switch-case/is-condition-expression'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -28,19 +29,6 @@ interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
 const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
 
 type MessageId = typeof ORDER_ERROR_ID
-
-let conditionOperators = new Set<string>([
-  'instanceof',
-  '===',
-  '!==',
-  '==',
-  '!=',
-  '<=',
-  '>=',
-  'in',
-  '<',
-  '>',
-])
 
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
@@ -338,32 +326,6 @@ function reduceCaseSortingNodes(
     },
     [[]],
   )
-}
-
-/**
- * Checks if an expression is condition-shaped.
- *
- * Condition-shaped expressions produce boolean values: boolean literals,
- * logical negations, comparison binary expressions and logical expressions.
- * Switch statements built on such expressions (e.g. `switch (true)`) encode
- * their program logic in the case order, so sorting them is unsafe.
- *
- * @param node - The expression AST node to check.
- * @returns True if the expression is condition-shaped.
- */
-function isConditionExpression(node: TSESTree.Expression): boolean {
-  switch (node.type) {
-    case AST_NODE_TYPES.LogicalExpression:
-      return true
-    case AST_NODE_TYPES.BinaryExpression:
-      return conditionOperators.has(node.operator)
-    case AST_NODE_TYPES.UnaryExpression:
-      return node.operator === '!'
-    case AST_NODE_TYPES.Literal:
-      return typeof node.value === 'boolean'
-    default:
-      return false
-  }
 }
 
 /**
