@@ -29,6 +29,14 @@ This rule promotes a standardized ordering of intersection types, making it easi
 If you use the [`sort-type-constituents`](https://typescript-eslint.io/rules/sort-type-constituents) rule from the [`@typescript-eslint/eslint-plugin`](https://typescript-eslint.io) plugin, it is highly recommended to [disable it](https://eslint.org/docs/latest/use/configure/rules#using-configuration-files-1) to avoid conflicts.
 </Important>
 
+<Important title="Function intersections are order-sensitive">
+Intersections of function types act as overloads, which TypeScript resolves left to right. Reordering them can silently change type inference.
+
+By default, the [`ignoreCallableTypes`](#ignorecallabletypes) option leaves intersections containing inline callable types unsorted.
+However, named function types (e.g. `MyFunction`) cannot be detected as callable and will still be sorted.
+Use an [ESLint disable comment](https://eslint.org/docs/latest/use/configure/rules#using-configuration-comments-1) to exclude those intersections from sorting.
+</Important>
+
 ## Try it out
 
 <CodeExample
