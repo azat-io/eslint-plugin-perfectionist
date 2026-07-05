@@ -11,10 +11,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { sortUnionOrIntersectionTypes } from './sort-union-types/sort-union-or-intersection-types'
+import { sortUnionOrIntersectionTypes } from './sort-union-or-intersection-types/sort-union-or-intersection-types'
+import { buildJsonSchema } from './sort-union-or-intersection-types/build-json-schema'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
-import { jsonSchema } from './sort-union-types'
 
 /**
  * Cache computed groups by modifiers and selectors for performance.
@@ -35,6 +35,7 @@ type MessageId =
 let defaultOptions: Required<Options[number]> = {
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  ignoreCallableTypes: true,
   specialCharacters: 'keep',
   newlinesBetween: 'ignore',
   partitionByComment: false,
@@ -62,7 +63,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted intersection types.',
       recommended: true,
     },
-    schema: jsonSchema,
+    schema: buildJsonSchema({ ignoreCallableTypes: true }),
     type: 'suggestion',
     fixable: 'code',
   },

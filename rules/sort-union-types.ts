@@ -1,4 +1,3 @@
-import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
@@ -7,23 +6,13 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './sort-union-types/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
-  matchesAstSelectorJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
-import {
-  partitionByCommentJsonSchema,
-  partitionByNewlineJsonSchema,
-} from '../utils/json-schemas/common-partition-json-schemas'
-import {
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
-import { sortUnionOrIntersectionTypes } from './sort-union-types/sort-union-or-intersection-types'
-import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-union-types/types'
+import { sortUnionOrIntersectionTypes } from './sort-union-or-intersection-types/sort-union-or-intersection-types'
+import { buildJsonSchema } from './sort-union-or-intersection-types/build-json-schema'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
@@ -60,29 +49,6 @@ let defaultOptions: Required<Options[number]> = {
   groups: [],
 }
 
-export let jsonSchema: JSONSchema4 = {
-  items: {
-    properties: {
-      ...buildCommonJsonSchemas(),
-      ...buildCommonGroupsJsonSchemas({
-        additionalCustomGroupMatchProperties:
-          additionalCustomGroupMatchOptionsJsonSchema,
-      }),
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
-        additionalProperties: {
-          matchesAstSelector: matchesAstSelectorJsonSchema,
-        },
-      }),
-      partitionByComment: partitionByCommentJsonSchema,
-      partitionByNewLine: partitionByNewlineJsonSchema,
-    },
-    additionalProperties: false,
-    type: 'object',
-  },
-  uniqueItems: true,
-  type: 'array',
-}
-
 export default createEslintRule<Options, MessageId>({
   meta: {
     messages: {
@@ -96,7 +62,7 @@ export default createEslintRule<Options, MessageId>({
       description: 'Enforce sorted union types.',
       recommended: true,
     },
-    schema: jsonSchema,
+    schema: buildJsonSchema({ ignoreCallableTypes: false }),
     type: 'suggestion',
     fixable: 'code',
   },
@@ -126,10 +92,13 @@ function sortUnionType({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
+    defaultOptions: {
+      ...defaultOptions,
+      ignoreCallableTypes: false,
+    },
     cachedGroupsByModifiersAndSelectors,
     tokenValueToIgnoreBefore: '|',
     matchedAstSelectors,
-    defaultOptions,
     context,
     node,
   })

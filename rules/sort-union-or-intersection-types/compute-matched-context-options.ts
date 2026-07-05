@@ -1,7 +1,7 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import type { Options } from './types'
+import type { Options } from '../sort-intersection-types/types'
 
 import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'

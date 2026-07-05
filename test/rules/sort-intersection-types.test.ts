@@ -190,7 +190,12 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
-        options: [options],
+        options: [
+          {
+            ...options,
+            ignoreCallableTypes: false,
+          },
+        ],
       })
     })
 
@@ -263,6 +268,7 @@ describe('sort-intersection-types', () => {
               'union',
               'nullish',
             ],
+            ignoreCallableTypes: false,
           },
         ],
       })
@@ -843,6 +849,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesBetween: 0,
           },
         ],
@@ -882,6 +889,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 0,
           },
         ],
@@ -926,6 +934,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
@@ -984,6 +993,7 @@ describe('sort-intersection-types', () => {
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
+            ignoreCallableTypes: false,
             newlinesBetween: 1,
           },
         ],
@@ -1957,6 +1967,175 @@ describe('sort-intersection-types', () => {
         })
       })
     })
+
+    describe('ignoreCallableTypes', () => {
+      it("doesn't sort function type intersections by default", async () => {
+        await valid({
+          code: dedent`
+            type T =
+              & ((x: string) => string)
+              & ((x: any) => any)
+          `,
+          options: [options],
+        })
+      })
+
+      it("doesn't sort constructor type intersections when ignoreCallableTypes is true", async () => {
+        await valid({
+          code: dedent`
+            type T =
+              & (new (x: string) => string)
+              & (new (x: any) => any)
+          `,
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+        })
+      })
+
+      it("doesn't sort object types with call signatures when ignoreCallableTypes is true", async () => {
+        await valid({
+          code: dedent`
+            type T =
+              & { (x: string): string }
+              & { (x: any): any }
+          `,
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+        })
+      })
+
+      it("doesn't sort objects with method signatures when ignoreCallableTypes is true", async () => {
+        await valid({
+          code: dedent`
+            type T =
+              & { fn(x: string): string }
+              & { fn(x: any): any }
+          `,
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+        })
+      })
+
+      it("doesn't sort objects with function-typed properties when ignoreCallableTypes is true", async () => {
+        await valid({
+          code: dedent`
+            type T =
+              & { fn: (x: string) => string }
+              & { fn: (x: any) => any }
+          `,
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+        })
+      })
+
+      it("doesn't sort nested callable properties when ignoreCallableTypes is true", async () => {
+        await valid({
+          code: dedent`
+            type T =
+              & { nested: { (x: string): string } }
+              & { nested: { (x: any): any } }
+          `,
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+        })
+      })
+
+      it("doesn't sort the intersection type when any member is callable even if others are not", async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+          code: dedent`
+            type T =
+              & string
+              & ((x: any) => any)
+          `,
+        })
+      })
+
+      it('sorts objects with only construct signatures even when ignoreCallableTypes is true', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: '{ new(): A }',
+                left: '{ new(): B }',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+          output: dedent`
+            type T =
+              & { new(): A }
+              & { new(): B }
+          `,
+          code: dedent`
+            type T =
+              & { new(): B }
+              & { new(): A }
+          `,
+        })
+      })
+
+      it('sorts objects with only index signatures even when ignoreCallableTypes is true', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: '{ [key: string]: A }',
+                left: '{ [key: string]: B }',
+              },
+              messageId: 'unexpectedIntersectionTypesOrder',
+            },
+          ],
+          output: dedent`
+            type T =
+              & { [key: string]: A }
+              & { [key: string]: B }
+          `,
+          code: dedent`
+            type T =
+              & { [key: string]: B }
+              & { [key: string]: A }
+          `,
+          options: [
+            {
+              ...options,
+              ignoreCallableTypes: true,
+            },
+          ],
+        })
+      })
+    })
   })
 
   describe('natural', () => {
@@ -2133,7 +2312,12 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
-        options: [options],
+        options: [
+          {
+            ...options,
+            ignoreCallableTypes: false,
+          },
+        ],
       })
     })
 
@@ -2202,6 +2386,7 @@ describe('sort-intersection-types', () => {
               'union',
               'nullish',
             ],
+            ignoreCallableTypes: false,
           },
         ],
       })
@@ -2778,6 +2963,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
@@ -2836,6 +3022,7 @@ describe('sort-intersection-types', () => {
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
+            ignoreCallableTypes: false,
             newlinesBetween: 1,
           },
         ],
@@ -3701,7 +3888,12 @@ describe('sort-intersection-types', () => {
             messageId: 'unexpectedIntersectionTypesOrder',
           },
         ],
-        options: [options],
+        options: [
+          {
+            ...options,
+            ignoreCallableTypes: false,
+          },
+        ],
       })
     })
 
@@ -3770,6 +3962,7 @@ describe('sort-intersection-types', () => {
               'union',
               'nullish',
             ],
+            ignoreCallableTypes: false,
           },
         ],
       })
@@ -4346,6 +4539,7 @@ describe('sort-intersection-types', () => {
           {
             ...options,
             groups: ['function', 'unknown'],
+            ignoreCallableTypes: false,
             newlinesInside: 'ignore',
             newlinesBetween: 0,
           },
@@ -4404,6 +4598,7 @@ describe('sort-intersection-types', () => {
               { newlinesBetween: 'ignore' },
               'nullish',
             ],
+            ignoreCallableTypes: false,
             newlinesBetween: 1,
           },
         ],
