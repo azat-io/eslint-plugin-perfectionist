@@ -10,6 +10,7 @@ import { defaultComparatorByOptionsComputer } from '../utils/compare/default-com
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
+import { isConditionExpression } from './sort-switch-case/is-condition-expression'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -54,10 +55,13 @@ export default createEslintRule<Options, MessageId>({
       validateCustomSortConfiguration(options)
 
       let { sourceCode } = context
-      let isDiscriminantTrue =
-        switchNode.discriminant.type === AST_NODE_TYPES.Literal &&
-        switchNode.discriminant.value === true
-      if (isDiscriminantTrue) {
+      let isConditionCaseSwitch =
+        isConditionExpression(switchNode.discriminant) ||
+        switchNode.cases.some(
+          caseNode =>
+            caseNode.test !== null && isConditionExpression(caseNode.test),
+        )
+      if (isConditionCaseSwitch) {
         return
       }
 
