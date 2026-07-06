@@ -1,6 +1,7 @@
 ---
 import Typography from './Typography.astro'
 import Container from './Container.astro'
+import { TAGLINE } from '../data/home'
 import Button from './Button.astro'
 import Logo from './Logo.astro'
 ---
@@ -15,7 +16,7 @@ import Logo from './Logo.astro'
     >
       Perfectionist
     </Typography>
-    <Typography size="l">Take Your Code to a Beauty Salon</Typography>
+    <Typography size="l">{TAGLINE}</Typography>
     <div class="button-group">
       <Button
         href="/guide/getting-started"
