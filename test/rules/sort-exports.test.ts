@@ -383,6 +383,28 @@ describe('sort-exports', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export { a } from 'a' /* comment
+          */
+          export { b } from 'b'
+        `,
+        code: dedent`
+          export { b } from 'b' /* comment
+          */
+          export { a } from 'a'
+        `,
+        options: [options],
+      })
+    })
+
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -1975,6 +1997,28 @@ describe('sort-exports', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export { a } from 'a' /* comment
+          */
+          export { b } from 'b'
+        `,
+        code: dedent`
+          export { b } from 'b' /* comment
+          */
+          export { a } from 'a'
+        `,
+        options: [options],
+      })
+    })
+
     it('allows to trim special characters', async () => {
       await valid({
         code: dedent`
@@ -3347,6 +3391,28 @@ describe('sort-exports', () => {
           /* I am a partition comment because I don't have f o o */
           export * from './a'
         `,
+      })
+    })
+
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportsOrder',
+            data: { right: 'bb', left: 'a' },
+          },
+        ],
+        output: dedent`
+          export { b } from 'bb' /* comment
+          */
+          export { a } from 'a'
+        `,
+        code: dedent`
+          export { a } from 'a' /* comment
+          */
+          export { b } from 'bb'
+        `,
+        options: [options],
       })
     })
 
