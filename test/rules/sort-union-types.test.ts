@@ -217,6 +217,57 @@ describe('sort-union-types', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type T =
+            | A /* comment
+          */
+            | B
+        `,
+        code: dedent`
+          type T =
+            | B /* comment
+          */
+            | A
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: true,
+          },
+        ],
+        output: dedent`
+          type T =
+            | A /* comment
+          */
+            | B
+        `,
+        code: dedent`
+          type T =
+            | B /* comment
+          */
+            | A
+        `,
+      })
+    })
+
     it('sorts unions by groups', async () => {
       await valid({
         code: dedent`
@@ -2161,6 +2212,57 @@ describe('sort-union-types', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type T =
+            | A /* comment
+          */
+            | B
+        `,
+        code: dedent`
+          type T =
+            | B /* comment
+          */
+            | A
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: true,
+          },
+        ],
+        output: dedent`
+          type T =
+            | A /* comment
+          */
+            | B
+        `,
+        code: dedent`
+          type T =
+            | B /* comment
+          */
+            | A
+        `,
+      })
+    })
+
     it('sorts unions by groups', async () => {
       await valid({
         code: dedent`
@@ -3721,6 +3823,57 @@ describe('sort-union-types', () => {
           type Step = 1 | 100 | 2 | 4 | 3 | 5; // Comment
         `,
         options: [options],
+      })
+    })
+
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'BB', left: 'A' },
+          },
+        ],
+        output: dedent`
+          type T =
+            | BB /* comment
+          */
+            | A
+        `,
+        code: dedent`
+          type T =
+            | A /* comment
+          */
+            | BB
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'BB', left: 'A' },
+          },
+        ],
+        options: [
+          {
+            ...options,
+            partitionByComment: true,
+          },
+        ],
+        output: dedent`
+          type T =
+            | BB /* comment
+          */
+            | A
+        `,
+        code: dedent`
+          type T =
+            | A /* comment
+          */
+            | BB
+        `,
       })
     })
 

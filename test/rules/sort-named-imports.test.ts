@@ -1564,6 +1564,32 @@ describe('sort-named-imports', () => {
       })
     })
 
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import {
+            a, /* comment
+           */
+            b
+          } from 'm'
+        `,
+        code: dedent`
+          import {
+            b, /* comment
+           */
+            a
+          } from 'm'
+        `,
+        options: [options],
+      })
+    })
+
     describe('useConfigurationIf.allNamesMatchPattern', () => {
       it.each([
         ['string pattern', 'foo'],
@@ -3334,6 +3360,32 @@ describe('sort-named-imports', () => {
         ],
       })
     })
+
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import {
+            a, /* comment
+           */
+            b
+          } from 'm'
+        `,
+        code: dedent`
+          import {
+            b, /* comment
+           */
+            a
+          } from 'm'
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('line-length', () => {
@@ -4736,6 +4788,32 @@ describe('sort-named-imports', () => {
             data: { right: 'bb', left: 'c' },
           },
         ],
+      })
+    })
+
+    it('keeps multiline trailing block comments anchored when sorting', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'bb', left: 'a' },
+          },
+        ],
+        output: dedent`
+          import {
+            bb, /* comment
+           */
+            a
+          } from 'm'
+        `,
+        code: dedent`
+          import {
+            a, /* comment
+           */
+            bb
+          } from 'm'
+        `,
+        options: [options],
       })
     })
   })

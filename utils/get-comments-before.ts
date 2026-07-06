@@ -48,7 +48,7 @@ function getRelevantCommentsBeforeNodeOrToken(
        * filter those out.
        */
       let tokenBeforeComment = source.getTokenBefore(comment)
-      return tokenBeforeComment?.loc.end.line !== comment.loc.end.line
+      return tokenBeforeComment?.loc.end.line !== comment.loc.start.line
     })
 }
 
