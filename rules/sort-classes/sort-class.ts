@@ -223,12 +223,23 @@ export function sortClass({
         case AST_NODE_TYPES.TSAbstractAccessorProperty:
         case AST_NODE_TYPES.AccessorProperty:
           addSafetySemicolonWhenInline = true
-          ;({ dependencyNames, nameDetails, selectors, modifiers, isStatic } =
-            computeAccessorDetails({
-              accessor: member,
-              isDecorated,
-              sourceCode,
-            }))
+          ;({
+            dependencyNames,
+            dependencies,
+            nameDetails,
+            modifiers,
+            selectors,
+            isStatic,
+          } = computeAccessorDetails({
+            ignoreCallbackDependenciesPatterns:
+              options.ignoreCallbackDependenciesPatterns,
+            useExperimentalDependencyDetection:
+              options.useExperimentalDependencyDetection,
+            accessor: member,
+            isDecorated,
+            sourceCode,
+            className,
+          }))
           ;({ name } = nameDetails)
           break
         case AST_NODE_TYPES.TSIndexSignature:

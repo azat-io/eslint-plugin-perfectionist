@@ -3751,6 +3751,115 @@ describe('sort-classes', () => {
             })
           },
         )
+
+        it('does not sort accessor properties if the right value depends on the left value', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              class C {
+                accessor z = 1
+                accessor a = this.z
+              }
+            `,
+          })
+        })
+
+        it('detects dependencies in accessor property initializers', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'a', right: 'z' },
+                messageId: 'unexpectedClassesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              class C {
+                accessor z = 1
+                accessor a = this.z
+              }
+            `,
+            code: dedent`
+              class C {
+                accessor a = this.z
+                accessor z = 1
+              }
+            `,
+          })
+        })
+
+        it('detects static accessor property dependencies through the class name', async () => {
+          await valid({
+            code: dedent`
+              class C {
+                static accessor z = 1
+                static accessor a = C.z
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('ignores accessor property dependencies inside function-valued initializers', async () => {
+          await valid({
+            code: dedent`
+              class C {
+                accessor a = () => this.z
+                accessor z = 1
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
+
+        it('sorts abstract accessor properties without initializers', async () => {
+          await invalid({
+            output: dedent`
+              abstract class C {
+                abstract accessor a: number
+                abstract accessor b: number
+              }
+            `,
+            code: dedent`
+              abstract class C {
+                abstract accessor b: number
+                abstract accessor a: number
+              }
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
+        })
       })
     }
     testDependencyDetection(true)

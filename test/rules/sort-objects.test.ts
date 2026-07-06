@@ -1309,6 +1309,43 @@ describe('sort-objects', () => {
     testDependencyDetection(true)
     testDependencyDetection(false)
 
+    describe('experimental detection specific', () => {
+      it('detects dependencies inside immediately invoked function bodies', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            const { b = 1, a = (() => b)() } = {};
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'a', right: 'b' },
+              messageId: 'unexpectedObjectsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          output: dedent`
+            const { b = 1, a = (() => b)() } = {};
+          `,
+          code: dedent`
+            const { a = (() => b)(), b = 1 } = {};
+          `,
+        })
+      })
+    })
+
     it('prioritizes dependencies over group configuration', async () => {
       await valid({
         options: [

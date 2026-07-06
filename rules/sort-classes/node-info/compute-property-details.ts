@@ -1,8 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-
 import type { NodeNameDetails, Modifier, Selector } from '../types'
 import type { RegexOption } from '../../../types/common-options'
 
@@ -18,6 +16,7 @@ import {
 } from './common-modifiers'
 import { computeMethodOrPropertyNameDetails } from './compute-method-or-property-name-details'
 import { computeDependencyName } from '../compute-dependency-name'
+import { isFunctionExpression } from './is-function-expression'
 import { computeDependencies } from '../compute-dependencies'
 
 /**
@@ -160,16 +159,4 @@ function computeSelectors(
   function computeFunctionPropertySelector(): Selector[] {
     return isFunctionExpression(property.value) ? ['function-property'] : []
   }
-}
-
-function isFunctionExpression(
-  node: TSESTree.Node | null,
-): node is TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression {
-  if (!node) {
-    return false
-  }
-  return (
-    node.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-    node.type === AST_NODE_TYPES.FunctionExpression
-  )
 }

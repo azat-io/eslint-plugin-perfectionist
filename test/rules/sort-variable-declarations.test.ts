@@ -670,6 +670,89 @@ describe('sort-variable-declarations', () => {
           })
         })
 
+        it('detects dependencies inside immediately invoked arrow functions', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 1,
+                  a = (() => b)();
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+                data: { nodeDependentOnRight: 'a', right: 'b' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let b = 1,
+                  a = (() => b)();
+            `,
+            code: dedent`
+              let a = (() => b)(),
+                  b = 1;
+            `,
+          })
+        })
+
+        it('detects dependencies inside immediately invoked function expressions', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = { x: 1 },
+                  a = (function() { return b.x })();
+            `,
+          })
+        })
+
+        it('detects dependencies inside immediately invoked constructor functions', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let b = 1,
+                  a = new (function() { this.v = b })().v;
+            `,
+          })
+        })
+
+        it('ignores dependencies inside functions passed as arguments', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              let a = f(() => b),
+                  b = 1;
+            `,
+          })
+        })
+
         it('ignores dependencies in non-computed properties', async () => {
           await valid({
             options: [
@@ -775,6 +858,33 @@ describe('sort-variable-declarations', () => {
     }
     testDependencyDetection(true)
     testDependencyDetection(false)
+
+    describe('experimental detection specific', () => {
+      it('ignores dependencies inside class declarations in immediately invoked functions', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          output: dedent`
+            let a = (function() { class D { m() { return b } } return 1 })(),
+                b = 1;
+          `,
+          code: dedent`
+            let b = 1,
+                a = (function() { class D { m() { return b } } return 1 })();
+          `,
+        })
+      })
+    })
 
     it('sorts within newline-separated partitions', async () => {
       await invalid({

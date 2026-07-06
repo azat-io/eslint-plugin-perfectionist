@@ -5783,6 +5783,98 @@ describe('sort-enums', () => {
             `,
           })
         })
+
+        it('detects dependencies in string-literal computed member access', async () => {
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum Enum {
+                B = 1,
+                A = Enum['B'].valueOf(),
+              }
+            `,
+          })
+        })
+
+        it('reports dependency order for string-literal computed member access', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'B' },
+                messageId: 'unexpectedEnumsDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                B = 1,
+                A = Enum['B'].valueOf(),
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                A = Enum['B'].valueOf(),
+                B = 1,
+              }
+            `,
+          })
+        })
+
+        it('links string-literal computed access to string-literal-named members', async () => {
+          await valid({
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            code: dedent`
+              enum E {
+                'B' = 1,
+                A = E['B'],
+              }
+            `,
+          })
+        })
+
+        it('does not detect dependencies in non-string computed member access', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedEnumsOrder',
+                data: { right: 'A', left: 'B' },
+              },
+            ],
+            options: [
+              {
+                useExperimentalDependencyDetection,
+                type: 'alphabetical',
+              },
+            ],
+            output: dedent`
+              enum Enum {
+                A = Enum[0],
+                B = 0,
+              }
+            `,
+            code: dedent`
+              enum Enum {
+                B = 0,
+                A = Enum[0],
+              }
+            `,
+          })
+        })
       })
     }
     testDependencyDetection(true)

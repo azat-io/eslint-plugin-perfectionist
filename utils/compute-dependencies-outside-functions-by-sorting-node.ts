@@ -8,6 +8,7 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { computeParentNodesWithTypes } from './compute-parent-nodes-with-types'
+import { isNodeImmediatelyCalled } from './is-node-immediately-called'
 
 export function computeDependenciesOutsideFunctionsBySortingNode<
   Node extends TSESTree.Node,
@@ -27,7 +28,7 @@ export function computeDependenciesOutsideFunctionsBySortingNode<
 
   function buildShouldIgnoreIdentifierComputer(): ShouldIgnoreIdentifierComputer<T> {
     return ({ referencingSortingNode, identifier }) => {
-      let ignoredParentNodes = computeParentNodesWithTypes({
+      let functionParentNodes = computeParentNodesWithTypes({
         allowedTypes: [
           AST_NODE_TYPES.FunctionExpression,
           AST_NODE_TYPES.ArrowFunctionExpression,
@@ -37,7 +38,9 @@ export function computeDependenciesOutsideFunctionsBySortingNode<
         node: identifier,
       })
 
-      return ignoredParentNodes.length > 0
+      return functionParentNodes.some(
+        functionParentNode => !isNodeImmediatelyCalled(functionParentNode),
+      )
     }
   }
 }
