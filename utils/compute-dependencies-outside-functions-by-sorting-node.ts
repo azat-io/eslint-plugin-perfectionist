@@ -7,8 +7,8 @@ import type { ShouldIgnoreIdentifierComputer } from './compute-dependencies-by-s
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
-import { isFunctionImmediatelyExecuted } from './is-function-immediately-executed'
 import { computeParentNodesWithTypes } from './compute-parent-nodes-with-types'
+import { isNodeImmediatelyCalled } from './is-node-immediately-called'
 
 export function computeDependenciesOutsideFunctionsBySortingNode<
   Node extends TSESTree.Node,
@@ -39,8 +39,7 @@ export function computeDependenciesOutsideFunctionsBySortingNode<
       })
 
       return functionParentNodes.some(
-        functionParentNode =>
-          !isFunctionImmediatelyExecuted(functionParentNode),
+        functionParentNode => !isNodeImmediatelyCalled(functionParentNode),
       )
     }
   }

@@ -4,7 +4,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 
 import type { SortVariableDeclarationsNode } from './types'
 
-import { isNodeImmediatelyCalled } from '../../utils/is-function-immediately-executed'
+import { isNodeImmediatelyCalled } from '../../utils/is-node-immediately-called'
 
 /**
  * Computes the dependencies of a variable declaration node.
