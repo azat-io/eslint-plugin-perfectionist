@@ -1131,6 +1131,63 @@ describe('sort-constructor-parameters', () => {
       },
     )
 
+    it.each([
+      ['string pattern', 'Hello'],
+      ['array of patterns', ['noMatch', 'Hello']],
+      ['case-insensitive regex', { pattern: 'HELLO', flags: 'i' }],
+      ['regex in array', ['noMatch', { pattern: 'HELLO', flags: 'i' }]],
+    ])(
+      'groups elements by decorator name pattern - %s',
+      async (_, decoratorNamePattern) => {
+        let customGroupOptions = [
+          {
+            customGroups: [
+              {
+                groupName: 'parametersWithDecoratorStartingWithHello',
+                selector: 'parameter',
+                decoratorNamePattern,
+              },
+            ],
+            groups: ['parametersWithDecoratorStartingWithHello', 'unknown'],
+            useConfigurationIf: {},
+          },
+        ]
+
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'parametersWithDecoratorStartingWithHello',
+                leftGroup: 'unknown',
+                right: 'z',
+                left: 'b',
+              },
+              messageId: 'unexpectedConstructorParametersGroupOrder',
+            },
+          ],
+          output: dedent`
+            class Foo {
+              constructor(
+                @HelloDecorator() z,
+                a,
+                b,
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+                a,
+                b,
+                @HelloDecorator() z,
+              ) {}
+            }
+          `,
+          options: customGroupOptions,
+        })
+      },
+    )
+
     it('overrides sort type and order for specific groups', async () => {
       let customSortOptions = [
         {

@@ -9,6 +9,7 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
+import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-constructor-parameters rule.
@@ -70,6 +71,11 @@ export type Modifier = (typeof allModifiers)[number]
  */
 interface CustomGroupMatchOptions {
   /**
+   * Pattern to match decorator names.
+   */
+  decoratorNamePattern?: RegexOption
+
+  /**
    * List of modifiers that constructor parameters must have to be included in
    * this group.
    */
@@ -115,4 +121,5 @@ export let additionalCustomGroupMatchOptionsJsonSchema: Record<
 > = {
   modifiers: buildCustomGroupModifiersJsonSchema(allModifiers),
   selector: buildCustomGroupSelectorJsonSchema(allSelectors),
+  decoratorNamePattern: buildRegexJsonSchema(),
 }

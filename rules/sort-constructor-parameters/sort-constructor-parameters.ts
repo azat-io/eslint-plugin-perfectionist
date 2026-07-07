@@ -24,6 +24,8 @@ import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { computeParameterModifiers } from './compute-parameter-modifiers'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
+import { getNodeDecorators } from '../../utils/get-node-decorators'
+import { getDecoratorName } from '../../utils/get-decorator-name'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
@@ -105,6 +107,9 @@ export function sortConstructorParameters<MessageIds extends string>({
         let name = computeNodeName({ node: parameter, sourceCode })
         let selector: Selector = 'parameter'
         let modifiers = computeParameterModifiers(parameter)
+        let decoratorNames = getNodeDecorators(parameter).map(decorator =>
+          getDecoratorName({ sourceCode, decorator }),
+        )
         let predefinedGroups = generatePredefinedGroups({
           cache: cachedGroupsByModifiersAndSelectors,
           selectors: [selector],
@@ -115,6 +120,7 @@ export function sortConstructorParameters<MessageIds extends string>({
             doesCustomGroupMatch({
               selectors: [selector],
               elementName: name,
+              decoratorNames,
               customGroup,
               modifiers,
             }),

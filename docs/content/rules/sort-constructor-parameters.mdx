@@ -434,7 +434,9 @@ interface CustomGroupDefinition {
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
   selector?: string
+  modifiers?: string[]
   elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+  decoratorNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
 }
 ```
 
@@ -451,7 +453,9 @@ interface CustomGroupAnyOfDefinition {
   newlinesInside?: number | 'ignore'
   anyOf: Array<{
       selector?: string
+      modifiers?: string[]
       elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
+      decoratorNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
   }>
 }
 ```
@@ -462,7 +466,9 @@ A constructor parameter will match a `CustomGroupAnyOfDefinition` group if it ma
 
 - `groupName` — The group's name, which needs to be put in the [`groups`](#groups) option.
 - `selector` — Filter on the `selector` of the element.
+- `modifiers` — Filter on the `modifiers` of the element. (All the modifiers of the element must be present in that list)
 - `elementNamePattern` — If entered, will check that the name of the element matches the pattern entered.
+- `decoratorNamePattern` — If entered, will check that at least one `decorator` matches the pattern entered.
 - `type` — Overrides the [`type`](#type) option for that custom group.
 - `order` — Overrides the [`order`](#order) option for that custom group.
 - `fallbackSort` — Overrides the [`fallbackSort`](#fallbacksort) option for that custom group.
@@ -555,7 +561,7 @@ Custom groups have a higher priority than any predefined group.
 
 ## Version
 
-This rule was introduced in [v5.10.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v5.10.0).
+This rule was introduced in [v5.11.0](https://github.com/azat-io/eslint-plugin-perfectionist/releases/tag/v5.11.0).
 
 ## Resources
 
