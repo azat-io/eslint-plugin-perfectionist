@@ -4,8 +4,8 @@ import type { MessageId, Options } from './sort-classes/types'
 
 import {
   useExperimentalDependencyDetectionJsonSchema,
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
@@ -46,7 +46,7 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+          useConfigurationIf: buildUseConfigIfJsonSchema({
             additionalProperties: {
               matchesAstSelector: matchesAstSelectorJsonSchema,
             },

@@ -148,7 +148,9 @@ describe('readClosestTsConfigByPath', () => {
         expect(actual?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
-        expect(mockExistsSync).toHaveBeenCalledOnce()
+        expect(mockExistsSync).toHaveBeenCalledExactlyOnceWith(
+          path.normalize('../../repos/repo/packages/package/tsconfig.json'),
+        )
       })
 
       it('returns a nearby parent tsconfig.json when it was previously cached by a different directory search', () => {

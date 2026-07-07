@@ -1,7 +1,7 @@
 let cleanup: () => void = () => {}
 
 function handleEntries(entries: IntersectionObserverEntry[]): void {
-  if (globalThis.scrollY === 0) {
+  if (scrollY === 0) {
     let firstTocItem = document.querySelector<HTMLAnchorElement>(
       '.table-of-content a',
     )
@@ -93,7 +93,7 @@ function setupTableOfContents(): void {
     return
   }
 
-  if (!(marker in globalThis)) {
+  if (!Object.hasOwn(globalThis, marker)) {
     Object.defineProperty(globalThis, marker, {
       configurable: false,
       enumerable: false,

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { validateSideEffectsConfiguration } from '../../../rules/sort-imports/validate-side-effects-configuration'
+import { validateSideEffectsConfig } from '../../../rules/sort-imports/validate-side-effects-config'
 
-describe('validate-side-effects-configuration', () => {
+describe('validate-side-effects-config', () => {
   it.each([
     { groups: [['side-effect', 'sibling']] },
     { groups: [{ group: ['side-effect', 'sibling'] }] },
   ])('should not throw an error when sortSideEffects is true', ({ groups }) => {
     expect(() => {
-      validateSideEffectsConfiguration({
+      validateSideEffectsConfig({
         sortSideEffects: true,
         groups,
       })
@@ -28,7 +28,7 @@ describe('validate-side-effects-configuration', () => {
     'should throw if `groups` contain a subgroup containing a side-effect group and a non-side effect group',
     ({ groups }) => {
       expect(() => {
-        validateSideEffectsConfiguration({
+        validateSideEffectsConfig({
           sortSideEffects: false,
           groups,
         })

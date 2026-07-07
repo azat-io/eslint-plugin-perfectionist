@@ -13,18 +13,18 @@ import {
   ORDER_ERROR_ID,
 } from './types'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { buildComparatorByOptionsComputer } from './build-comparator-by-options-computer'
-import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { computeExpressionNumberValue } from './compute-expression-number-value'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
+import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
@@ -66,10 +66,7 @@ export function sortEnum({
   node: TSESTree.TSEnumDeclaration
 }): void {
   let members = getEnumMembers(node)
-  if (
-    !isSortable(members) ||
-    !members.every(({ initializer }) => initializer)
-  ) {
+  if (!isSortable(members) || members.some(({ initializer }) => !initializer)) {
     return
   }
 
@@ -81,13 +78,13 @@ export function sortEnum({
   })
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
+  validateCustomSortConfig(options)
+  validateGroupsConfig({
     selectors: [],
     modifiers: [],
     options,
   })
-  validateNewlinesAndPartitionConfiguration(options)
+  validateNewlinesAndPartitionConfig(options)
 
   let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({

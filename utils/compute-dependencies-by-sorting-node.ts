@@ -52,7 +52,8 @@ export function computeDependenciesBySortingNode<
     computeDeepScopeReferences(sortingNode.node, sourceCode),
   )
 
-  for (let reference of new Set(references)) {
+  let uniqueReferences = new Set(references)
+  for (let reference of uniqueReferences) {
     let { identifier, resolved } = reference
     if (!resolved) {
       continue
@@ -103,8 +104,7 @@ function computeMainIdentifierDependencies<
   resolved,
 }: {
   shouldIgnoreSortingNodeComputer:
-    | ShouldIgnoreSortingNodeComputer<T>
-    | undefined
+    ShouldIgnoreSortingNodeComputer<T> | undefined
   shouldIgnoreIdentifierComputer: ShouldIgnoreIdentifierComputer<T> | undefined
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier
   resolved: TSESLint.Scope.Variable

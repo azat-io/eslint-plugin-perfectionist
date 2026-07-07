@@ -42,7 +42,7 @@ function computeIdentifierName({
     case AST_NODE_TYPES.Identifier:
       return node.name
     case AST_NODE_TYPES.Literal:
-      return `${node.value}`
+      return String(node.value)
     default:
       return sourceCode.getText(node)
   }

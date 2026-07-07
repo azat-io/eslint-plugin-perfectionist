@@ -43,9 +43,15 @@ export function computeOverloadSignatureGroups(
   }
 
   /* Ignore groups that only have one function. */
-  return [...functionDetailsByName.values()]
-    .filter(isSortable)
-    .map(buildOverloadSignatureGroup)
+  let overloadSignatureGroups: OverloadSignatureGroup<SortModulesNode>[] = []
+  for (let functionDetailsArray of functionDetailsByName.values()) {
+    if (isSortable(functionDetailsArray)) {
+      overloadSignatureGroups.push(
+        buildOverloadSignatureGroup(functionDetailsArray),
+      )
+    }
+  }
+  return overloadSignatureGroups
 }
 
 function computeNodeFunctionDetails(
@@ -54,19 +60,25 @@ function computeNodeFunctionDetails(
     | TSESTree.NamedExportDeclarations
     | SortModulesNode,
 ): Omit<FunctionDetails, 'node'> | null {
-  switch (node.type) {
-    case AST_NODE_TYPES.ExportDefaultDeclaration:
-      return computeNodeFunctionDetails(node.declaration)
-    case AST_NODE_TYPES.ExportNamedDeclaration:
-      /* v8 ignore start -- @preserve Unsure how we can reach that case */
-      if (!node.declaration) {
-        return null
-      }
-      /* v8 ignore stop -- @preserve Unsure how we can reach that case */
-      return computeNodeFunctionDetails(node.declaration)
+  let currentNode:
+    | TSESTree.DefaultExportDeclarations
+    | TSESTree.NamedExportDeclarations
+    | SortModulesNode = node
+  while (
+    currentNode.type === AST_NODE_TYPES.ExportDefaultDeclaration ||
+    currentNode.type === AST_NODE_TYPES.ExportNamedDeclaration
+  ) {
+    /* v8 ignore start -- @preserve Unsure how we can reach that case */
+    if (!currentNode.declaration) {
+      return null
+    }
+    /* v8 ignore stop -- @preserve Unsure how we can reach that case */
+    currentNode = currentNode.declaration
+  }
+  switch (currentNode.type) {
     case AST_NODE_TYPES.FunctionDeclaration:
     case AST_NODE_TYPES.TSDeclareFunction:
-      return computeFunctionDetails(node)
+      return computeFunctionDetails(currentNode)
     default:
       return null
   }

@@ -7,8 +7,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { Options } from './sort-array-includes/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -68,7 +68,7 @@ export let jsonSchema: JSONSchema4 = {
         additionalCustomGroupMatchProperties:
           additionalCustomGroupMatchOptionsJsonSchema,
       }),
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+      useConfigurationIf: buildUseConfigIfJsonSchema({
         additionalProperties: {
           matchesAstSelector: matchesAstSelectorJsonSchema,
         },
@@ -154,10 +154,6 @@ function sortPotentiallyValidArray({
       return false
     }
 
-    if (node.parent.parent.callee !== node.parent) {
-      return false
-    }
-
-    return true
+    return node.parent.parent.callee === node.parent
   }
 }

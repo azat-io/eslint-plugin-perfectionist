@@ -7,15 +7,15 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { ObjectTypeParent, Options } from './sort-object-types/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
-  matchesAstSelectorJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   additionalCustomGroupMatchOptionsJsonSchema,
   additionalSortOptionsJsonSchema,
   objectTypeParentTypes,
 } from './sort-object-types/types'
+import {
+  matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
+  buildCommonJsonSchemas,
+} from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
   partitionByNewlineJsonSchema,
@@ -73,7 +73,7 @@ export let jsonSchema: JSONSchema4 = {
           additionalCustomGroupMatchOptionsJsonSchema,
         additionalSortProperties: additionalSortOptionsJsonSchema,
       }),
-      useConfigurationIf: buildUseConfigurationIfJsonSchema({
+      useConfigurationIf: buildUseConfigIfJsonSchema({
         additionalProperties: {
           hasNumericKeysOnly: {
             description:

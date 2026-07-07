@@ -51,7 +51,8 @@ export function matches(value: string, regexOption: RegexOption): boolean {
   }
 
   if (typeof regexOption === 'string') {
-    return new RegExp(regexOption).test(value)
+    let regex = new RegExp(regexOption)
+    return regex.test(value)
   }
 
   /*
@@ -65,5 +66,6 @@ export function matches(value: string, regexOption: RegexOption): boolean {
     )
   }
 
-  return new RegExp(regexOption.pattern, regexOption.flags).test(value)
+  let regex = new RegExp(regexOption.pattern, regexOption.flags)
+  return regex.test(value)
 }

@@ -14,6 +14,7 @@ import { remarkHeadings } from './docs/plugins/remark-headings'
 import { colorTheme } from './docs/utils/shiki-theme'
 
 let site = 'https://perfectionist.dev'
+let guidePageRegex = new RegExp(`^${site}/guide$`, 'u')
 
 export default defineConfig({
   markdown: {
@@ -63,7 +64,7 @@ export default defineConfig({
   integrations: [
     svelte(),
     sitemap({
-      filter: page => !new RegExp(`^${site}/guide$`, 'u').test(page),
+      filter: page => !guidePageRegex.test(page),
     }),
     mdx(),
   ],

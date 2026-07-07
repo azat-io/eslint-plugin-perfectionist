@@ -13,11 +13,18 @@
       return []
     }
 
-    let uniqueTerms = [
-      ...new Map(
-        highlightTerms.filter(Boolean).map(term => [term.toLowerCase(), term]),
-      ).values(),
-    ]
+    let uniqueTerms: string[] = []
+    let seenLowercasedTerms: string[] = []
+    for (let term of highlightTerms) {
+      if (!term) {
+        continue
+      }
+      let lowercasedTerm = term.toLowerCase()
+      if (!seenLowercasedTerms.includes(lowercasedTerm)) {
+        seenLowercasedTerms.push(lowercasedTerm)
+        uniqueTerms.push(term)
+      }
+    }
 
     if (uniqueTerms.length === 0) {
       return [{ highlight: false, value }]

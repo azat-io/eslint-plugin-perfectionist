@@ -3,8 +3,8 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
 import type { MessageId, Options } from './sort-maps/types'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -38,7 +38,7 @@ export default createEslintRule<Options, MessageId>({
         properties: {
           ...buildCommonJsonSchemas(),
           ...buildCommonGroupsJsonSchemas(),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+          useConfigurationIf: buildUseConfigIfJsonSchema({
             additionalProperties: {
               matchesAstSelector: matchesAstSelectorJsonSchema,
             },

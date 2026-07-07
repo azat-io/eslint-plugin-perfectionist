@@ -1,8 +1,8 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 
 import {
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../../utils/json-schemas/common-json-schemas'
 import {
@@ -25,16 +25,16 @@ export function buildJsonSchema({
           additionalCustomGroupMatchProperties:
             additionalCustomGroupMatchOptionsJsonSchema,
         }),
-        useConfigurationIf: buildUseConfigurationIfJsonSchema({
+        useConfigurationIf: buildUseConfigIfJsonSchema({
           additionalProperties: {
             matchesAstSelector: matchesAstSelectorJsonSchema,
           },
         }),
         partitionByComment: partitionByCommentJsonSchema,
         partitionByNewLine: partitionByNewlineJsonSchema,
-        ...(ignoreCallableTypes ?
-          { ignoreCallableTypes: { type: 'boolean' } }
-        : {}),
+        ...(ignoreCallableTypes && {
+          ignoreCallableTypes: { type: 'boolean' },
+        }),
       },
       additionalProperties: false,
       type: 'object',

@@ -12,16 +12,16 @@ import {
   allSelectors,
   type Options,
 } from './types'
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { comparatorByOptionsComputer } from './comparator-by-options-computer'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
+import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
@@ -75,13 +75,13 @@ export function sortObjectTypeElements<MessageIds extends string>({
     context,
   })
   let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
+  validateCustomSortConfig(options)
+  validateGroupsConfig({
     selectors: allSelectors,
     modifiers: allModifiers,
     options,
   })
-  validateNewlinesAndPartitionConfiguration(options)
+  validateNewlinesAndPartitionConfig(options)
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
@@ -118,8 +118,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
     }
 
     if (
-      !(['index-signature', 'method'] as const).some(selector =>
-        selectors.includes(selector),
+      (['index-signature', 'method'] as const).every(
+        selector => !selectors.includes(selector),
       )
     ) {
       selectors.push('property')

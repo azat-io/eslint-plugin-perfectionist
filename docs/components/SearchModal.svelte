@@ -329,9 +329,9 @@
   function openResult(result: ParsedResult): void {
     dialog.close()
 
-    globalThis.setTimeout(() => {
-      globalThis.location.assign(result.data.slug)
-    })
+    setTimeout(() => {
+      location.assign(result.data.slug)
+    }, 0)
   }
 
   function handleResultClick(event: MouseEvent, result: ParsedResult): void {
@@ -502,7 +502,8 @@
     }
 
     &:focus-visible {
-      outline: none;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
       box-shadow: 0 0 0 3px var(--color-overlay-brand);
 
       @media (prefers-reduced-motion: no-preference) {
@@ -522,6 +523,8 @@
     border-radius: var(--border-radius);
 
     &:focus-visible {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
       box-shadow: 0 0 0 3px var(--color-overlay-brand);
     }
   }

@@ -14,12 +14,12 @@ import {
 } from './types'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
+import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
@@ -79,8 +79,8 @@ export function sortPotentialMap({
   })
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
+  validateCustomSortConfig(options)
+  validateGroupsConfig({
     selectors: [],
     modifiers: [],
     options,

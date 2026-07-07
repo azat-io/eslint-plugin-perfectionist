@@ -17,17 +17,17 @@ import {
   allModifiers,
   allSelectors,
 } from './types'
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { computeExportKindModifier } from './compute-export-kind-modifier'
+import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
@@ -82,13 +82,13 @@ export function sortNamedExport({
   })
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
+  validateCustomSortConfig(options)
+  validateGroupsConfig({
     modifiers: allModifiers,
     selectors: allSelectors,
     options,
   })
-  validateNewlinesAndPartitionConfiguration(options)
+  validateNewlinesAndPartitionConfig(options)
 
   let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({

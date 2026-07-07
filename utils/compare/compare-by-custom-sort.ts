@@ -58,7 +58,7 @@ export function compareByCustomSort(
 
     if (indexOfA !== indexOfB) {
       return computeOrderedValue(
-        convertBooleanToSign(indexOfA - indexOfB > 0),
+        convertBooleanToSign(indexOfA > indexOfB),
         order,
       )
     }
@@ -69,7 +69,7 @@ export function compareByCustomSort(
   }
 
   return computeOrderedValue(
-    convertBooleanToSign(aValue.length - bValue.length > 0),
+    convertBooleanToSign(aValue.length > bValue.length),
     order,
   )
 }

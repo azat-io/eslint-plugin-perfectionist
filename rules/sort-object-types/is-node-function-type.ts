@@ -58,20 +58,24 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
  * @returns True if the node represents a function type, false otherwise.
  */
 export function isNodeFunctionType(node: TSESTree.Node): boolean {
+  let currentNode = node
+  while (
+    currentNode.type === AST_NODE_TYPES.TSPropertySignature &&
+    currentNode.typeAnnotation
+  ) {
+    currentNode = currentNode.typeAnnotation.typeAnnotation
+  }
   if (
-    node.type === AST_NODE_TYPES.TSMethodSignature ||
-    node.type === AST_NODE_TYPES.TSFunctionType
+    currentNode.type === AST_NODE_TYPES.TSMethodSignature ||
+    currentNode.type === AST_NODE_TYPES.TSFunctionType
   ) {
     return true
   }
   if (
-    node.type === AST_NODE_TYPES.TSUnionType ||
-    node.type === AST_NODE_TYPES.TSIntersectionType
+    currentNode.type === AST_NODE_TYPES.TSUnionType ||
+    currentNode.type === AST_NODE_TYPES.TSIntersectionType
   ) {
-    return node.types.every(isNodeFunctionType)
-  }
-  if (node.type === AST_NODE_TYPES.TSPropertySignature && node.typeAnnotation) {
-    return isNodeFunctionType(node.typeAnnotation.typeAnnotation)
+    return currentNode.types.every(isNodeFunctionType)
   }
   return false
 }

@@ -17,7 +17,7 @@ import { isSideEffectOnlyGroup } from './is-side-effect-only-group'
  * @throws {Error} If side-effect groups are incorrectly nested with regular
  *   groups.
  */
-export function validateSideEffectsConfiguration({
+export function validateSideEffectsConfig({
   sortSideEffects,
   groups,
 }: {

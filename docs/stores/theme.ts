@@ -7,8 +7,8 @@ type Theme = 'light' | 'dark'
 
 let systemTheme: Theme = 'light'
 if (
-  typeof globalThis.matchMedia === 'function' &&
-  globalThis.matchMedia('(prefers-color-scheme: dark)').matches
+  typeof matchMedia === 'function' &&
+  matchMedia('(prefers-color-scheme: dark)').matches
 ) {
   systemTheme = 'dark'
 }

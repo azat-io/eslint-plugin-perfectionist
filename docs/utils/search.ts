@@ -114,5 +114,5 @@ function getHeadings(tree: MdastRoot): string[] {
 }
 
 function normalizeWhitespace(value: string): string {
-  return value.replaceAll('\u00A0', ' ').replaceAll(/\s+/gu, ' ').trim()
+  return value.replaceAll('\u{A0}', ' ').replaceAll(/\s+/gu, ' ').trim()
 }

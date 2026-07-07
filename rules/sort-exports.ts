@@ -22,17 +22,17 @@ import {
   allModifiers,
   allSelectors,
 } from './sort-exports/types'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
+import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
+import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { validateGroupsConfig } from '../utils/validate-groups-config'
 import { UnreachableCaseError } from '../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -87,13 +87,13 @@ export default createEslintRule<Options, MessageId>({
     let settings = getSettings(context.settings)
 
     let options = complete(context.options.at(0), settings, defaultOptions)
-    validateCustomSortConfiguration(options)
-    validateGroupsConfiguration({
+    validateCustomSortConfig(options)
+    validateGroupsConfig({
       modifiers: allModifiers,
       selectors: allSelectors,
       options,
     })
-    validateNewlinesAndPartitionConfiguration(options)
+    validateNewlinesAndPartitionConfig(options)
 
     let { sourceCode, id } = context
     let eslintDisabledLines = getEslintDisabledLines({

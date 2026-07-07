@@ -33,19 +33,19 @@ import {
   newlinesBetweenJsonSchema,
 } from '../utils/json-schemas/common-groups-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { computeDependenciesBySortingNode } from './sort-modules/compute-dependencies-by-sorting-node'
+import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
+import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeNodeDetails } from './sort-modules/compute-node-details'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { validateGroupsConfig } from '../utils/validate-groups-config'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { getDecoratorName } from '../utils/get-decorator-name'
@@ -148,13 +148,13 @@ export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
     let options = complete(context.options.at(0), settings, defaultOptions)
-    validateCustomSortConfiguration(options)
-    validateGroupsConfiguration({
+    validateCustomSortConfig(options)
+    validateGroupsConfig({
       modifiers: allModifiers,
       selectors: allSelectors,
       options,
     })
-    validateNewlinesAndPartitionConfiguration(options)
+    validateNewlinesAndPartitionConfig(options)
 
     let { sourceCode, id } = context
     let eslintDisabledLines = getEslintDisabledLines({

@@ -147,7 +147,7 @@ export function buildFallbackSortJsonSchema({
  *   schema.
  * @returns JSON schema for conditional configuration validation.
  */
-export function buildUseConfigurationIfJsonSchema({
+export function buildUseConfigIfJsonSchema({
   additionalProperties,
 }: {
   additionalProperties?: Record<string, JSONSchema4>

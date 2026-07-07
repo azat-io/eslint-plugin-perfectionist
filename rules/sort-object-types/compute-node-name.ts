@@ -44,7 +44,7 @@ function computePropertySignatureName(
     case AST_NODE_TYPES.Identifier:
       return node.key.name
     case AST_NODE_TYPES.Literal:
-      return `${node.key.value}`
+      return String(node.key.value)
     default: {
       let endIndex: number =
         node.typeAnnotation?.range.at(0) ??

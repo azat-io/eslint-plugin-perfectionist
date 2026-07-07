@@ -65,15 +65,20 @@ export function generatePredefinedGroups({
  */
 function getPermutations(elements: string[]): string[][] {
   let result: string[][] = []
+  function swapElements(indexA: number, indexB: number): void {
+    let temporaryElement = elements[indexA]!
+    elements[indexA] = elements[indexB]!
+    elements[indexB] = temporaryElement
+  }
   function backtrack(first: number): void {
     if (first === elements.length) {
       result.push([...elements])
       return
     }
     for (let i = first; i < elements.length; i++) {
-      ;[elements[first], elements[i]] = [elements[i]!, elements[first]!]
+      swapElements(first, i)
       backtrack(first + 1)
-      ;[elements[first], elements[i]] = [elements[i]!, elements[first]]
+      swapElements(first, i)
     }
   }
   backtrack(0)

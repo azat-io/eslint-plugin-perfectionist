@@ -8,8 +8,7 @@ import { UnreachableCaseError } from '../../../utils/unreachable-case-error'
 import { assertIsNever } from '../../../utils/assert-is-never'
 
 type Property =
-  | TSESTree.TSAbstractPropertyDefinition
-  | TSESTree.PropertyDefinition
+  TSESTree.TSAbstractPropertyDefinition | TSESTree.PropertyDefinition
 type Accessor = TSESTree.TSAbstractAccessorProperty | TSESTree.AccessorProperty
 type Method = TSESTree.TSAbstractMethodDefinition | TSESTree.MethodDefinition
 

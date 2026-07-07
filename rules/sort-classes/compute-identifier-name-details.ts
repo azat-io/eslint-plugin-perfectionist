@@ -26,7 +26,7 @@ export function computeIdentifierNameDetails(
     case AST_NODE_TYPES.Identifier:
       return buildNonPrivateHashDetails(node.name)
     case AST_NODE_TYPES.Literal:
-      return buildNonPrivateHashDetails(`${node.value}`)
+      return buildNonPrivateHashDetails(String(node.value))
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
       throw new UnreachableCaseError(node)

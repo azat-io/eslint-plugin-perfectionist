@@ -24,15 +24,14 @@ import {
 import { buildOverloadSignatureNewlinesBetweenValueGetter } from '../../utils/overload-signature/build-overload-signature-newlines-between-value-getter'
 import { populateSortingNodeGroupsWithOverloadSignature } from '../../utils/overload-signature/populate-sorting-node-groups-with-overload-signature'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { computeIndexSignatureDetails } from './node-info/compute-index-signature-details'
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
-import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
 import { computeStaticBlockDetails } from './node-info/compute-static-block-details'
 import { computeOverloadSignatureGroups } from './compute-overload-signature-groups'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
@@ -41,6 +40,7 @@ import { computePropertyDetails } from './node-info/compute-property-details'
 import { computeAccessorDetails } from './node-info/compute-accessor-details'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
+import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { computeMethodDetails } from './node-info/compute-method-details'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
@@ -126,13 +126,13 @@ export function sortClass({
   })
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
+  validateCustomSortConfig(options)
+  validateGroupsConfig({
     modifiers: allModifiers,
     selectors: allSelectors,
     options,
   })
-  validateNewlinesAndPartitionConfiguration(options)
+  validateNewlinesAndPartitionConfig(options)
 
   let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({

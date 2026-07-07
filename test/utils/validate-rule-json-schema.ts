@@ -51,6 +51,7 @@ async function validateTsJsonSchema(schema: JSONSchema4): Promise<void> {
 }
 
 async function validateJsonSchema(schema: JSONSchema4): Promise<void> {
-  new Ajv().compile(schema)
+  let ajv = new Ajv()
+  ajv.compile(schema)
   await validateTsJsonSchema(schema)
 }

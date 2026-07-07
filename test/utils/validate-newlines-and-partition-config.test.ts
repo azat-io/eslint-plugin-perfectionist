@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 
-describe('validate-newlines-and-partition-configuration', () => {
+describe('validate-newlines-and-partition-config', () => {
   describe('newlinesBetween', () => {
     it.each([1, 0] as const)(
       "throws an error when 'partitionByNewline' is enabled and 'newlinesBetween' is '%s'",
       newlinesBetween => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             partitionByNewLine: true,
             newlinesInside: 'ignore',
             customGroups: [],
@@ -25,7 +25,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "throws an error when 'partitionByNewline' is enabled and `newlinesBetween: '%s'` objects exist in 'groups'",
       newlinesBetween => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             groups: [{ newlinesBetween }],
             newlinesBetween: 'ignore',
             partitionByNewLine: true,
@@ -42,7 +42,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "allows `newlinesBetween: '%s'` when 'partitionByNewline' is 'false'",
       newlinesBetween => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             partitionByNewLine: false,
             newlinesInside: 'ignore',
             customGroups: [],
@@ -59,7 +59,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "throws an error when 'partitionByNewline' is enabled and 'newlinesInside' is '%s'",
       newlinesInside => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             newlinesBetween: 'ignore',
             partitionByNewLine: true,
             customGroups: [],
@@ -76,7 +76,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "throws an error when 'partitionByNewline' is enabled and `newlinesInside: '%s'` exists in 'groups'",
       newlinesInside => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             groups: [{ group: 'group', newlinesInside }],
             newlinesBetween: 'ignore',
             partitionByNewLine: true,
@@ -93,7 +93,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "throws an error when 'partitionByNewline' is enabled and `newlinesInside: '%s'` exists in 'customGroups'",
       newlinesInside => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             customGroups: [{ groupName: 'group', newlinesInside }],
             newlinesBetween: 'ignore',
             partitionByNewLine: true,
@@ -110,7 +110,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "allows `newlinesInside: '%s'` when 'partitionByNewline' enabled'",
       newlinesInside => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             newlinesBetween: 'ignore',
             partitionByNewLine: true,
             customGroups: [],
@@ -125,7 +125,7 @@ describe('validate-newlines-and-partition-configuration', () => {
       "allows `newlinesInside: '%s'` when 'partitionByNewline' is 'false'",
       newlinesInside => {
         expect(() => {
-          validateNewlinesAndPartitionConfiguration({
+          validateNewlinesAndPartitionConfig({
             partitionByNewLine: false,
             newlinesBetween: 'ignore',
             customGroups: [],
@@ -139,7 +139,7 @@ describe('validate-newlines-and-partition-configuration', () => {
 
   it("allows 'partitionByNewline' when 'newlinesInside' and 'newlinesBetween' are 'ignore'", () => {
     expect(() => {
-      validateNewlinesAndPartitionConfiguration({
+      validateNewlinesAndPartitionConfig({
         groups: [
           { newlinesInside: 'ignore', group: 'group1' },
           { newlinesBetween: 'ignore' },

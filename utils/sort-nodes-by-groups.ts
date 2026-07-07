@@ -131,9 +131,10 @@ export function sortNodesByGroups<
   }
 
   let sortedNodes: T[] = []
-  for (let groupIndexString of Object.keys(
+  let sortedGroupIndexStrings = Object.keys(
     nodesByNonIgnoredGroupIndex,
-  ).toSorted((a, b) => Number(a) - Number(b))) {
+  ).toSorted((a, b) => Number(a) - Number(b))
+  for (let groupIndexString of sortedGroupIndexStrings) {
     let groupIndex = Number(groupIndexString)
     let options = optionsByGroupIndexComputer(groupIndex)
     let nodesToPush = nodesByNonIgnoredGroupIndex[groupIndex]!

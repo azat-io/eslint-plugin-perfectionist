@@ -22,13 +22,14 @@ export function buildOxlintRuleTester(
 
   return {
     run: (name: string, tests: RuleTester.TestCases) => {
-      new RuleTester({
+      let ruleTester = new RuleTester({
         languageOptions: {
           parserOptions: {
             lang,
           },
         },
-      }).run(name, rule as Parameters<RuleTester['run']>[1], tests)
+      })
+      ruleTester.run(name, rule as Parameters<RuleTester['run']>[1], tests)
     },
   }
 }

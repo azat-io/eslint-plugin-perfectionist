@@ -74,9 +74,7 @@ export type Options = Partial<
 
 export interface SortClassesSortingNode extends SortingNodeWithDependencies<TSESTree.ClassElement> {
   overloadSignatureImplementation:
-    | TSESTree.TSAbstractMethodDefinition
-    | TSESTree.MethodDefinition
-    | null
+    TSESTree.TSAbstractMethodDefinition | TSESTree.MethodDefinition | null
 
   nameDetails: NodeNameDetails | null
 

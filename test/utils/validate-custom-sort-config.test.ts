@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 
-describe('validate-custom-sort-configuration', () => {
+describe('validate-custom-sort-config', () => {
   it.each(['alphabetical', 'line-length', 'natural'] as const)(
     'accepts empty alphabet when type is `%s`',
     type => {
       expect(() =>
-        validateCustomSortConfiguration({
+        validateCustomSortConfig({
           alphabet: '',
           type,
         }),
@@ -17,7 +17,7 @@ describe('validate-custom-sort-configuration', () => {
 
   it('throws when an empty alphabet is entered while type is `custom`', () => {
     expect(() =>
-      validateCustomSortConfiguration({
+      validateCustomSortConfig({
         type: 'custom',
         alphabet: '',
       }),
@@ -26,7 +26,7 @@ describe('validate-custom-sort-configuration', () => {
 
   it('throws when an empty alphabet is entered while type is `custom` in groups', () => {
     expect(() =>
-      validateCustomSortConfiguration({
+      validateCustomSortConfig({
         groups: [{ group: 'group', type: 'custom' }],
         type: 'alphabetical',
         alphabet: '',

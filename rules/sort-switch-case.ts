@@ -8,9 +8,9 @@ import type { Options } from './sort-switch-case/types'
 
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
 import { isConditionExpression } from './sort-switch-case/is-condition-expression'
+import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -52,7 +52,7 @@ export default createEslintRule<Options, MessageId>({
       let options = complete(context.options.at(0), settings, defaultOptions)
       let defaultComparator = defaultComparatorByOptionsComputer(options)
 
-      validateCustomSortConfiguration(options)
+      validateCustomSortConfig(options)
 
       let { sourceCode } = context
       let isConditionCaseSwitch =
@@ -344,8 +344,9 @@ function getCaseName(
   caseNode: TSESTree.SwitchCase,
 ): string {
   if (caseNode.test?.type === AST_NODE_TYPES.Literal) {
-    return `${caseNode.test.value}`
-  } else if (caseNode.test === null) {
+    return String(caseNode.test.value)
+  }
+  if (caseNode.test === null) {
     return 'default'
   }
   return sourceCode.getText(caseNode.test)

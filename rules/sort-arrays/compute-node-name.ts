@@ -19,6 +19,6 @@ export function computeNodeName({
   sourceCode: TSESLint.SourceCode
 }): string {
   return node.type === AST_NODE_TYPES.Literal ?
-      `${node.value}`
+      String(node.value)
     : sourceCode.getText(node)
 }

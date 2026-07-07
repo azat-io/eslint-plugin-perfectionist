@@ -6,6 +6,8 @@ import {
   buildRegexJsonSchema,
 } from '../../../utils/json-schemas/common-json-schemas'
 
+let ajv = new Ajv()
+
 describe('common-json-schemas', () => {
   let commonJsonSchemaValidator = compileObjectSchema(buildCommonJsonSchemas())
 
@@ -215,7 +217,7 @@ describe('common-json-schemas', () => {
   })
 
   describe('regex', () => {
-    let regexJsonSchemaValidator = new Ajv().compile(buildRegexJsonSchema())
+    let regexJsonSchemaValidator = ajv.compile(buildRegexJsonSchema())
 
     it('should allow string values', () => {
       expect(regexJsonSchemaValidator('some string')).toBeTruthy()
@@ -252,7 +254,7 @@ describe('common-json-schemas', () => {
   })
 
   function compileObjectSchema(schema: object): (data: unknown) => boolean {
-    return new Ajv().compile({
+    return ajv.compile({
       additionalProperties: false,
       properties: schema,
       type: 'object',

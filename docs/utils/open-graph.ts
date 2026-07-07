@@ -14,7 +14,7 @@ export async function openGraph(title: string): Promise<ImageResponse> {
   let logo = await fs.readFile(
     path.join(process.cwd(), './docs/public/logo.svg'),
   )
-  let logoImage = `data:image/svg+xml;base64,${Buffer.from(logo).toString('base64')}`
+  let logoImage = `data:image/svg+xml;base64,${logo.toBase64()}`
 
   return new ImageResponse(
     {

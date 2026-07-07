@@ -35,21 +35,20 @@ import {
   partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../utils/validate-newlines-and-partition-configuration'
 import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
-import { validateSideEffectsConfiguration } from './sort-imports/validate-side-effects-configuration'
+import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeDependenciesBySortingNode } from '../utils/compute-dependencies-by-sorting-node'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
-import { validateCustomSortConfiguration } from '../utils/validate-custom-sort-configuration'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
 import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
+import { validateSideEffectsConfig } from './sort-imports/validate-side-effects-config'
 import { computeSpecifierModifiers } from './sort-imports/compute-specifier-modifiers'
-import { validateGroupsConfiguration } from '../utils/validate-groups-configuration'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
 import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { computeDependencyNames } from './sort-imports/compute-dependency-names'
+import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { computeSpecifierName } from './sort-imports/compute-specifier-name'
@@ -58,6 +57,7 @@ import { computeDependencies } from './sort-imports/compute-dependencies'
 import { isSideEffectImport } from './sort-imports/is-side-effect-import'
 import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { doesCustomGroupMatch } from '../utils/does-custom-group-match'
+import { validateGroupsConfig } from '../utils/validate-groups-config'
 import { isNodeOnSingleLine } from '../utils/is-node-on-single-line'
 import { computeNodeName } from './sort-imports/compute-node-name'
 import { sortNodesByGroups } from '../utils/sort-nodes-by-groups'
@@ -131,14 +131,14 @@ export default createEslintRule<Options, MessageId>({
       complete(userOptions, settings, defaultOptions),
     )
 
-    validateGroupsConfiguration({
+    validateGroupsConfig({
       selectors: allSelectors,
       modifiers: allModifiers,
       options,
     })
-    validateCustomSortConfiguration(options)
-    validateNewlinesAndPartitionConfiguration(options)
-    validateSideEffectsConfiguration(options)
+    validateCustomSortConfig(options)
+    validateNewlinesAndPartitionConfig(options)
+    validateSideEffectsConfig(options)
 
     let tsconfigRootDirectory = options.tsconfig.rootDir
     let tsConfigOutput =

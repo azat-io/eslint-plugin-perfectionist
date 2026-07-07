@@ -7,7 +7,7 @@ import { computeGroupsNames } from './compute-groups-names'
 /**
  * Parameters for validating generated groups configuration.
  */
-interface ValidateGenerateGroupsConfigurationParameters {
+interface ValidateGenerateGroupsConfigParameters {
   options: Pick<
     CommonGroupsOptions<string, unknown, unknown>,
     'customGroups' | 'groups'
@@ -83,11 +83,11 @@ interface ValidateGenerateGroupsConfigurationParameters {
  * @param params - Configuration parameters to validate.
  * @throws {Error} If any group is neither predefined nor custom.
  */
-export function validateGroupsConfiguration({
+export function validateGroupsConfig({
   selectors,
   modifiers,
   options,
-}: ValidateGenerateGroupsConfigurationParameters): void {
+}: ValidateGenerateGroupsConfigParameters): void {
   let availableCustomGroupNames = new Set(
     options.customGroups.map(customGroup => customGroup.groupName),
   )

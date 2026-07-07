@@ -35,7 +35,7 @@ describe('get-node-decorators', () => {
   ): NodeWithDecoratorsParameter {
     return {
       type: 'ClassDeclaration',
-      ...(decorators ? { decorators } : {}),
+      ...(decorators && { decorators }),
     } as unknown as NodeWithDecoratorsParameter
   }
 })

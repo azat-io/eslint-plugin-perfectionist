@@ -10,8 +10,8 @@ import {
   ORDER_ERROR_ID,
 } from './sort-named-imports/types'
 import {
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -42,7 +42,7 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+          useConfigurationIf: buildUseConfigIfJsonSchema({
             additionalProperties: {
               matchesAstSelector: matchesAstSelectorJsonSchema,
             },

@@ -10,8 +10,8 @@ import {
   ORDER_ERROR_ID,
 } from './sort-jsx-props/types'
 import {
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
@@ -37,7 +37,7 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+          useConfigurationIf: buildUseConfigIfJsonSchema({
             additionalProperties: {
               matchesAstSelector: matchesAstSelectorJsonSchema,
               tagMatchesPattern: buildRegexJsonSchema(),

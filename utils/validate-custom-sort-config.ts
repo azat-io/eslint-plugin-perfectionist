@@ -26,7 +26,7 @@ type Options = {
  * @param options - Configuration options to validate.
  * @throws {Error} If type is 'custom' but alphabet is empty.
  */
-export function validateCustomSortConfiguration(options: Options): void {
+export function validateCustomSortConfig(options: Options): void {
   if (!usesCustomSort(options)) {
     return
   }

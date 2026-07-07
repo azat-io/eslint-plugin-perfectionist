@@ -38,9 +38,10 @@ export class UnreachableCaseError extends Error {
    *
    * @param value - The value that should have type `never` if all cases are
    *   handled. In practice, this will contain the unhandled case value.
+   * @param options - Standard error options, such as `cause`.
    */
-  public constructor(value: never) {
-    super(`Unreachable case: ${value as string}`)
+  public constructor(value: never, options?: ErrorOptions) {
+    super(`Unreachable case: ${value as string}`, options)
     this.name = 'UnreachableCaseError'
   }
 }

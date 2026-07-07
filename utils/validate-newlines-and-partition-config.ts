@@ -38,7 +38,7 @@ const NEWLINES_BETWEEN_ERROR_MESSAGE =
  *
  * ```ts
  * // Valid: Using partitionByNewLine alone
- * validateNewlinesAndPartitionConfiguration({
+ * validateNewlinesAndPartitionConfig({
  *   partitionByNewLine: true,
  *   newlinesBetween: 'ignore', // Must be 'ignore' with partitions
  *   groups: ['external', 'internal'],
@@ -50,7 +50,7 @@ const NEWLINES_BETWEEN_ERROR_MESSAGE =
  *
  * ```ts
  * // Invalid: Conflicting options
- * validateNewlinesAndPartitionConfiguration({
+ * validateNewlinesAndPartitionConfig({
  *   partitionByNewLine: true,
  *   newlinesBetween: 1, // Conflicts with partitionByNewLine
  *   groups: ['react', 'external', 'internal'],
@@ -62,7 +62,7 @@ const NEWLINES_BETWEEN_ERROR_MESSAGE =
  *
  * ```ts
  * // Invalid: newlinesBetween in groups with partitions
- * validateNewlinesAndPartitionConfiguration({
+ * validateNewlinesAndPartitionConfig({
  *   partitionByNewLine: true,
  *   newlinesBetween: 'ignore',
  *   groups: [
@@ -78,7 +78,7 @@ const NEWLINES_BETWEEN_ERROR_MESSAGE =
  *
  * ```ts
  * // Valid: Using newlinesBetween without partitions
- * validateNewlinesAndPartitionConfiguration({
+ * validateNewlinesAndPartitionConfig({
  *   partitionByNewLine: false,
  *   newlinesBetween: 1,
  *   groups: [
@@ -97,14 +97,14 @@ const NEWLINES_BETWEEN_ERROR_MESSAGE =
  * ```ts
  * // Real-world React imports configuration
  * // Option 1: Preserve developer's spacing
- * validateNewlinesAndPartitionConfiguration({
+ * validateNewlinesAndPartitionConfig({
  *   partitionByNewLine: true,
  *   newlinesBetween: 'ignore',
  *   groups: ['react', 'external', '@company', 'internal', 'relative'],
  * })
  *
  * // Option 2: Enforce consistent spacing
- * validateNewlinesAndPartitionConfiguration({
+ * validateNewlinesAndPartitionConfig({
  *   partitionByNewLine: false,
  *   newlinesBetween: 1,
  *   groups: ['react', 'external', '@company', 'internal', 'relative'],
@@ -115,7 +115,7 @@ const NEWLINES_BETWEEN_ERROR_MESSAGE =
  * @param options - Configuration options to validate.
  * @throws {Error} If partitionByNewLine and newlinesBetween conflict.
  */
-export function validateNewlinesAndPartitionConfiguration({
+export function validateNewlinesAndPartitionConfig({
   partitionByNewLine,
   newlinesBetween,
   newlinesInside,
@@ -126,18 +126,18 @@ export function validateNewlinesAndPartitionConfiguration({
     return
   }
 
-  validateNewlinesBetweenConfiguration({
+  validateNewlinesBetweenConfig({
     newlinesBetween,
     groups,
   })
-  validateNewlinesInsideConfiguration({
+  validateNewlinesInsideConfig({
     newlinesInside,
     customGroups,
     groups,
   })
 }
 
-function validateNewlinesInsideConfiguration({
+function validateNewlinesInsideConfig({
   newlinesInside,
   customGroups,
   groups,
@@ -184,7 +184,7 @@ function validateNewlinesInsideConfiguration({
   }
 }
 
-function validateNewlinesBetweenConfiguration({
+function validateNewlinesBetweenConfig({
   newlinesBetween,
   groups,
 }: Pick<

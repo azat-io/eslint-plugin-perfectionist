@@ -36,6 +36,8 @@
 
     &:focus-visible {
       text-decoration: none;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
       box-shadow: 0 0 0 3px var(--color-border-brand);
     }
 

@@ -135,8 +135,7 @@ export function doesCustomGroupMatch<
 >(
   props: {
     customGroup:
-      | AnyOfCustomGroup<CustomGroupMatchOptions>
-      | CustomGroupMatchOptions
+      AnyOfCustomGroup<CustomGroupMatchOptions> | CustomGroupMatchOptions
   } & DoesCustomGroupMatchParameters,
 ): boolean {
   if ('anyOf' in props.customGroup) {

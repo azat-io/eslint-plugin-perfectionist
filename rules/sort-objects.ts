@@ -13,8 +13,8 @@ import {
 } from './sort-objects/types'
 import {
   useExperimentalDependencyDetectionJsonSchema,
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -47,7 +47,7 @@ export default createEslintRule<Options, MessageId>({
               additionalCustomGroupMatchOptionsJsonSchema,
             additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
+          useConfigurationIf: buildUseConfigIfJsonSchema({
             additionalProperties: {
               objectType: {
                 description:

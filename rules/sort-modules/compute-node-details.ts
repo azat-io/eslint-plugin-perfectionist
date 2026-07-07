@@ -61,27 +61,6 @@ export function computeNodeDetails({
   let shouldPartitionAfterNode: boolean = false
   let dependencyDetection: DependencyDetection = 'soft'
 
-  parseNode(node)
-
-  if (!selector || !name) {
-    return {
-      shouldPartitionAfterNode,
-      moduleBlock,
-    }
-  }
-
-  return {
-    nodeDetails: {
-      addSafetySemicolonWhenInline,
-      dependencyDetection,
-      dependencies,
-      decorators,
-      modifiers,
-      selector,
-      name,
-    },
-  }
-
   function parseNode(
     nodeToParse:
       | TSESTree.DefaultExportDeclarations
@@ -167,6 +146,27 @@ export function computeNodeDetails({
       default:
         break
     }
+  }
+
+  parseNode(node)
+
+  if (!selector || !name) {
+    return {
+      shouldPartitionAfterNode,
+      moduleBlock,
+    }
+  }
+
+  return {
+    nodeDetails: {
+      addSafetySemicolonWhenInline,
+      dependencyDetection,
+      dependencies,
+      decorators,
+      modifiers,
+      selector,
+      name,
+    },
   }
 }
 

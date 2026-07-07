@@ -135,7 +135,7 @@ let isProduction = import.meta.env.PROD
     content={type}
   />
   <meta
-    content={Astro.url.toString().replace(/\.html/u, '')}
+    content={Astro.url.href.replace(/\.html/u, '')}
     property="og:url"
   />
   <meta

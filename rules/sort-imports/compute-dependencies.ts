@@ -51,16 +51,18 @@ function computeImportEqualsDeclarationDependencies(
 function getQualifiedNameDependencyName(
   node: TSESTree.EntityName,
 ): string | null {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSQualifiedName:
-      return getQualifiedNameDependencyName(node.left)
+  let currentNode = node
+  while (currentNode.type === AST_NODE_TYPES.TSQualifiedName) {
+    currentNode = currentNode.left
+  }
+  switch (currentNode.type) {
     /* v8 ignore next -- @preserve Unsure how we can reach that case */
     case AST_NODE_TYPES.ThisExpression:
       return null
     case AST_NODE_TYPES.Identifier:
-      return node.name
+      return currentNode.name
     /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      throw new UnreachableCaseError(node)
+      throw new UnreachableCaseError(currentNode)
   }
 }

@@ -12,8 +12,8 @@ import {
 } from './sort-enums/types'
 import {
   useExperimentalDependencyDetectionJsonSchema,
-  buildUseConfigurationIfJsonSchema,
   matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -42,16 +42,16 @@ export default createEslintRule<Options, MessageId>({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
           }),
-          useConfigurationIf: buildUseConfigurationIfJsonSchema({
-            additionalProperties: {
-              matchesAstSelector: matchesAstSelectorJsonSchema,
-            },
-          }),
           sortByValue: {
             description: 'Specifies whether to sort enums by value.',
             enum: ['always', 'ifNumericEnum', 'never'],
             type: 'string',
           },
+          useConfigurationIf: buildUseConfigIfJsonSchema({
+            additionalProperties: {
+              matchesAstSelector: matchesAstSelectorJsonSchema,
+            },
+          }),
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,

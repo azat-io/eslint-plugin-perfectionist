@@ -3,9 +3,11 @@ import Ajv from 'ajv-draft-04'
 
 import { partitionByCommentJsonSchema } from '../../../utils/json-schemas/common-partition-json-schemas'
 
+let ajv = new Ajv()
+
 describe('common-partition-json-schemas', () => {
   describe('partitionByComment', () => {
-    let partitionByCommentJsonSchemaValidator = new Ajv().compile(
+    let partitionByCommentJsonSchemaValidator = ajv.compile(
       partitionByCommentJsonSchema,
     )
 

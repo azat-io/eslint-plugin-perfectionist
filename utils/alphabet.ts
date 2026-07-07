@@ -69,7 +69,8 @@ export class Alphabet {
    */
   public static generateFrom(values: string[] | string): Alphabet {
     let arrayValues = typeof values === 'string' ? [...values] : values
-    if (arrayValues.length !== new Set(arrayValues).size) {
+    let uniqueValues = new Set(arrayValues)
+    if (arrayValues.length !== uniqueValues.size) {
       throw new Error('The alphabet must not contain repeated characters')
     }
     if (arrayValues.some(value => value.length !== 1)) {
@@ -110,16 +111,12 @@ export class Alphabet {
     return {
       value: character,
       codePoint,
-      ...(lowercaseCharacter === character ? null : (
-        {
-          lowercaseCharacterCodePoint: lowercaseCharacter.codePointAt(0)!,
-        }
-      )),
-      ...(uppercaseCharacter === character ? null : (
-        {
-          uppercaseCharacterCodePoint: uppercaseCharacter.codePointAt(0)!,
-        }
-      )),
+      ...(lowercaseCharacter !== character && {
+        lowercaseCharacterCodePoint: lowercaseCharacter.codePointAt(0)!,
+      }),
+      ...(uppercaseCharacter !== character && {
+        uppercaseCharacterCodePoint: uppercaseCharacter.codePointAt(0)!,
+      }),
     }
   }
 
@@ -248,8 +245,7 @@ export class Alphabet {
     caseToComeFirst: 'uppercase' | 'lowercase',
   ): this {
     let otherCaseKey:
-      | 'lowercaseCharacterCodePoint'
-      | 'uppercaseCharacterCodePoint' =
+      'lowercaseCharacterCodePoint' | 'uppercaseCharacterCodePoint' =
       caseToComeFirst === 'uppercase' ?
         'uppercaseCharacterCodePoint'
       : 'lowercaseCharacterCodePoint'
@@ -443,12 +439,13 @@ export class Alphabet {
     let indexOfCharacterAfter = this.characters.findIndex(
       ({ value }) => value === characterAfter,
     )
-    let indexOfCharacterBefore = this.characters.findIndex(
-      ({ value }) => value === characterBefore,
-    )
     if (indexOfCharacterAfter === -1) {
       throw new Error(`Character ${characterAfter} not found in alphabet`)
     }
+
+    let indexOfCharacterBefore = this.characters.findIndex(
+      ({ value }) => value === characterBefore,
+    )
     if (indexOfCharacterBefore === -1) {
       throw new Error(`Character ${characterBefore} not found in alphabet`)
     }
