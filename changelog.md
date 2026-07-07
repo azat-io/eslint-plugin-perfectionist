@@ -1,5 +1,32 @@
 # Changelog
 
+## v5.10.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.9.1...v5.10.0)
+
+### 🚀 Features
+
+- **sort-intersection-types:** Add ignore callable types option
+  ([967da574](https://github.com/azat-io/eslint-plugin-perfectionist/commit/967da574))
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Allow sorting of decorated exported classes
+  ([05cc7218](https://github.com/azat-io/eslint-plugin-perfectionist/commit/05cc7218))
+- **sort-arrays:** Require options to be provided
+  ([5417cb5a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5417cb5a))
+- Stop treating multiline trailing block comments as leading comments
+  ([5c66d19d](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5c66d19d))
+- **sort-switch-case:** Skip condition-shaped switch statements
+  ([2bea3292](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2bea3292))
+- Detect dependencies in iifes, auto-accessors and computed enum access
+  ([119bafe6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/119bafe6))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.9.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.9.0...v5.9.1)
