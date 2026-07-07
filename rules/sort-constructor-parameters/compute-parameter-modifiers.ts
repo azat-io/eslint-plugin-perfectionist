@@ -50,10 +50,10 @@ function computeAccessibilityModifier(parameter: Parameter): Modifier[] {
 }
 
 function computeOptionalModifier(parameter: Parameter): Modifier[] {
-  let isOptional =
+  let isOptional = (
     parameter.type === AST_NODE_TYPES.TSParameterProperty ?
-      parameter.parameter.optional
-    : parameter.optional
+      parameter.parameter
+    : parameter).optional
   return isOptional ? ['optional'] : []
 }
 

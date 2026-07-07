@@ -10,18 +10,18 @@ import type {
 } from './types'
 
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
-import { validateNewlinesAndPartitionConfiguration } from '../../utils/validate-newlines-and-partition-configuration'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { validateCustomSortConfiguration } from '../../utils/validate-custom-sort-configuration'
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
-import { validateGroupsConfiguration } from '../../utils/validate-groups-configuration'
+import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
+import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { computeParameterModifiers } from './compute-parameter-modifiers'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
@@ -77,13 +77,13 @@ export function sortConstructorParameters<MessageIds extends string>({
   }
 
   let options = complete(matchedContextOptions, settings, defaultOptions)
-  validateCustomSortConfiguration(options)
-  validateGroupsConfiguration({
+  validateCustomSortConfig(options)
+  validateGroupsConfig({
     selectors: allSelectors,
     modifiers: allModifiers,
     options,
   })
-  validateNewlinesAndPartitionConfiguration(options)
+  validateNewlinesAndPartitionConfig(options)
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,

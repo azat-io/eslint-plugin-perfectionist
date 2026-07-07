@@ -20,18 +20,35 @@ export function computeNodeName({
   node: Exclude<TSESTree.Parameter, TSESTree.RestElement>
   sourceCode: TSESLint.SourceCode
 }): string {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSParameterProperty:
-      return computeNodeName({ node: node.parameter, sourceCode })
-    case AST_NODE_TYPES.AssignmentPattern:
-      return computeNodeName({ node: node.left, sourceCode })
+  let nonParameterNorAssignmentNode =
+    extractFirstNonParameterNorAssignmentNode(node)
+
+  switch (nonParameterNorAssignmentNode.type) {
     case AST_NODE_TYPES.ObjectPattern:
     case AST_NODE_TYPES.ArrayPattern:
-      return sourceCode.getText(node)
+      return sourceCode.getText(nonParameterNorAssignmentNode)
     case AST_NODE_TYPES.Identifier:
-      return node.name
-    /* v8 ignore next */
+      return nonParameterNorAssignmentNode.name
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
     default:
-      throw new UnreachableCaseError(node)
+      throw new UnreachableCaseError(nonParameterNorAssignmentNode)
   }
+}
+
+function extractFirstNonParameterNorAssignmentNode(
+  node: Exclude<TSESTree.Parameter, TSESTree.RestElement>,
+): TSESTree.ObjectPattern | TSESTree.ArrayPattern | TSESTree.Identifier {
+  let currentNode = node
+
+  while (
+    currentNode.type === AST_NODE_TYPES.TSParameterProperty ||
+    currentNode.type === AST_NODE_TYPES.AssignmentPattern
+  ) {
+    currentNode =
+      currentNode.type === AST_NODE_TYPES.TSParameterProperty ?
+        currentNode.parameter
+      : currentNode.left
+  }
+
+  return currentNode
 }
