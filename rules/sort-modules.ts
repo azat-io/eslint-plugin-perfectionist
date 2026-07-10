@@ -95,6 +95,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  emitDecoratorMetadata: false,
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -120,6 +121,11 @@ export default createEslintRule<Options, MessageId>({
               additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
           }),
+          emitDecoratorMetadata: {
+            description:
+              'Treat decorator-metadata type references as dependencies, set to match your tsconfig emitDecoratorMetadata.',
+            type: 'boolean',
+          },
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
@@ -348,6 +354,7 @@ function analyzeModule({
 
   if (options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode = computeDependenciesBySortingNode({
+      emitDecoratorMetadata: options.emitDecoratorMetadata,
       sortingNodes: sortingNodeGroups.flat(),
       dependencyDetection: 'hard',
       sourceCode,

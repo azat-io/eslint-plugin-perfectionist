@@ -636,6 +636,23 @@ Specifies whether to use a new experimental dependency detection logic, with red
 - `true` — Use the new experimental dependency detection logic.
 - `false` — Use the legacy dependency detection logic.
 
+### emitDecoratorMetadata
+
+<Important title="Migrating from the old API">
+  Requires [`useExperimentalDependencyDetection`](#useexperimentaldependencydetection) to be enabled.
+</Important>
+
+<sub>default: `false`</sub>
+
+Treats decorator-metadata type references as dependencies, set it to match your tsconfig's `emitDecoratorMetadata` option.
+
+With TypeScript's `experimentalDecorators` + `emitDecoratorMetadata`, a decorator on a class or member makes the compiler emit, at class-declaration time, metadata referencing the annotated type.
+
+This turns an otherwise-erased type annotation into a real runtime value reference, so reordering the declaration after its user breaks compilation.
+
+- `true` — Treat decorator-metadata type references as dependencies.
+- `false` — Ignore decorator-metadata type references.
+
 ## Usage
 
 <CodeTabs
@@ -679,6 +696,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   ],
                   customGroups: [],
                   useExperimentalDependencyDetection: true,
+                  emitDecoratorMetadata: false
                 },
               ],
             },
@@ -724,6 +742,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 ],
                 customGroups: [],
                 useExperimentalDependencyDetection: true,
+                emitDecoratorMetadata: false
               },
             ],
           },

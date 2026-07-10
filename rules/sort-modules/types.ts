@@ -31,6 +31,11 @@ export type Options = [
        * Enables experimental dependency detection.
        */
       useExperimentalDependencyDetection: boolean
+
+      /**
+       * Treats decorator-metadata type references as dependencies.
+       */
+      emitDecoratorMetadata: boolean
     } & AllCommonOptions<
       CustomTypeOption,
       AdditionalSortOptions,
