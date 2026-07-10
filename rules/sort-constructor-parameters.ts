@@ -101,7 +101,7 @@ export default createEslintRule<Options, MessageId>({
     },
     docs: {
       url: 'https://perfectionist.dev/rules/sort-constructor-parameters',
-      description: 'Enforce sorted constructor parameters parameters.',
+      description: 'Enforce sorted constructor parameters.',
       recommended: false,
     },
     schema: jsonSchema,
