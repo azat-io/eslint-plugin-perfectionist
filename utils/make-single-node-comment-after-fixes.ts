@@ -82,6 +82,8 @@ export function makeSingleNodeCommentAfterFixes({
     node,
   })
   let commentText = computeCommentTextToInsertAfter({
+    nodeToInsertAfter,
+    commentAfter,
     sourceCode,
     range,
   })
@@ -125,13 +127,29 @@ function computeNodeToInsertAfter({
 }
 
 function computeCommentTextToInsertAfter({
+  nodeToInsertAfter,
+  commentAfter,
   sourceCode,
   range,
 }: {
+  nodeToInsertAfter: TSESTree.Token | TSESTree.Node
   sourceCode: TSESLint.SourceCode
+  commentAfter: TSESTree.Comment
   range: TSESTree.Range
 }): string {
-  return sourceCode.text.slice(...range)
+  let commentText = sourceCode.text.slice(...range)
+
+  if (commentAfter.type !== 'Line') {
+    return commentText
+  }
+
+  let tokenAfterInsertion = sourceCode.getTokenAfter(nodeToInsertAfter)
+  if (tokenAfterInsertion?.loc.start.line !== nodeToInsertAfter.loc.end.line) {
+    return commentText
+  }
+  commentText += '\n'
+
+  return commentText
 }
 
 /**
