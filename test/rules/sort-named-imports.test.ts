@@ -1519,6 +1519,28 @@ describe('sort-named-imports', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import {
+            a, /* a */
+            b /* b */ } from 'module'
+        `,
+        code: dedent`
+          import {
+            b, /* b */
+            a /* a */ } from 'module'
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
       await invalid({
         options: [

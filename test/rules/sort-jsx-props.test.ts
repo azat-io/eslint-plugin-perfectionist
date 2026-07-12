@@ -1289,6 +1289,28 @@ describe('sort-jsx-props', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          <Component
+            a /* a */
+            b /* b */ />
+        `,
+        code: dedent`
+          <Component
+            b /* b */
+            a /* a */ />
+        `,
+        options: [options],
+      })
+    })
+
     describe('useConfigurationIf.allNamesMatchPattern', () => {
       it.each([
         ['string pattern', '^[rgb]$'],

@@ -217,6 +217,28 @@ describe('sort-union-types', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedUnionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type Type = (
+            | A /* a */
+            | B /* b */ )
+        `,
+        code: dedent`
+          type Type = (
+            | B /* b */
+            | A /* a */ )
+        `,
+        options: [options],
+      })
+    })
+
     it('keeps multiline trailing block comments anchored when sorting', async () => {
       await invalid({
         errors: [

@@ -653,6 +653,28 @@ describe('sort-export-attributes', () => {
         })
       })
     })
+
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export { x } from 'module' with {
+            a: 'y', /* a */
+            b: 'x' /* b */ }
+        `,
+        code: dedent`
+          export { x } from 'module' with {
+            b: 'x', /* b */
+            a: 'y' /* a */ }
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('natural', () => {

@@ -144,6 +144,28 @@ describe('sort-heritage-clauses', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedHeritageClausesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          interface Interface extends
+            A, /* a */
+            B /* b */ {}
+        `,
+        code: dedent`
+          interface Interface extends
+            B, /* b */
+            A /* a */ {}
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts heritage clauses with inline comments', async () => {
       await invalid({
         errors: [

@@ -221,6 +221,28 @@ describe('sort-intersection-types', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type Type = (
+            & A /* a */
+            & B /* b */ )
+        `,
+        code: dedent`
+          type Type = (
+            & B /* b */
+            & A /* a */ )
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts intersections using groups', async () => {
       await valid({
         code: dedent`

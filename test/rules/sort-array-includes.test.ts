@@ -2176,6 +2176,28 @@ describe('sort-array-includes', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArrayIncludesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          [
+            a, /* a */
+            b /* b */ ].includes(x)
+        `,
+        code: dedent`
+          [
+            b, /* b */
+            a /* a */ ].includes(x)
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
       let partitionOptions = [
         {

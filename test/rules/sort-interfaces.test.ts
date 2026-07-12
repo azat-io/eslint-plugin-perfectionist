@@ -355,6 +355,28 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: string /* a */
+            b: string; /* b */ }
+        `,
+        code: dedent`
+          interface Interface {
+            b: string; /* b */
+            a: string /* a */ }
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts interfaces with semi and comments on the same line', async () => {
       await invalid({
         errors: [
