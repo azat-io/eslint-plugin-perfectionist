@@ -375,6 +375,27 @@ describe('sort-interfaces', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          interface Interface {
+            a: string
+            b: string; // b
+           }
+        `,
+        code: dedent`
+          interface Interface {
+            b: string; // b
+            a: string }
+        `,
+        options: [options],
+      })
     })
 
     it('sorts interfaces with semi and comments on the same line', async () => {

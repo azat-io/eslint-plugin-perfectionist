@@ -1408,6 +1408,27 @@ describe('sort-named-exports', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export {
+            a,
+            b // b
+           }
+        `,
+        code: dedent`
+          export {
+            b, // b
+            a }
+        `,
+        options: [options],
+      })
     })
 
     it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {

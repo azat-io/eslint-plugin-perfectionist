@@ -205,6 +205,27 @@ describe('sort-enums', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = 'a',
+            B = 'b' // b
+           }
+        `,
+        code: dedent`
+          enum Enum {
+            B = 'b', // b
+            A = 'a' }
+        `,
+        options: [options],
+      })
     })
 
     it('preserves implicit values in enums', async () => {

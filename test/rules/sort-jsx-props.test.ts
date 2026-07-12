@@ -1309,6 +1309,27 @@ describe('sort-jsx-props', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          <Component
+            a
+            b // b
+           />
+        `,
+        code: dedent`
+          <Component
+            b // b
+            a />
+        `,
+        options: [options],
+      })
     })
 
     describe('useConfigurationIf.allNamesMatchPattern', () => {

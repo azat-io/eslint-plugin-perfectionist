@@ -1440,6 +1440,27 @@ describe('sort-maps', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedMapElementsOrder',
+            data: { right: "'a'", left: "'b'" },
+          },
+        ],
+        output: dedent`
+          new Map([
+            ['a', 2],
+            ['b', 1] // b
+           ])
+        `,
+        code: dedent`
+          new Map([
+            ['b', 1], // b
+            ['a', 2] ])
+        `,
+        options: [options],
+      })
     })
 
     it('preserves partition boundaries when newlinesBetween is 0', async () => {

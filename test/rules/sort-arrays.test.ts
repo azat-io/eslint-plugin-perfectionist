@@ -2173,6 +2173,27 @@ describe('sort-arrays', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          [
+            a,
+            b // b
+           ]
+        `,
+        code: dedent`
+          [
+            b, // b
+            a ]
+        `,
+        options: [options],
+      })
     })
 
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {

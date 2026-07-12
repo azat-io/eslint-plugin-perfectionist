@@ -1539,6 +1539,27 @@ describe('sort-named-imports', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import {
+            a,
+            b // b
+           } from 'module'
+        `,
+        code: dedent`
+          import {
+            b, // b
+            a } from 'module'
+        `,
+        options: [options],
+      })
     })
 
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {

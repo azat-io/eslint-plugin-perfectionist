@@ -674,6 +674,27 @@ describe('sort-export-attributes', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedExportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export { x } from 'module' with {
+            a: 'y',
+            b: 'x' // b
+           }
+        `,
+        code: dedent`
+          export { x } from 'module' with {
+            b: 'x', // b
+            a: 'y' }
+        `,
+        options: [options],
+      })
     })
   })
 

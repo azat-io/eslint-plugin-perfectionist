@@ -4635,6 +4635,27 @@ describe('sort-classes', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            a = 2
+            b = 1; // b
+           }
+        `,
+        code: dedent`
+          class Class {
+            b = 1; // b
+            a = 2 }
+        `,
+        options: [options],
+      })
     })
 
     it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {

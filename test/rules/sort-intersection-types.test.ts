@@ -241,6 +241,27 @@ describe('sort-intersection-types', () => {
         `,
         options: [options],
       })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          type Type = (
+            & A
+            & B // b
+           )
+        `,
+        code: dedent`
+          type Type = (
+            & B // b
+            & A )
+        `,
+        options: [options],
+      })
     })
 
     it('sorts intersections using groups', async () => {
