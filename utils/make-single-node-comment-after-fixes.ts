@@ -77,17 +77,41 @@ export function makeSingleNodeCommentAfterFixes({
 
   fixes.push(fixer.replaceTextRange(range, ''))
 
-  let tokenAfterNode = sourceCode.getTokenAfter(node)
-  fixes.push(
-    fixer.insertTextAfter(
-      tokenAfterNode?.loc.end.line === node.loc.end.line ?
-        tokenAfterNode
-      : node,
-      sourceCode.text.slice(...range),
-    ),
-  )
+  let nodeToInsertAfter = computeNodeToInsertAfter({
+    sourceCode,
+    node,
+  })
+  let commentText = computeCommentTextToInsertAfter({
+    sourceCode,
+    range,
+  })
+  fixes.push(fixer.insertTextAfter(nodeToInsertAfter, commentText))
 
   return fixes
+}
+
+function computeNodeToInsertAfter({
+  sourceCode,
+  node,
+}: {
+  node: TSESTree.Token | TSESTree.Node
+  sourceCode: TSESLint.SourceCode
+}): TSESTree.Token | TSESTree.Node {
+  let tokenAfterNode = sourceCode.getTokenAfter(node)
+
+  return tokenAfterNode?.loc.end.line === node.loc.end.line ?
+      tokenAfterNode
+    : node
+}
+
+function computeCommentTextToInsertAfter({
+  sourceCode,
+  range,
+}: {
+  sourceCode: TSESLint.SourceCode
+  range: TSESTree.Range
+}): string {
+  return sourceCode.text.slice(...range)
 }
 
 /**
