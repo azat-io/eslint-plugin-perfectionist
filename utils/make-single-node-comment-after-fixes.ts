@@ -99,9 +99,29 @@ function computeNodeToInsertAfter({
 }): TSESTree.Token | TSESTree.Node {
   let tokenAfterNode = sourceCode.getTokenAfter(node)
 
-  return tokenAfterNode?.loc.end.line === node.loc.end.line ?
-      tokenAfterNode
-    : node
+  if (tokenAfterNode?.type !== 'Punctuator') {
+    return node
+  }
+  if (!isRelevantPunctuator(tokenAfterNode)) {
+    return node
+  }
+  if (tokenAfterNode.loc.end.line !== node.loc.end.line) {
+    return node
+  }
+
+  return tokenAfterNode
+
+  function isRelevantPunctuator(
+    punctuatorToken: TSESTree.PunctuatorToken,
+  ): boolean {
+    switch (punctuatorToken.value) {
+      case ',':
+      case ':':
+        return true
+      default:
+        return false
+    }
+  }
 }
 
 function computeCommentTextToInsertAfter({
