@@ -77,17 +77,79 @@ export function makeSingleNodeCommentAfterFixes({
 
   fixes.push(fixer.replaceTextRange(range, ''))
 
-  let tokenAfterNode = sourceCode.getTokenAfter(node)
-  fixes.push(
-    fixer.insertTextAfter(
-      tokenAfterNode?.loc.end.line === node.loc.end.line ?
-        tokenAfterNode
-      : node,
-      sourceCode.text.slice(...range),
-    ),
-  )
+  let nodeToInsertAfter = computeNodeToInsertAfter({
+    sourceCode,
+    node,
+  })
+  let commentText = computeCommentTextToInsertAfter({
+    nodeToInsertAfter,
+    commentAfter,
+    sourceCode,
+    range,
+  })
+  fixes.push(fixer.insertTextAfter(nodeToInsertAfter, commentText))
 
   return fixes
+}
+
+function computeNodeToInsertAfter({
+  sourceCode,
+  node,
+}: {
+  node: TSESTree.Token | TSESTree.Node
+  sourceCode: TSESLint.SourceCode
+}): TSESTree.Token | TSESTree.Node {
+  let tokenAfterNode = sourceCode.getTokenAfter(node)
+
+  if (tokenAfterNode?.type !== 'Punctuator') {
+    return node
+  }
+  if (!isRelevantPunctuator(tokenAfterNode)) {
+    return node
+  }
+  if (tokenAfterNode.loc.end.line !== node.loc.end.line) {
+    return node
+  }
+
+  return tokenAfterNode
+
+  function isRelevantPunctuator(
+    punctuatorToken: TSESTree.PunctuatorToken,
+  ): boolean {
+    switch (punctuatorToken.value) {
+      case ',':
+      case ':':
+        return true
+      default:
+        return false
+    }
+  }
+}
+
+function computeCommentTextToInsertAfter({
+  nodeToInsertAfter,
+  commentAfter,
+  sourceCode,
+  range,
+}: {
+  nodeToInsertAfter: TSESTree.Token | TSESTree.Node
+  sourceCode: TSESLint.SourceCode
+  commentAfter: TSESTree.Comment
+  range: TSESTree.Range
+}): string {
+  let commentText = sourceCode.text.slice(...range)
+
+  if (commentAfter.type !== 'Line') {
+    return commentText
+  }
+
+  let tokenAfterInsertion = sourceCode.getTokenAfter(nodeToInsertAfter)
+  if (tokenAfterInsertion?.loc.start.line !== nodeToInsertAfter.loc.end.line) {
+    return commentText
+  }
+  commentText += '\n'
+
+  return commentText
 }
 
 /**

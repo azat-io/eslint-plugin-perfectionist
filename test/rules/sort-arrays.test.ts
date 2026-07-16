@@ -2153,6 +2153,49 @@ describe('sort-arrays', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          [
+            a, /* a */
+            b /* b */ ]
+        `,
+        code: dedent`
+          [
+            b, /* b */
+            a /* a */ ]
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedArraysOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          [
+            a,
+            b // b
+           ]
+        `,
+        code: dedent`
+          [
+            b, // b
+            a ]
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
       let partitionOptions = [
         {

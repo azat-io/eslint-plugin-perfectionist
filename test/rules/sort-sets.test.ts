@@ -1956,6 +1956,49 @@ describe('sort-sets', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a', /* a */
+            'b' /* b */ ])
+        `,
+        code: dedent`
+          new Set([
+            'b', /* b */
+            'a' /* a */ ])
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          new Set([
+            'a',
+            'b' // b
+           ])
+        `,
+        code: dedent`
+          new Set([
+            'b', // b
+            'a' ])
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
       let partitionOptions = [
         {

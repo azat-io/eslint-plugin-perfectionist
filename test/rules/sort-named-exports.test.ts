@@ -1388,6 +1388,49 @@ describe('sort-named-exports', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export {
+            a, /* a */
+            b /* b */ }
+        `,
+        code: dedent`
+          export {
+            b, /* b */
+            a /* a */ }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          export {
+            a,
+            b // b
+           }
+        `,
+        code: dedent`
+          export {
+            b, // b
+            a }
+        `,
+        options: [options],
+      })
+    })
+
     it('ignores newline fixes between different partitions when newlinesBetween is 0', async () => {
       await invalid({
         options: [

@@ -312,6 +312,49 @@ describe('sort-objects', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a: 2, /* a */
+            b: 1 /* b */ }
+        `,
+        code: dedent`
+          let obj = {
+            b: 1, /* b */
+            a: 2 /* a */ }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            a: 2,
+            b: 1 // b
+           }
+        `,
+        code: dedent`
+          let obj = {
+            b: 1, // b
+            a: 2 }
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts objects without trailing comma when last element has a comment', async () => {
       await invalid({
         errors: [
