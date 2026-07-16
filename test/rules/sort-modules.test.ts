@@ -2580,6 +2580,416 @@ describe('sort-modules', () => {
     testDependencyDetection(true)
     testDependencyDetection(false)
 
+    describe('decorator metadata dependency detection', () => {
+      let metadataOptions = {
+        useExperimentalDependencyDetection: true,
+        emitDecoratorMetadata: true,
+        type: 'alphabetical',
+        groups: ['unknown'],
+        order: 'asc',
+      } as const
+
+      it('detects a constructor parameter type of a decorated class', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            @Decorator()
+            class A {
+              constructor(dependency: B) {}
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('reorders a constructor parameter type before its decorated user', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            @Decorator()
+            class A {
+              constructor(dependency: B) {}
+            }
+          `,
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: B) {}
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not detect the type when emitDecoratorMetadata is disabled', async () => {
+        await valid({
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: B) {}
+            }
+
+            class B {}
+          `,
+          options: [{ ...metadataOptions, emitDecoratorMetadata: false }],
+        })
+      })
+
+      it('does not detect the type on an undecorated class', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              constructor(dependency: B) {}
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects a decorated property type', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              property: B
+            }
+          `,
+          code: dedent`
+            class A {
+              @Decorator()
+              property: B
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects decorated method parameter and return types', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+            {
+              data: { nodeDependentOnRight: 'A', right: 'C' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class C {}
+
+            class A {
+              @Decorator()
+              method(argument: B): C {
+                return null as any
+              }
+            }
+          `,
+          code: dedent`
+            class A {
+              @Decorator()
+              method(argument: B): C {
+                return null as any
+              }
+            }
+
+            class B {}
+
+            class C {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('reorders a decorated property type before its user', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              property: B
+            }
+          `,
+          code: dedent`
+            class A {
+              @Decorator()
+              property: B
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('reorders a decorated method return type before its user', async () => {
+        await invalid({
+          output: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              method(): B {
+                return null as any
+              }
+            }
+          `,
+          code: dedent`
+            class A {
+              @Decorator()
+              method(): B {
+                return null as any
+              }
+            }
+
+            class B {}
+          `,
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects a decorated accessor property type', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              accessor property: B
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects a decorated getter return type', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              get property(): B {
+                return null as any
+              }
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects a decorated setter parameter type', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              set property(value: B) {}
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not detect a wrapped type in a decorated position', async () => {
+        await valid({
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: Array<B>) {}
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not treat an interface parameter type as a dependency', async () => {
+        await valid({
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: B) {}
+            }
+
+            interface B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects the constructor parameter type of an exported decorated class', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            @Decorator()
+            export abstract class A {
+              constructor(dependency: B) {}
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects a constructor parameter type when the parameter is decorated', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            class A {
+              constructor(@Inject() dependency: B) {}
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('detects a parameter-property type of a decorated class', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            @Decorator()
+            class A {
+              constructor(private dependency: B) {}
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not detect an undecorated method parameter type', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              method(argument: B): void {}
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not detect a decorated array parameter type', async () => {
+        await valid({
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: B[]) {}
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not detect a decorated union parameter type', async () => {
+        await valid({
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: B | C) {}
+            }
+
+            class B {}
+
+            class C {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('does not detect a type cast in a decorated method', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              @Decorator()
+              method() {
+                return value as B
+              }
+            }
+
+            class B {}
+          `,
+          options: [metadataOptions],
+        })
+      })
+
+      it('is a no-op without experimental dependency detection', async () => {
+        await valid({
+          code: dedent`
+            @Decorator()
+            class A {
+              constructor(dependency: B) {}
+            }
+
+            class B {}
+          `,
+          options: [
+            { ...metadataOptions, useExperimentalDependencyDetection: false },
+          ],
+        })
+      })
+
+      it('ignores a type annotation not attached to a class member', async () => {
+        await valid({
+          code: dedent`
+            class B {}
+
+            class A {
+              static {
+                let dependency: B
+              }
+            }
+          `,
+          options: [metadataOptions],
+        })
+      })
+    })
+
     it('supports function overload names', async () => {
       await valid({
         code: dedent`
