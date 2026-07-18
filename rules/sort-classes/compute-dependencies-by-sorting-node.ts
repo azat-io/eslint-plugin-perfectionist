@@ -107,24 +107,26 @@ function computeIdentifierOrThisExpressionDependency({
     }
   }
   function shouldIgnoreCallbackDependency(): boolean {
-    let [firstCallExpressionParent] = computeParentNodesWithTypes({
+    let callExpressionParents = computeParentNodesWithTypes({
       allowedTypes: [AST_NODE_TYPES.CallExpression],
       maxParent: classElement,
       consecutiveOnly: false,
       node,
     })
-    if (!firstCallExpressionParent) {
-      return false
-    }
 
-    if (!('name' in firstCallExpressionParent.callee)) {
-      return false
-    }
+    return callExpressionParents.some(shouldIgnoreCallExpression)
 
-    return matches(
-      firstCallExpressionParent.callee.name,
-      ignoreCallbackDependenciesPatterns,
-    )
+    function shouldIgnoreCallExpression(
+      callExpressionParent: TSESTree.CallExpression,
+    ): boolean {
+      return (
+        'name' in callExpressionParent.callee &&
+        matches(
+          callExpressionParent.callee.name,
+          ignoreCallbackDependenciesPatterns,
+        )
+      )
+    }
   }
 }
 

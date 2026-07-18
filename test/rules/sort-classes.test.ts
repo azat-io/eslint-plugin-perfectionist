@@ -3749,6 +3749,24 @@ describe('sort-classes', () => {
                 },
               ],
             })
+
+            await valid({
+              code: dedent`
+                class Class {
+                  a = computed(() => {
+                    console.log(this.b)
+                  });
+
+                  b;
+                }
+              `,
+              options: [
+                {
+                  ignoreCallbackDependenciesPatterns,
+                  useExperimentalDependencyDetection,
+                },
+              ],
+            })
           },
         )
 
