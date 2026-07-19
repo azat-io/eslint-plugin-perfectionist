@@ -3962,6 +3962,30 @@ describe('sort-classes', () => {
       })
     })
 
+    describe('experimental detection specific', () => {
+      it('ignores dependencies inside function declarations nested in immediately invoked functions', async () => {
+        await valid({
+          code: dedent`
+            class Class {
+              static a = (() => {
+                function inner() {
+                  return Class.b
+                }
+                return inner
+              })()
+              static b = 1
+            }
+          `,
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+        })
+      })
+    })
+
     it('ignores unknown group', async () => {
       await invalid({
         errors: [
