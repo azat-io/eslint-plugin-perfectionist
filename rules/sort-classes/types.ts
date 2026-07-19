@@ -62,7 +62,7 @@ export type Options = Partial<
     ignoreCallbackDependenciesPatterns: RegexOption
 
     /**
-     * Enables experimental dependency detection.
+     * @deprecated Enables experimental dependency detection.
      */
     useExperimentalDependencyDetection: boolean
   } & AllCommonOptions<
