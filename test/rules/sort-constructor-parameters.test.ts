@@ -1491,6 +1491,138 @@ describe('sort-constructor-parameters', () => {
         })
       })
 
+      it('ignores dependencies inside function bodies', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                a = () => b,
+                b = 1,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                a = function() { return b },
+                b = 1,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                a = () => { return b },
+                b = 1,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                b = () => a,
+                a = b,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies inside immediately invoked arrow functions', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                b = 1,
+                a = (() => b)(),
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersDependencyOrder',
+              data: { nodeDependentOnRight: 'a', right: 'b' },
+            },
+          ],
+          output: dedent`
+            class Foo {
+              constructor(
+                b = 1,
+                a = (() => b)(),
+              ) {}
+            }
+          `,
+          code: dedent`
+            class Foo {
+              constructor(
+                a = (() => b)(),
+                b = 1,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies inside immediately invoked function expressions', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                b = { x: 1 },
+                a = (function() { return b.x })(),
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('detects dependencies inside immediately invoked constructor functions', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                b = 1,
+                a = new (function() { this.v = b })().v,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('ignores dependencies inside functions passed as arguments', async () => {
+        await valid({
+          code: dedent`
+            class Foo {
+              constructor(
+                a = f(() => b),
+                b = 1,
+              ) {}
+            }
+          `,
+          options: [options],
+        })
+      })
+
       it('detects dependencies in template literal expressions', async () => {
         await valid({
           code: dedent`

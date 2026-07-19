@@ -9,11 +9,11 @@ import type {
   Options,
 } from './types'
 
+import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
-import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
@@ -166,10 +166,11 @@ export function sortConstructorParameters<MessageIds extends string>({
       [[]],
     )
 
-  let dependenciesBySortingNode = computeDependenciesBySortingNode({
-    sortingNodes: sortingNodeGroups.flat(),
-    sourceCode,
-  })
+  let dependenciesBySortingNode =
+    computeDependenciesOutsideFunctionsBySortingNode({
+      sortingNodes: sortingNodeGroups.flat(),
+      sourceCode,
+    })
   sortingNodeGroups = populateSortingNodeGroupsWithDependencies({
     dependenciesBySortingNode,
     sortingNodeGroups,
