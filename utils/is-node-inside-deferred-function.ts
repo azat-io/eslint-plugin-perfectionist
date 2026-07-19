@@ -26,6 +26,7 @@ export function isNodeInsideDeferredFunction({
     allowedTypes: [
       AST_NODE_TYPES.FunctionExpression,
       AST_NODE_TYPES.ArrowFunctionExpression,
+      AST_NODE_TYPES.FunctionDeclaration,
     ],
     consecutiveOnly: false,
     maxParent,

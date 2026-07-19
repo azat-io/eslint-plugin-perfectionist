@@ -668,6 +668,24 @@ describe('sort-variable-declarations', () => {
               }
             `,
           })
+
+          await valid({
+            code: dedent`
+              let a = (() => {
+                function inner() {
+                  return b
+                }
+                return inner
+              })(),
+              b = 1;
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+          })
         })
 
         it('detects dependencies inside immediately invoked arrow functions', async () => {

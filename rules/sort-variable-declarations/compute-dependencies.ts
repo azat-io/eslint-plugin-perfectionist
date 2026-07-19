@@ -39,6 +39,7 @@ function computeExpressionDependencies(
        * are immediately called.
        */
       case AST_NODE_TYPES.ArrowFunctionExpression:
+      case AST_NODE_TYPES.FunctionDeclaration:
       case AST_NODE_TYPES.FunctionExpression:
         if (!isNodeImmediatelyCalled(node)) {
           return
