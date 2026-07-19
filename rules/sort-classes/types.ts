@@ -55,9 +55,10 @@ export type Options = Partial<
     newlinesBetweenOverloadSignatures: NewlinesBetweenOption
 
     /**
-     * Regex patterns for function names whose callback argument dependencies
-     * are ignored during class-member sorting. Dependencies inside these
-     * callbacks won't influence the ordering.
+     * @deprecated Regex patterns for function names whose callback argument
+     *   dependencies are ignored during class-member sorting. Dependencies
+     *   inside these callbacks won't influence the ordering. Only useful for
+     *   the legacy dependency detection.
      */
     ignoreCallbackDependenciesPatterns: RegexOption
 

@@ -350,7 +350,11 @@ Specifies how to handle newlines between overload signatures and the implementat
 - `0` — No newlines are allowed.
 - Any other number — Enforce this number of newlines between each overload signature.
 
-### ignoreCallbackDependenciesPatterns
+### [DEPRECATED] ignoreCallbackDependenciesPatterns
+
+<Important>
+  This option only has an impact with [`useExperimentalDependencyDetection: false`](#useexperimentaldependencydetection).
+</Important>
 
 <sub>
   type: `string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]`
