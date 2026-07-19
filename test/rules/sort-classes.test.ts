@@ -2250,6 +2250,23 @@ describe('sort-classes', () => {
       useExperimentalDependencyDetection: boolean,
     ): void {
       describe(`experimental dependency detection: ${useExperimentalDependencyDetection}`, () => {
+        it('ignores this-references that do not match any class member', async () => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            code: dedent`
+              class Class {
+                a = this.nonExistent
+                b = 1
+              }
+            `,
+          })
+        })
+
         it('does not sort properties if the right value depends on the left value', async () => {
           await valid({
             options: [
