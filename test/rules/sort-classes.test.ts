@@ -3904,7 +3904,7 @@ describe('sort-classes', () => {
 
     describe('function property dependencies inside deferred callbacks', () => {
       describe('useExperimentalDependencyDetection: true', () => {
-        it('ignores them, so members sort by order', async () => {
+        it('ignores them', async () => {
           await invalid({
             output: dedent`
               class Class {
