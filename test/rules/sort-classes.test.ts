@@ -3801,52 +3801,37 @@ describe('sort-classes', () => {
 
     describe('ignoreCallbackDependenciesPatterns', () => {
       describe('useExperimentalDependencyDetection: true', () => {
-        it.each([
-          ['computed function pattern as string', '^computed$'],
-          ['computed function pattern in array', ['noMatch', '^computed$']],
-          [
-            'computed function pattern as object',
-            { pattern: '^COMPUTED$', flags: 'i' },
-          ],
-          [
-            'computed function pattern as object in array',
-            ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
-          ],
-        ])(
-          'ignores only callback dependencies matching %s, keeping the others',
-          async (_name, ignoreCallbackDependenciesPatterns) => {
-            await valid({
-              code: dedent`
-                class Class {
-                  a = computed(() => this.c)
-                  c
-                  b = notComputed(() => this.c)
-                }
-              `,
-              options: [
-                {
-                  ignoreCallbackDependenciesPatterns,
-                },
-              ],
-            })
+        it('ignores every deferred callback dependency', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                a = computed(() => this.c)
+                b = notComputed(() => this.c)
+                c
+              }
+            `,
+            options: [
+              {
+                useExperimentalDependencyDetection: true,
+              },
+            ],
+          })
 
-            await valid({
-              code: dedent`
-                class Class {
-                  static a = computed(() => Class.c)
-                  static c
-                  static b = notComputed(() => Class.c)
-                }
-              `,
-              options: [
-                {
-                  useExperimentalDependencyDetection: false,
-                  ignoreCallbackDependenciesPatterns,
-                },
-              ],
-            })
-          },
-        )
+          await valid({
+            code: dedent`
+              class Class {
+                static a = computed(() => Class.c)
+                static b = notComputed(() => Class.c)
+                static c
+              }
+            `,
+            options: [
+              {
+                useExperimentalDependencyDetection: true,
+              },
+            ],
+          })
+        })
       })
 
       describe('useExperimentalDependencyDetection: false', () => {
@@ -3902,8 +3887,16 @@ describe('sort-classes', () => {
 
     describe('function property dependencies inside deferred callbacks', () => {
       describe('useExperimentalDependencyDetection: true', () => {
-        it('keeps the used member first', async () => {
-          await valid({
+        it('ignores them, so members sort by order', async () => {
+          await invalid({
+            output: dedent`
+              class Class {
+                a = createState((set) => {
+                  set('query', this.b.value)
+                })
+                b = createQueryString()
+              }
+            `,
             code: dedent`
               class Class {
                 b = createQueryString()
@@ -3915,7 +3908,14 @@ describe('sort-classes', () => {
             options: [
               {
                 ...options,
+                useExperimentalDependencyDetection: true,
                 groups: [['property', 'method']],
+              },
+            ],
+            errors: [
+              {
+                messageId: 'unexpectedClassesOrder',
+                data: { right: 'a', left: 'b' },
               },
             ],
           })

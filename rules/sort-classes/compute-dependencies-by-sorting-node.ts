@@ -8,6 +8,7 @@ import type { SortClassesSortingNode, NodeNameDetails } from './types'
 import type { RegexOption } from '../../types/common-options'
 
 import { computeDependenciesBySortingNode as baseComputeDependenciesBySortingNode } from '../../utils/compute-dependencies-by-sorting-node'
+import { isNodeInsideDeferredFunction } from '../../utils/is-node-inside-deferred-function'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { computeIdentifierNameDetails } from './compute-identifier-name-details'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -72,6 +73,13 @@ function computeIdentifierOrThisExpressionDependency({
   classElement: TSESTree.ClassElement
 }): SortingNodeWithoutDependencies | null {
   if (shouldIgnoreCallbackDependency()) {
+    return null
+  }
+
+  if (
+    classElement.type !== AST_NODE_TYPES.StaticBlock &&
+    isNodeInsideDeferredFunction({ maxParent: classElement, node })
+  ) {
     return null
   }
 
