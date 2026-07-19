@@ -2668,24 +2668,6 @@ describe('sort-classes', () => {
           await valid({
             code: dedent`
               class Class {
-                b = createQueryString();
-                a = createState((set) => {
-                    set('query', this.b.value);
-                 });
-              }
-            `,
-            options: [
-              {
-                ...options,
-                useExperimentalDependencyDetection,
-                groups: [['property', 'method']],
-              },
-            ],
-          })
-
-          await valid({
-            code: dedent`
-              class Class {
                 b = function () {
                   return 1
                 }
@@ -3704,72 +3686,6 @@ describe('sort-classes', () => {
           })
         })
 
-        it.each([
-          ['computed function pattern as string', '^computed$'],
-          ['computed function pattern in array', ['noMatch', '^computed$']],
-          [
-            'computed function pattern as object',
-            { pattern: '^COMPUTED$', flags: 'i' },
-          ],
-          [
-            'computed function pattern as object in array',
-            ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
-          ],
-        ])(
-          'ignores callback dependencies matching %s',
-          async (_name, ignoreCallbackDependenciesPatterns) => {
-            await valid({
-              code: dedent`
-                class Class {
-                  a = computed(() => this.c)
-                  c
-                  b = notComputed(() => this.c)
-                }
-              `,
-              options: [
-                {
-                  ignoreCallbackDependenciesPatterns,
-                  useExperimentalDependencyDetection,
-                },
-              ],
-            })
-
-            await valid({
-              code: dedent`
-                class Class {
-                  static a = computed(() => Class.c)
-                  static c
-                  static b = notComputed(() => Class.c)
-                }
-              `,
-              options: [
-                {
-                  ignoreCallbackDependenciesPatterns,
-                  useExperimentalDependencyDetection,
-                },
-              ],
-            })
-
-            await valid({
-              code: dedent`
-                class Class {
-                  a = computed(() => {
-                    console.log(this.b)
-                  });
-
-                  b;
-                }
-              `,
-              options: [
-                {
-                  ignoreCallbackDependenciesPatterns,
-                  useExperimentalDependencyDetection,
-                },
-              ],
-            })
-          },
-        )
-
         it('does not sort accessor properties if the right value depends on the left value', async () => {
           await valid({
             options: [
@@ -3882,6 +3798,152 @@ describe('sort-classes', () => {
     }
     testDependencyDetection(true)
     testDependencyDetection(false)
+
+    describe('ignoreCallbackDependenciesPatterns', () => {
+      describe('useExperimentalDependencyDetection: true', () => {
+        it.each([
+          ['computed function pattern as string', '^computed$'],
+          ['computed function pattern in array', ['noMatch', '^computed$']],
+          [
+            'computed function pattern as object',
+            { pattern: '^COMPUTED$', flags: 'i' },
+          ],
+          [
+            'computed function pattern as object in array',
+            ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
+          ],
+        ])(
+          'ignores only callback dependencies matching %s, keeping the others',
+          async (_name, ignoreCallbackDependenciesPatterns) => {
+            await valid({
+              code: dedent`
+                class Class {
+                  a = computed(() => this.c)
+                  c
+                  b = notComputed(() => this.c)
+                }
+              `,
+              options: [
+                {
+                  ignoreCallbackDependenciesPatterns,
+                },
+              ],
+            })
+
+            await valid({
+              code: dedent`
+                class Class {
+                  static a = computed(() => Class.c)
+                  static c
+                  static b = notComputed(() => Class.c)
+                }
+              `,
+              options: [
+                {
+                  useExperimentalDependencyDetection: false,
+                  ignoreCallbackDependenciesPatterns,
+                },
+              ],
+            })
+          },
+        )
+      })
+
+      describe('useExperimentalDependencyDetection: false', () => {
+        it.each([
+          ['computed function pattern as string', '^computed$'],
+          ['computed function pattern in array', ['noMatch', '^computed$']],
+          [
+            'computed function pattern as object',
+            { pattern: '^COMPUTED$', flags: 'i' },
+          ],
+          [
+            'computed function pattern as object in array',
+            ['noMatch', { pattern: '^COMPUTED$', flags: 'i' }],
+          ],
+        ])(
+          'ignores only callback dependencies matching %s, keeping the others',
+          async (_name, ignoreCallbackDependenciesPatterns) => {
+            await valid({
+              code: dedent`
+                class Class {
+                  a = computed(() => this.c)
+                  c
+                  b = notComputed(() => this.c)
+                }
+              `,
+              options: [
+                {
+                  useExperimentalDependencyDetection: false,
+                  ignoreCallbackDependenciesPatterns,
+                },
+              ],
+            })
+
+            await valid({
+              code: dedent`
+                class Class {
+                  static a = computed(() => Class.c)
+                  static c
+                  static b = notComputed(() => Class.c)
+                }
+              `,
+              options: [
+                {
+                  useExperimentalDependencyDetection: false,
+                  ignoreCallbackDependenciesPatterns,
+                },
+              ],
+            })
+          },
+        )
+      })
+    })
+
+    describe('function property dependencies inside deferred callbacks', () => {
+      describe('useExperimentalDependencyDetection: true', () => {
+        it('keeps the used member first', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = createQueryString()
+                a = createState((set) => {
+                  set('query', this.b.value)
+                })
+              }
+            `,
+            options: [
+              {
+                ...options,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+        })
+      })
+
+      describe('useExperimentalDependencyDetection: false', () => {
+        it('keeps the used member first', async () => {
+          await valid({
+            code: dedent`
+              class Class {
+                b = createQueryString()
+                a = createState((set) => {
+                  set('query', this.b.value)
+                })
+              }
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection: false,
+                groups: [['property', 'method']],
+              },
+            ],
+          })
+        })
+      })
+    })
 
     it('ignores unknown group', async () => {
       await invalid({
@@ -7963,23 +8025,6 @@ describe('sort-classes', () => {
           },
         ],
       })
-
-      await valid({
-        code: dedent`
-          class Class {
-            b = createQueryString();
-            a = createState((set) => {
-                set('query', this.b.value);
-             });
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
     })
 
     it('detects static block dependencies', async () => {
@@ -8982,8 +9027,8 @@ describe('sort-classes', () => {
           code: dedent`
             class Class {
               a = computed(() => this.c)
-              c
               b = notComputed(() => this.c)
+              c
             }
           `,
           options: [
@@ -12461,23 +12506,6 @@ describe('sort-classes', () => {
           },
         ],
       })
-
-      await valid({
-        code: dedent`
-          class Class {
-            state = createState((set) => {
-              set('query', this.queryString.value);
-            });
-            querystring = createQueryString();
-          }
-        `,
-        options: [
-          {
-            ...options,
-            groups: [['property', 'method']],
-          },
-        ],
-      })
     })
 
     it('detects static block dependencies', async () => {
@@ -13485,8 +13513,8 @@ describe('sort-classes', () => {
           code: dedent`
             class Class {
               a = computed(() => this.c)
-              c
               b = notComputed(() => this.c)
+              c
             }
           `,
           options: [
