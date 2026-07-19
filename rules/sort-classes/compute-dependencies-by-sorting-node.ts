@@ -8,6 +8,7 @@ import type { SortClassesSortingNode, NodeNameDetails } from './types'
 import type { RegexOption } from '../../types/common-options'
 
 import { computeDependenciesBySortingNode as baseComputeDependenciesBySortingNode } from '../../utils/compute-dependencies-by-sorting-node'
+import { isNodeInsideDeferredFunction } from '../../utils/is-node-inside-deferred-function'
 import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
 import { computeIdentifierNameDetails } from './compute-identifier-name-details'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
@@ -75,6 +76,13 @@ function computeIdentifierOrThisExpressionDependency({
     return null
   }
 
+  if (
+    classElement.type !== AST_NODE_TYPES.StaticBlock &&
+    isNodeInsideDeferredFunction({ maxParent: classElement, node })
+  ) {
+    return null
+  }
+
   let { parent } = node
   /* v8 ignore if -- @preserve Unsure how we can reach that case */
   if (parent.type !== AST_NODE_TYPES.MemberExpression) {
@@ -107,24 +115,26 @@ function computeIdentifierOrThisExpressionDependency({
     }
   }
   function shouldIgnoreCallbackDependency(): boolean {
-    let [firstCallExpressionParent] = computeParentNodesWithTypes({
+    let callExpressionParents = computeParentNodesWithTypes({
       allowedTypes: [AST_NODE_TYPES.CallExpression],
       maxParent: classElement,
       consecutiveOnly: false,
       node,
     })
-    if (!firstCallExpressionParent) {
-      return false
-    }
 
-    if (!('name' in firstCallExpressionParent.callee)) {
-      return false
-    }
+    return callExpressionParents.some(shouldIgnoreCallExpression)
 
-    return matches(
-      firstCallExpressionParent.callee.name,
-      ignoreCallbackDependenciesPatterns,
-    )
+    function shouldIgnoreCallExpression(
+      callExpressionParent: TSESTree.CallExpression,
+    ): boolean {
+      return (
+        'name' in callExpressionParent.callee &&
+        matches(
+          callExpressionParent.callee.name,
+          ignoreCallbackDependenciesPatterns,
+        )
+      )
+    }
   }
 }
 
