@@ -44,7 +44,22 @@ describe('getTypescriptImport', () => {
     expect(mockCreateRequire).toHaveBeenCalledExactlyOnceWith('typescript')
   })
 
-  it('loads typescript once if typescript exists', () => {
+  it("doesn't load typescript if it exists but is missing at least one required key (Typescript 7)", () => {
+    mockCreateRequire.mockReturnValue({
+      convertCompilerOptionsFromJson: () => {},
+      isExternalModuleNameRelative: () => {},
+      createModuleResolutionCache: () => {},
+      parseJsonConfigFileContent: () => {},
+      readConfigFile: () => {},
+      sys: {},
+    } as unknown as typeof ts)
+
+    let result = getTypescriptImport()
+
+    expect(result).toBeNull()
+  })
+
+  it('loads typescript once if typescript exists and exposes all the necessary keys', () => {
     mockCreateRequire.mockReturnValue(ts)
 
     getTypescriptImport()
