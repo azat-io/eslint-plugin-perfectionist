@@ -185,6 +185,49 @@ describe('sort-enums', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = 'a', /* a */
+            B = 'b' /* b */ }
+        `,
+        code: dedent`
+          enum Enum {
+            B = 'b', /* b */
+            A = 'a' /* a */ }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          enum Enum {
+            A = 'a',
+            B = 'b' // b
+           }
+        `,
+        code: dedent`
+          enum Enum {
+            B = 'b', // b
+            A = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves implicit values in enums', async () => {
       await valid({
         code: dedent`
