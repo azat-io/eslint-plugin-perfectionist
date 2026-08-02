@@ -143,9 +143,9 @@ describe('readClosestTsConfigByPath', () => {
         mockConvertCompilerOptionsFromJsonReturnValue()
 
         readClosestTsConfigByPath(testInput)
-        let actual = readClosestTsConfigByPath(testInput)
+        let result = readClosestTsConfigByPath(testInput)
 
-        expect(actual?.compilerOptions).toEqual(
+        expect(result?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
         expect(mockExistsSync).toHaveBeenCalledExactlyOnceWith(
@@ -168,19 +168,18 @@ describe('readClosestTsConfigByPath', () => {
           tsconfigRootDir: './a',
           contextCwd: '../../',
         })
-
         /**
          * This should call to fs.existsSync once: e, then it should retrieve c
          * from cache, pointing to a.
          */
-        let actual = readClosestTsConfigByPath({
+        let result = readClosestTsConfigByPath({
           tsconfigFilename: 'tsconfig.json',
           filePath: './a/b/c/e/f.ts',
           tsconfigRootDir: './a',
           contextCwd: './',
         })
 
-        expect(actual?.compilerOptions).toEqual(
+        expect(result?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
         expect(mockExistsSync).toHaveBeenCalledTimes(4)
@@ -203,19 +202,18 @@ describe('readClosestTsConfigByPath', () => {
           tsconfigRootDir: './a',
           contextCwd: '../../',
         })
-
         /**
          * This should call to fs.existsSync 2: g, f Then it should retrieve b
          * from cache, pointing to a.
          */
-        let actual = readClosestTsConfigByPath({
+        let result = readClosestTsConfigByPath({
           tsconfigFilename: 'tsconfig.json',
           filePath: './a/b/f/g/h.ts',
           tsconfigRootDir: './a',
           contextCwd: '../../',
         })
 
-        expect(actual?.compilerOptions).toEqual(
+        expect(result?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
         expect(mockExistsSync).toHaveBeenCalledTimes(6)
@@ -229,9 +227,9 @@ describe('readClosestTsConfigByPath', () => {
         mockParseJsonConfigFileContentReturnValue()
         mockConvertCompilerOptionsFromJsonReturnValue()
 
-        let actual = readClosestTsConfigByPath(testInput)
+        let result = readClosestTsConfigByPath(testInput)
 
-        expect(actual?.compilerOptions).toEqual(
+        expect(result?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
       })
@@ -245,9 +243,9 @@ describe('readClosestTsConfigByPath', () => {
         mockParseJsonConfigFileContentReturnValue()
         mockConvertCompilerOptionsFromJsonReturnValue()
 
-        let actual = readClosestTsConfigByPath(testInput)
+        let result = readClosestTsConfigByPath(testInput)
 
-        expect(actual?.compilerOptions).toEqual(
+        expect(result?.compilerOptions).toEqual(
           tsConfigContent.raw.config.compilerOptions,
         )
       })
