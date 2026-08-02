@@ -14,7 +14,6 @@ let cachedImport: typeof ts | undefined
 let hasTriedLoadingTypescript: boolean = false
 
 let requiredTypescriptAttributes = [
-  'convertCompilerOptionsFromJson',
   'createModuleResolutionCache',
   'isExternalModuleNameRelative',
   'parseJsonConfigFileContent',
