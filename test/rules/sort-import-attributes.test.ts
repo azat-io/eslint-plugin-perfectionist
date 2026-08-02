@@ -650,6 +650,49 @@ describe('sort-import-attributes', () => {
         })
       })
     })
+
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import x from 'm' with {
+            a: 'y', /* a */
+            b: 'x' /* b */ }
+        `,
+        code: dedent`
+          import x from 'm' with {
+            b: 'x', /* b */
+            a: 'y' /* a */ }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import x from 'module' with {
+            a: 'y',
+            b: 'x' // b
+           }
+        `,
+        code: dedent`
+          import x from 'module' with {
+            b: 'x', // b
+            a: 'y' }
+        `,
+        options: [options],
+      })
+    })
   })
 
   describe('natural', () => {

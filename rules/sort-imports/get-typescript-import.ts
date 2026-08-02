@@ -13,12 +13,26 @@ let cachedImport: typeof ts | undefined
  */
 let hasTriedLoadingTypescript: boolean = false
 
+let requiredTypescriptAttributes = [
+  'convertCompilerOptionsFromJson',
+  'createModuleResolutionCache',
+  'isExternalModuleNameRelative',
+  'parseJsonConfigFileContent',
+  'readConfigFile',
+  'resolveModuleName',
+  'sys',
+] as const satisfies (keyof typeof ts)[]
+export type TypescriptImport = Pick<
+  typeof ts,
+  (typeof requiredTypescriptAttributes)[number]
+>
+
 /**
  * Dynamically loads the typescript module if it's available and caches it.
  *
  * @returns The TypeScript module or null if it's not available.
  */
-export function getTypescriptImport(): typeof ts | null {
+export function getTypescriptImport(): TypescriptImport | null {
   if (cachedImport) {
     return cachedImport
   }
@@ -27,10 +41,21 @@ export function getTypescriptImport(): typeof ts | null {
   }
   hasTriedLoadingTypescript = true
   try {
-    cachedImport = createRequire(import.meta.url)('typescript') as typeof ts
+    let tsImport = createRequire(import.meta.url)('typescript') as typeof ts
+    if (!isSupportedTypescriptVersion(tsImport)) {
+      return null
+    }
+
+    cachedImport = tsImport
+    return cachedImport
     // eslint-disable-next-line sonarjs/no-ignored-exceptions
   } catch (_error) {
     return null
   }
-  return cachedImport
+}
+
+function isSupportedTypescriptVersion(typescriptImport: typeof ts): boolean {
+  return requiredTypescriptAttributes.every(attribute =>
+    Object.hasOwn(typescriptImport, attribute),
+  )
 }

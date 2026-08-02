@@ -3749,6 +3749,24 @@ describe('sort-classes', () => {
                 },
               ],
             })
+
+            await valid({
+              code: dedent`
+                class Class {
+                  a = computed(() => {
+                    console.log(this.b)
+                  });
+
+                  b;
+                }
+              `,
+              options: [
+                {
+                  ignoreCallbackDependenciesPatterns,
+                  useExperimentalDependencyDetection,
+                },
+              ],
+            })
           },
         )
 
@@ -4612,6 +4630,49 @@ describe('sort-classes', () => {
             c() {}
           }
         `,
+      })
+    })
+
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            a = 2 /* a */
+            b = 1; /* b */ }
+        `,
+        code: dedent`
+          class Class {
+            b = 1; /* b */
+            a = 2 /* a */ }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            a = 2
+            b = 1; // b
+           }
+        `,
+        code: dedent`
+          class Class {
+            b = 1; // b
+            a = 2 }
+        `,
+        options: [options],
       })
     })
 
