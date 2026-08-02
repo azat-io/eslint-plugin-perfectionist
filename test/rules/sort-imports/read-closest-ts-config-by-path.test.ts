@@ -1,5 +1,3 @@
-/* eslint-disable typescript/no-unsafe-member-access */
-
 import type { Diagnostic } from 'typescript'
 import type { PathLike } from 'node:fs'
 import type { Mock } from 'vitest'
@@ -16,9 +14,6 @@ vi.mock(import('node:fs'), () => ({
   existsSync: (filePath: PathLike): boolean =>
     mockExistsSync(filePath as string),
 }))
-
-let mockConvertCompilerOptionsFromJson: Mock<(content: object) => unknown> =
-  vi.fn()
 
 let mockReadConfigFile: Mock<(filePath: string) => ts.ParsedCommandLine> =
   vi.fn()
@@ -41,8 +36,6 @@ let mockRequire: Mock<(moduleId: string) => typeof ts> = vi.fn(
       },
       parseJsonConfigFileContent: (content: object): ts.ParsedCommandLine =>
         mockParseJsonConfigFileContent(content),
-      convertCompilerOptionsFromJson: (content: object) =>
-        mockConvertCompilerOptionsFromJson(content),
       readConfigFile: (filePath: string): ts.ParsedCommandLine =>
         mockReadConfigFile(filePath),
     }) as unknown as typeof ts,
@@ -66,17 +59,11 @@ let testInput = {
   contextCwd: '../../../',
 }
 
-let tsConfigContent = {
-  raw: {
-    config: {
-      compilerOptions: {
-        baseUrl: './packages/package',
-      },
-    },
-  },
-} as ts.ParsedCommandLine
-
 describe('readClosestTsConfigByPath', () => {
+  let compilerOptions = {
+    baseUrl: './packages/package',
+  }
+
   let readClosestTsConfigByPath: typeof testedFunction
 
   beforeEach(async () => {
@@ -120,12 +107,13 @@ describe('readClosestTsConfigByPath', () => {
       )
     })
 
-    it("throws an error if the compiler options can't be converted", () => {
+    it('throws an error if the config has parse errors', () => {
       mockExistsSync.mockReturnValue(true)
       mockReadConfigFileReturnValue()
-      mockParseJsonConfigFileContentReturnValue()
-      mockConvertCompilerOptionsFromJson.mockReturnValue({
+      mockParseJsonConfigFileContent.mockReturnValue({
         errors: [{ code: 1 }] as Diagnostic[],
+        fileNames: [],
+        options: {},
       })
 
       expect(() =>
@@ -140,14 +128,11 @@ describe('readClosestTsConfigByPath', () => {
         mockExistsSync.mockReturnValue(true)
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()
-        mockConvertCompilerOptionsFromJsonReturnValue()
 
         readClosestTsConfigByPath(testInput)
         let result = readClosestTsConfigByPath(testInput)
 
-        expect(result?.compilerOptions).toEqual(
-          tsConfigContent.raw.config.compilerOptions,
-        )
+        expect(result?.compilerOptions).toEqual(compilerOptions)
         expect(mockExistsSync).toHaveBeenCalledExactlyOnceWith(
           path.normalize('../../repos/repo/packages/package/tsconfig.json'),
         )
@@ -159,7 +144,6 @@ describe('readClosestTsConfigByPath', () => {
         )
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()
-        mockConvertCompilerOptionsFromJsonReturnValue()
 
         // This should call to fs.existsSync three times: c, b, a.
         readClosestTsConfigByPath({
@@ -179,9 +163,7 @@ describe('readClosestTsConfigByPath', () => {
           contextCwd: './',
         })
 
-        expect(result?.compilerOptions).toEqual(
-          tsConfigContent.raw.config.compilerOptions,
-        )
+        expect(result?.compilerOptions).toEqual(compilerOptions)
         expect(mockExistsSync).toHaveBeenCalledTimes(4)
       })
 
@@ -191,7 +173,6 @@ describe('readClosestTsConfigByPath', () => {
         )
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()
-        mockConvertCompilerOptionsFromJsonReturnValue()
 
         /**
          * This should call to fs.existsSync 4 times: d, c, b, a.
@@ -213,25 +194,45 @@ describe('readClosestTsConfigByPath', () => {
           contextCwd: '../../',
         })
 
-        expect(result?.compilerOptions).toEqual(
-          tsConfigContent.raw.config.compilerOptions,
-        )
+        expect(result?.compilerOptions).toEqual(compilerOptions)
         expect(mockExistsSync).toHaveBeenCalledTimes(6)
       })
     })
 
     describe('when caching misses', () => {
+      it('passes the raw config to parseJsonConfigFileContent and returns the parsed options', () => {
+        mockExistsSync.mockReturnValue(true)
+        let rawConfig = {
+          compilerOptions: { baseUrl: './packages/package' },
+          extends: '../tsconfig.base.json',
+        }
+        mockReadConfigFileReturnValue({ config: rawConfig })
+        let resolvedOptions = {
+          baseUrl: './packages/package',
+          paths: { '@/*': ['src/*'] },
+        }
+        mockParseJsonConfigFileContent.mockReturnValue({
+          options: resolvedOptions,
+          fileNames: [],
+          errors: [],
+        })
+
+        let result = readClosestTsConfigByPath(testInput)
+
+        expect(mockParseJsonConfigFileContent).toHaveBeenCalledExactlyOnceWith(
+          rawConfig,
+        )
+        expect(result?.compilerOptions).toEqual(resolvedOptions)
+      })
+
       it('returns a local tsconfig.json when matched', () => {
         mockExistsSync.mockReturnValue(true)
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()
-        mockConvertCompilerOptionsFromJsonReturnValue()
 
         let result = readClosestTsConfigByPath(testInput)
 
-        expect(result?.compilerOptions).toEqual(
-          tsConfigContent.raw.config.compilerOptions,
-        )
+        expect(result?.compilerOptions).toEqual(compilerOptions)
       })
 
       it('returns a parent tsconfig.json when matched', () => {
@@ -241,13 +242,10 @@ describe('readClosestTsConfigByPath', () => {
         )
         mockReadConfigFileReturnValue()
         mockParseJsonConfigFileContentReturnValue()
-        mockConvertCompilerOptionsFromJsonReturnValue()
 
         let result = readClosestTsConfigByPath(testInput)
 
-        expect(result?.compilerOptions).toEqual(
-          tsConfigContent.raw.config.compilerOptions,
-        )
+        expect(result?.compilerOptions).toEqual(compilerOptions)
       })
 
       it('throws when searching fails.', () => {
@@ -282,16 +280,11 @@ describe('readClosestTsConfigByPath', () => {
     }
 
     function mockParseJsonConfigFileContentReturnValue(): void {
-      mockParseJsonConfigFileContent.mockReturnValue(tsConfigContent)
-    }
-
-    function mockConvertCompilerOptionsFromJsonReturnValue(): void {
-      mockConvertCompilerOptionsFromJson.mockReturnValue({
-        options: tsConfigContent.raw.config.compilerOptions,
+      mockParseJsonConfigFileContent.mockReturnValue({
+        options: compilerOptions,
+        fileNames: [],
         errors: [],
       })
     }
   })
 })
-
-/* eslint-enable typescript/no-unsafe-member-access */
