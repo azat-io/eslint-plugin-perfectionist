@@ -1,11 +1,11 @@
 import { builtinModules } from 'node:module'
 
-import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by-path'
+import type { ReadClosestTsConfigByPathValue } from '../../utils/tsconfig/read-closest-ts-config-by-path'
 import type { RegexOption } from '../../types/common-options'
 import type { Selector } from './types'
 
+import { getTypescriptImport } from '../../utils/tsconfig/get-typescript-import'
 import { matchesTsconfigPaths } from './matches-tsconfig-paths'
-import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
 /**
