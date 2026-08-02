@@ -3,7 +3,10 @@ import type ts from 'typescript'
 import * as path from 'node:path'
 import * as fs from 'node:fs'
 
-import { getTypescriptImport } from './get-typescript-import'
+import {
+  type TypescriptImport,
+  getTypescriptImport,
+} from './get-typescript-import'
 
 /**
  * Heavily inspired from:
@@ -113,7 +116,7 @@ export function readClosestTsConfigByPath({
  * @throws {Error} If the config file cannot be read or parsed.
  */
 function getCompilerOptions(
-  typescriptImport: typeof ts,
+  typescriptImport: TypescriptImport,
   contextCwd: string,
   filePath: string,
 ): ReadClosestTsConfigByPathValue {

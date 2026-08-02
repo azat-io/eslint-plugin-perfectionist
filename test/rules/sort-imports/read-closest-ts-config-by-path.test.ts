@@ -30,6 +30,7 @@ let mockParseJsonConfigFileContent: Mock<
 let mockRequire: Mock<(moduleId: string) => typeof ts> = vi.fn(
   () =>
     ({
+      ...ts,
       createModuleResolutionCache: (
         _contextCwd: string,
         getCanonicalFileName: (fileName: string) => string,
@@ -44,7 +45,6 @@ let mockRequire: Mock<(moduleId: string) => typeof ts> = vi.fn(
         mockConvertCompilerOptionsFromJson(content),
       readConfigFile: (filePath: string): ts.ParsedCommandLine =>
         mockReadConfigFile(filePath),
-      sys: ts.sys,
     }) as unknown as typeof ts,
 )
 
