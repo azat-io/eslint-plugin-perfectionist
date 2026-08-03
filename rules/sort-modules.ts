@@ -38,6 +38,7 @@ import { computeDependenciesBySortingNode } from './sort-modules/compute-depende
 import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
+import { readClosestTsConfigByPath } from '../utils/tsconfig/read-closest-ts-config-by-path'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { tsconfigJsonSchema } from '../utils/json-schemas/tsconfig-json-schema'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -350,7 +351,19 @@ function analyzeModule({
   })
 
   if (options.useExperimentalDependencyDetection) {
+    let tsconfigRootDirectory = options.tsconfig.rootDir
+    let tsConfigOutput =
+      tsconfigRootDirectory ?
+        readClosestTsConfigByPath({
+          tsconfigFilename: options.tsconfig.filename ?? 'tsconfig.json',
+          tsconfigRootDir: options.tsconfig.rootDir,
+          filePath: context.physicalFilename,
+          contextCwd: context.cwd,
+        })
+      : null
     let dependenciesBySortingNode = computeDependenciesBySortingNode({
+      emitDecoratorMetadata:
+        tsConfigOutput?.compilerOptions.emitDecoratorMetadata ?? false,
       sortingNodes: sortingNodeGroups.flat(),
       dependencyDetection: 'hard',
       sourceCode,

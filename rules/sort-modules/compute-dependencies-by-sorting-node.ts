@@ -17,44 +17,123 @@ import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { isPropertyOrAccessorNode } from './is-property-or-accessor-node'
 import { isArrowFunctionNode } from './is-arrow-function-node'
 
+type HardDependencyDetectionParameters = {
+  emitDecoratorMetadata: boolean
+  dependencyDetection: 'hard'
+} & CommonParameters
+type SoftDependencyDetectionParameters = {
+  emitDecoratorMetadata?: never
+  dependencyDetection: 'soft'
+} & CommonParameters
+interface CommonParameters {
+  sortingNodes: SortingNodeWithoutDependencies[]
+  sourceCode: TSESLint.SourceCode
+}
+type Parameters =
+  SoftDependencyDetectionParameters | HardDependencyDetectionParameters
+
 type SortingNodeWithoutDependencies = Omit<
   SortModulesSortingNode,
   'dependencies'
 >
 
 export function computeDependenciesBySortingNode({
+  emitDecoratorMetadata,
   dependencyDetection,
   sortingNodes,
   sourceCode,
-}: {
-  sortingNodes: SortingNodeWithoutDependencies[]
-  dependencyDetection: DependencyDetection
-  sourceCode: TSESLint.SourceCode
-}): Map<SortingNodeWithoutDependencies, SortingNodeWithoutDependencies[]> {
+}: Parameters): Map<
+  SortingNodeWithoutDependencies,
+  SortingNodeWithoutDependencies[]
+> {
   return baseComputeDependenciesBySortingNode({
+    shouldIgnoreIdentifierComputer: buildShouldIgnoreIdentifierComputer({
+      emitDecoratorMetadata,
+      dependencyDetection,
+    }),
     additionalIdentifierDependenciesComputer:
       buildAdditionalIdentifierDependenciesComputer({ sortingNodes }),
     shouldIgnoreSortingNodeComputer:
       buildShouldIgnoreSortingNodeComputer(dependencyDetection),
-    shouldIgnoreIdentifierComputer:
-      buildShouldIgnoreIdentifierComputer(dependencyDetection),
     sortingNodes,
     sourceCode,
   })
 }
 
-function buildShouldIgnoreIdentifierComputer(
-  dependencyDetection: DependencyDetection,
-): ShouldIgnoreIdentifierComputer<SortingNodeWithoutDependencies> {
+function buildShouldIgnoreIdentifierComputer({
+  emitDecoratorMetadata,
+  dependencyDetection,
+}: Pick<
+  Parameters,
+  'emitDecoratorMetadata' | 'dependencyDetection'
+>): ShouldIgnoreIdentifierComputer<SortingNodeWithoutDependencies> {
   return ({ referencingSortingNode, identifier }) => {
     switch (dependencyDetection) {
       case 'soft':
         return false
       case 'hard':
+        if (emitDecoratorMetadata && isInDecoratorMetadataTypePosition()) {
+          return false
+        }
+
+        if (
+          identifier.parent.type === AST_NODE_TYPES.TSTypeReference &&
+          identifier.parent.typeName === identifier
+        ) {
+          return true
+        }
+
         return !isInRelevantClassContext()
       /* v8 ignore next 2 -- @preserve Exhaustive guard. */
       default:
         throw new UnreachableCaseError(dependencyDetection)
+    }
+
+    function isInDecoratorMetadataTypePosition(): boolean {
+      let { parent } = identifier
+      if (
+        parent.type !== AST_NODE_TYPES.TSTypeReference ||
+        parent.typeName !== identifier ||
+        parent.parent.type !== AST_NODE_TYPES.TSTypeAnnotation
+      ) {
+        return false
+      }
+
+      let [element] = computeParentNodesWithTypes({
+        allowedTypes: [
+          AST_NODE_TYPES.PropertyDefinition,
+          AST_NODE_TYPES.AccessorProperty,
+          AST_NODE_TYPES.MethodDefinition,
+        ],
+        maxParent: referencingSortingNode.node,
+        consecutiveOnly: false,
+        node: identifier,
+      })
+      if (!element) {
+        return false
+      }
+
+      switch (element.type) {
+        case AST_NODE_TYPES.PropertyDefinition:
+        case AST_NODE_TYPES.AccessorProperty:
+          return element.decorators.length > 0
+        case AST_NODE_TYPES.MethodDefinition: {
+          if (element.kind !== 'constructor') {
+            return element.decorators.length > 0
+          }
+
+          if (element.parent.parent.decorators.length > 0) {
+            return true
+          }
+
+          return element.value.params.some(
+            parameter => parameter.decorators.length > 0,
+          )
+        }
+        /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+        default:
+          throw new UnreachableCaseError(element)
+      }
     }
 
     function isInRelevantClassContext(): boolean {
