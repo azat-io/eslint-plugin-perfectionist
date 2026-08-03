@@ -39,6 +39,7 @@ import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-a
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
+import { tsconfigJsonSchema } from '../utils/json-schemas/tsconfig-json-schema'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -95,6 +96,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  tsconfig: { rootDir: '' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -125,6 +127,7 @@ export default createEslintRule<Options, MessageId>({
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewlineJsonSchema,
+          tsconfig: tsconfigJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
