@@ -151,6 +151,7 @@ In settings, you can set the following options:
 - `partitionByNewLine` — Partition the sorted elements by newlines. Values can be `true` or `false`.
 - `newlinesBetween` — Specifies how to handle newlines between groups. Values can be `'ignore'` or a number.
 - `newlinesInside` — Specifies how to handle newlines between elements of each group. Values can be `'ignore'`, `'newlinesBetween'` or a number.
+- `tsconfig` — `tsconfig` configuration option used by rules such as [`sort-imports`](/rules/sort-imports#tsconfig) or [`sort-modules`](/rules/sort-modules#tsconfig).
 
 Example:
 
@@ -171,11 +172,16 @@ Example:
                 type: 'alphabetical',
               }],
               'perfectionist/sort-interfaces': ['error'],
+              'perfectionist/sort-imports': ['error'],
             },
             settings: {
               perfectionist: {
                 type: 'line-length',
                 partitionByComment: true,
+                tsconfig: {
+                  filename: 'tsconfig.json',
+                  rootDir: '.',
+                },
               },
             },
           },
@@ -196,11 +202,16 @@ Example:
               type: 'alphabetical',
             }],
             'perfectionist/sort-interfaces': ['error'],
+            'perfectionist/sort-imports': ['error'],
           },
           settings: {
             perfectionist: {
               type: 'line-length',
               partitionByComment: true,
+              tsconfig: {
+                filename: 'tsconfig.json',
+                rootDir: '.',
+              },
             },
           },
         }
