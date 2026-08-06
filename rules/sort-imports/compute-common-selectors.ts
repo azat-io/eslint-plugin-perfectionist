@@ -198,7 +198,7 @@ function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
   function clean(string_: string): string {
     return string_.replace(/^(?:node:){1,2}/u, '')
   }
-  let [basePath] = value.split('/')
+  let [basePath] = value.split('/', 1)
 
   let cleanValue = clean(value)
   let cleanBase = clean(basePath!)

@@ -130,9 +130,9 @@
 
   $effect(() => {
     if (
-      trimmedQuery.length >= MIN_QUERY_LENGTH &&
       !isIndexReady &&
-      !isLoading
+      !isLoading &&
+      trimmedQuery.length >= MIN_QUERY_LENGTH
     ) {
       void init()
     }

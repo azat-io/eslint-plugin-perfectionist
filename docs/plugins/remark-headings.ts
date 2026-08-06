@@ -8,9 +8,9 @@ export let remarkHeadings: Plugin<[], Root> =
   (): Transformer<Root> => (tree: Node) => {
     visit(tree, (node: Node, index: undefined | number, parent: Parent) => {
       if (
+        typeof index === 'number' &&
         node.type === 'heading' &&
-        ((node as Heading).depth === 2 || (node as Heading).depth === 3) &&
-        typeof index === 'number'
+        ((node as Heading).depth === 2 || (node as Heading).depth === 3)
       ) {
         // eslint-disable-next-line unicorn/better-dom-traversing
         let text = ((node as Heading).children[0] as Literal).value as string
