@@ -26,8 +26,8 @@ export function getCommentsBefore({
   let commentsBefore = getRelevantCommentsBeforeNodeOrToken(sourceCode, node)
   let tokenBeforeNode = sourceCode.getTokenBefore(node)
   if (
-    commentsBefore.length > 0 ||
     !tokenValueToIgnoreBefore ||
+    commentsBefore.length > 0 ||
     tokenBeforeNode?.value !== tokenValueToIgnoreBefore
   ) {
     return commentsBefore

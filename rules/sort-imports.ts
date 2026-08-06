@@ -536,6 +536,6 @@ let styleExtensions = [
   '.sss',
 ]
 function isStyle(value: string): boolean {
-  let [cleanedValue] = value.split('?')
+  let [cleanedValue] = value.split('?', 1)
   return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
 }

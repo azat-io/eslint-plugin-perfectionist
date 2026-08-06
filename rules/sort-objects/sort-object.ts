@@ -129,8 +129,8 @@ export function sortObject({
     }
 
     if (
-      options.partitionByComputedKey &&
       !isDestructuredObject &&
+      options.partitionByComputedKey &&
       property.computed
     ) {
       sortingNodeGroups.push([])

@@ -99,8 +99,8 @@ export function shouldPartition({
   }
 
   return !!(
-    options.partitionByNewLine &&
     lastSortingNode &&
+    options.partitionByNewLine &&
     getLinesBetween(sourceCode, lastSortingNode, sortingNode)
   )
 }

@@ -46,7 +46,6 @@ describe('getTypescriptImport', () => {
 
   it("doesn't load typescript if it exists but is missing at least one required key (Typescript 7)", () => {
     mockCreateRequire.mockReturnValue({
-      convertCompilerOptionsFromJson: () => {},
       isExternalModuleNameRelative: () => {},
       createModuleResolutionCache: () => {},
       parseJsonConfigFileContent: () => {},
