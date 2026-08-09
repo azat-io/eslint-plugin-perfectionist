@@ -55,6 +55,7 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
+  ignoreCallbackDependenciesPatterns: [],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   partitionByComputedKey: false,
@@ -224,6 +225,8 @@ export function sortObject({
   if (options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
       computeDependenciesOutsideDeferredFunctionsBySortingNode({
+        ignoreCallbackDependenciesPatterns:
+          options.ignoreCallbackDependenciesPatterns,
         sortingNodes: sortingNodeGroups.flat(),
         sourceCode,
       })

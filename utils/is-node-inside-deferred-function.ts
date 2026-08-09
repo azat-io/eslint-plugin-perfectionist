@@ -28,7 +28,7 @@ export function isNodeInsideDeferredFunction({
   maxParent,
   node,
 }: {
-  ignoreCallbackDependenciesPatterns?: RegexOption
+  ignoreCallbackDependenciesPatterns: RegexOption
   maxParent: TSESTree.Node
   node: TSESTree.Node
 }): boolean {
