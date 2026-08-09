@@ -854,26 +854,92 @@ describe('sort-variable-declarations', () => {
             },
           ],
           code: dedent`
-            let a = f(() => b),
+            let a = [1].map(() => b),
                 b = 1;
           `,
+        })
+      })
+
+      it('detects dependencies inside simple deferred callbacks', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+            },
+          ],
+          output: dedent`
+            let a = () => b,
+                b = 1;
+          `,
+          code: dedent`
+            let b = 1,
+                a = () => b;
+          `,
+          errors: [{ messageId: 'unexpectedVariableDeclarationsOrder' }],
         })
       })
     })
 
     describe('experimental detection specific', () => {
-      it('ignores dependencies inside functions passed as arguments', async () => {
-        await valid({
+      it('detects dependencies inside functions passed as arguments', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedVariableDeclarationsDependencyOrder',
+              data: { nodeDependentOnRight: 'a', right: 'b' },
+            },
+          ],
           options: [
             {
               ...options,
               useExperimentalDependencyDetection: true,
             },
           ],
+          output: dedent`
+            let b = 1,
+                a = [1].map(() => b);
+          `,
           code: dedent`
-            let a = f(() => b),
+            let a = [1].map(() => b),
                 b = 1;
           `,
+        })
+      })
+
+      it('ignores dependencies inside configured functions passed as arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              ignoreCallbackDependenciesPatterns: ['^computed$'],
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let a = computed(() => b),
+                b = 1;
+          `,
+        })
+      })
+
+      it('ignores dependencies inside simple deferred callbacks', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          output: dedent`
+            let a = () => b,
+                b = 1;
+          `,
+          code: dedent`
+            let b = 1,
+                a = () => b;
+          `,
+          errors: [{ messageId: 'unexpectedVariableDeclarationsOrder' }],
         })
       })
 
