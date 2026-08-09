@@ -1505,7 +1505,10 @@ describe('sort-objects', () => {
             },
           ],
           code: dedent`
-            const { b = 1, a = (() => b)() } = {};
+            const {
+              b = 1,
+              a = (() => b)()
+            } = {};
           `,
         })
 
@@ -1523,10 +1526,16 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            const { b = 1, a = (() => b)() } = {};
+            const {
+              b = 1,
+              a = (() => b)()
+            } = {};
           `,
           code: dedent`
-            const { a = (() => b)(), b = 1 } = {};
+            const {
+              a = (() => b)(),
+              b = 1
+            } = {};
           `,
         })
       })
