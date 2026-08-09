@@ -351,6 +351,27 @@ Specifies whether this rule should be applied to styled-components like librarie
 - `true` — Apply the rule to styled-components.
 - `false` — Disable the rule for styled-components.
 
+### ignoreCallbackDependenciesPatterns
+
+<sub>
+  type: `string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]`
+</sub>
+<sub>default: `[]`</sub>
+
+Specifies regexp patterns of function names that should ignore dependency sorting in their callback functions.
+
+Example with `ignoreCallbackDependenciesPatterns: ['^computed$']`:
+
+```ts
+let {
+  fullName = computed(() => role + ' - ' + username),
+  role = signal('admin'),
+  username = signal('John'),
+} = props;
+```
+
+Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `username` would be sorted before `fullName` as it depends on them.
+
 ### useConfigurationIf
 
 <sub>
@@ -874,6 +895,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   newlinesInside: 'ignore',
                   styledComponents: true,
                   useConfigurationIf: {},
+                  ignoreCallbackDependenciesPatterns: [],
                   groups: [],
                   customGroups: [],
                   useExperimentalDependencyDetection: true,
@@ -910,6 +932,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 newlinesInside: 'ignore',
                 styledComponents: true,
                 useConfigurationIf: {},
+                ignoreCallbackDependenciesPatterns: [],
                 groups: [],
                 customGroups: [],
                 useExperimentalDependencyDetection: true,

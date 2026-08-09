@@ -169,6 +169,25 @@ Specifies the sorting locales. Refer To [String.prototype.localeCompare() - loca
 - `string` — A BCP 47 language tag (e.g. `'en'`, `'en-US'`, `'zh-CN'`).
 - `string[]` — An array of BCP 47 language tags.
 
+### ignoreCallbackDependenciesPatterns
+
+<sub>
+  type: `string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]`
+</sub>
+<sub>default: `[]`</sub>
+
+Specifies regexp patterns of function names that should ignore dependency sorting in their callback functions.
+
+Example with `ignoreCallbackDependenciesPatterns: ['^computed$']`:
+
+```ts
+let fullName = computed(() => role + ' - ' + username),
+    role = signal('admin'),
+    username = signal('John');
+```
+
+Without `ignoreCallbackDependenciesPatterns: ['^computed$']`, `role` and `username` would be sorted before `fullName` as it depends on them.
+
 ### useConfigurationIf
 
 <sub>
@@ -487,6 +506,8 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   partitionByComment: false,
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
+                  useConfigurationIf: {},
+                  ignoreCallbackDependenciesPatterns: [],
                   groups: [],
                   customGroups: [],
                   useExperimentalDependencyDetection: true,
@@ -519,6 +540,8 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 partitionByComment: false,
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
+                useConfigurationIf: {},
+                ignoreCallbackDependenciesPatterns: [],
                 groups: [],
                 customGroups: [],
                 useExperimentalDependencyDetection: true,
