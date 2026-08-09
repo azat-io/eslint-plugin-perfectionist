@@ -738,21 +738,6 @@ describe('sort-variable-declarations', () => {
           })
         })
 
-        it('ignores dependencies inside functions passed as arguments', async () => {
-          await valid({
-            options: [
-              {
-                ...options,
-                useExperimentalDependencyDetection,
-              },
-            ],
-            code: dedent`
-              let a = f(() => b),
-                  b = 1;
-            `,
-          })
-        })
-
         it('ignores dependencies in non-computed properties', async () => {
           await valid({
             options: [
@@ -859,7 +844,39 @@ describe('sort-variable-declarations', () => {
     testDependencyDetection(true)
     testDependencyDetection(false)
 
+    describe('legacy detection specific', () => {
+      it('ignores dependencies inside functions passed as arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+            },
+          ],
+          code: dedent`
+            let a = f(() => b),
+                b = 1;
+          `,
+        })
+      })
+    })
+
     describe('experimental detection specific', () => {
+      it('ignores dependencies inside functions passed as arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let a = f(() => b),
+                b = 1;
+          `,
+        })
+      })
+
       it('ignores dependencies inside class declarations in immediately invoked functions', async () => {
         await invalid({
           errors: [
