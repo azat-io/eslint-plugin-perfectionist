@@ -85,6 +85,12 @@ export type Options = Partial<
     }
 
     /**
+     * Regex patterns for function names whose callback argument dependencies
+     * should be ignored.
+     */
+    ignoreCallbackDependenciesPatterns: RegexOption
+
+    /**
      * @deprecated Enables experimental dependency detection.
      */
     useExperimentalDependencyDetection: boolean

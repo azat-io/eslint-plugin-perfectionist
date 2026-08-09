@@ -16,6 +16,7 @@ import {
   matchesAstSelectorJsonSchema,
   buildUseConfigIfJsonSchema,
   buildCommonJsonSchemas,
+  buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
   DEPENDENCY_ORDER_ERROR,
@@ -77,6 +78,7 @@ export default createEslintRule<Options, MessageId>({
           },
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
+          ignoreCallbackDependenciesPatterns: buildRegexJsonSchema(),
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewlineJsonSchema,
         },
