@@ -189,26 +189,6 @@ function buildAdditionalIdentifierDependenciesComputer({
   }
 }
 
-function shouldIgnoreDependencyComputation(
-  node: TSESTree.ClassElement,
-): boolean {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSAbstractPropertyDefinition:
-    case AST_NODE_TYPES.TSAbstractAccessorProperty:
-    case AST_NODE_TYPES.TSAbstractMethodDefinition:
-    case AST_NODE_TYPES.PropertyDefinition:
-    case AST_NODE_TYPES.AccessorProperty:
-    case AST_NODE_TYPES.StaticBlock:
-      return false
-    case AST_NODE_TYPES.MethodDefinition:
-    case AST_NODE_TYPES.TSIndexSignature:
-      return true
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-}
-
 function computeThisExpressionsInsideClassElement({
   classElement,
   sourceCode,
@@ -227,5 +207,25 @@ function computeThisExpressionsInsideClassElement({
   }
   function isThisToken(token: TSESTree.Token): boolean {
     return token.type === AST_TOKEN_TYPES.Keyword && token.value === 'this'
+  }
+}
+
+function shouldIgnoreDependencyComputation(
+  node: TSESTree.ClassElement,
+): boolean {
+  switch (node.type) {
+    case AST_NODE_TYPES.TSAbstractPropertyDefinition:
+    case AST_NODE_TYPES.TSAbstractAccessorProperty:
+    case AST_NODE_TYPES.TSAbstractMethodDefinition:
+    case AST_NODE_TYPES.PropertyDefinition:
+    case AST_NODE_TYPES.AccessorProperty:
+    case AST_NODE_TYPES.StaticBlock:
+      return false
+    case AST_NODE_TYPES.MethodDefinition:
+    case AST_NODE_TYPES.TSIndexSignature:
+      return true
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
 }
