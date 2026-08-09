@@ -20,7 +20,7 @@ import {
   allModifiers,
   allSelectors,
 } from './types'
-import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
+import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -223,7 +223,7 @@ export function sortObject({
 
   if (options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
-      computeDependenciesOutsideFunctionsBySortingNode({
+      computeDependenciesOutsideDeferredFunctionsBySortingNode({
         sortingNodes: sortingNodeGroups.flat(),
         sourceCode,
       })

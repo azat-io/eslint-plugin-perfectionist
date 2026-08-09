@@ -7,7 +7,7 @@ import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
 import { isNodeInsideDeferredFunction } from './is-node-inside-deferred-function'
 
-export function computeDependenciesOutsideFunctionsBySortingNode<
+export function computeDependenciesOutsideDeferredFunctionsBySortingNode<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
 >({

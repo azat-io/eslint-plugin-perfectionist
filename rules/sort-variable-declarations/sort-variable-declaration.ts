@@ -16,7 +16,7 @@ import {
   ORDER_ERROR_ID,
   allSelectors,
 } from './types'
-import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
+import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -171,7 +171,7 @@ export function sortVariableDeclaration({
 
   if (options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
-      computeDependenciesOutsideFunctionsBySortingNode({
+      computeDependenciesOutsideDeferredFunctionsBySortingNode({
         sortingNodes: sortingNodeGroups.flat(),
         sourceCode,
       })
