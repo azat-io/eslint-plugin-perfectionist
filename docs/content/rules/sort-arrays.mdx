@@ -342,7 +342,7 @@ Example configuration 1: only sort arrays followed by `as const`.
     'error',
     {
       useConfigurationIf: {
-        matchesAstSelector: 'TSAsExpression > ArrayExpression',
+        matchesAstSelector: 'TSAsExpression[typeAnnotation.typeName.name=const] > ArrayExpression',
       },
       type: 'alphabetical',
     },
