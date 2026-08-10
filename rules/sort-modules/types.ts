@@ -5,6 +5,7 @@ import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-depe
 import type { NewlinesBetweenOption } from '../../types/common-groups-options'
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
+import type { TsConfigOption } from '../../types/ts-config-option'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -31,6 +32,12 @@ export type Options = [
        * @deprecated Enables experimental dependency detection.
        */
       useExperimentalDependencyDetection: boolean
+
+      /**
+       * TypeScript configuration used to read compiler options such as
+       * `emitDecoratorMetadata`.
+       */
+      tsconfig: TsConfigOption
     } & AllCommonOptions<
       CustomTypeOption,
       AdditionalSortOptions,

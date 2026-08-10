@@ -2,19 +2,17 @@ import type {
   RuleListener,
   RuleContext,
 } from '@typescript-eslint/utils/ts-eslint'
-import type { CompilerOptions } from 'typescript'
 
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
-import { createModuleResolutionCache } from 'typescript'
 import { describe, expect, it, vi } from 'vitest'
 import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-imports/types'
 import type { MessageId } from '../../rules/sort-imports'
 
-import * as readClosestTsConfigUtilities from '../../rules/sort-imports/read-closest-ts-config-by-path'
-import * as getTypescriptImportUtilities from '../../rules/sort-imports/get-typescript-import'
+import { mockReadClosestTsConfigByPathWith } from './mock-read-closest-ts-config-by-path-with'
+import * as getTypescriptImportUtilities from '../../utils/tsconfig/get-typescript-import'
 import { validateRuleJsonSchema } from '../utils/validate-rule-json-schema'
 import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
@@ -27,22 +25,6 @@ describe('sort-imports', () => {
     rule,
   })
   let oxlintRuleTester = buildOxlintRuleTester(rule)
-
-  function mockReadClosestTsConfigByPathWith(
-    compilerOptions: CompilerOptions,
-  ): void {
-    vi.spyOn(
-      readClosestTsConfigUtilities,
-      'readClosestTsConfigByPath',
-    ).mockReturnValue({
-      cache: createModuleResolutionCache(
-        '.',
-        filename => filename,
-        compilerOptions,
-      ),
-      compilerOptions,
-    })
-  }
 
   describe('alphabetical', () => {
     let options = {

@@ -7,50 +7,89 @@ import type {
   AdditionalIdentifierDependenciesComputer,
   ShouldIgnoreSortingNodeComputer,
   ShouldIgnoreIdentifierComputer,
-} from '../../utils/compute-dependencies-by-sorting-node'
-import type { SortModulesSortingNode, DependencyDetection } from './types'
+} from '../../../utils/compute-dependencies-by-sorting-node'
+import type { DependencyDetection } from '../types'
 
-import { computeDependenciesBySortingNode as baseComputeDependenciesBySortingNode } from '../../utils/compute-dependencies-by-sorting-node'
-import { doesSortingNodeHaveOneOfDependencyNames } from '../../utils/does-sorting-node-have-one-of-dependency-names'
-import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
-import { UnreachableCaseError } from '../../utils/unreachable-case-error'
-import { isPropertyOrAccessorNode } from './is-property-or-accessor-node'
-import { isArrowFunctionNode } from './is-arrow-function-node'
+import {
+  type SortModulesSortingNodeWithoutDependencies,
+  isIdentifierInDecoratorMetadataTypePosition,
+} from './is-identifier-in-decorator-metadata-type-position'
+import { computeDependenciesBySortingNode as baseComputeDependenciesBySortingNode } from '../../../utils/compute-dependencies-by-sorting-node'
+import { doesSortingNodeHaveOneOfDependencyNames } from '../../../utils/does-sorting-node-have-one-of-dependency-names'
+import { computeParentNodesWithTypes } from '../../../utils/compute-parent-nodes-with-types'
+import { UnreachableCaseError } from '../../../utils/unreachable-case-error'
+import { isPropertyOrAccessorNode } from '../is-property-or-accessor-node'
+import { isArrowFunctionNode } from '../is-arrow-function-node'
 
-type SortingNodeWithoutDependencies = Omit<
-  SortModulesSortingNode,
-  'dependencies'
->
+type HardDependencyDetectionParameters = {
+  emitDecoratorMetadata: boolean
+  dependencyDetection: 'hard'
+} & CommonParameters
+type SoftDependencyDetectionParameters = {
+  emitDecoratorMetadata?: never
+  dependencyDetection: 'soft'
+} & CommonParameters
+interface CommonParameters {
+  sortingNodes: SortModulesSortingNodeWithoutDependencies[]
+  sourceCode: TSESLint.SourceCode
+}
+type Parameters =
+  SoftDependencyDetectionParameters | HardDependencyDetectionParameters
 
 export function computeDependenciesBySortingNode({
+  emitDecoratorMetadata,
   dependencyDetection,
   sortingNodes,
   sourceCode,
-}: {
-  sortingNodes: SortingNodeWithoutDependencies[]
-  dependencyDetection: DependencyDetection
-  sourceCode: TSESLint.SourceCode
-}): Map<SortingNodeWithoutDependencies, SortingNodeWithoutDependencies[]> {
+}: Parameters): Map<
+  SortModulesSortingNodeWithoutDependencies,
+  SortModulesSortingNodeWithoutDependencies[]
+> {
   return baseComputeDependenciesBySortingNode({
+    shouldIgnoreIdentifierComputer: buildShouldIgnoreIdentifierComputer({
+      emitDecoratorMetadata,
+      dependencyDetection,
+      sortingNodes,
+    }),
     additionalIdentifierDependenciesComputer:
       buildAdditionalIdentifierDependenciesComputer({ sortingNodes }),
     shouldIgnoreSortingNodeComputer:
       buildShouldIgnoreSortingNodeComputer(dependencyDetection),
-    shouldIgnoreIdentifierComputer:
-      buildShouldIgnoreIdentifierComputer(dependencyDetection),
     sortingNodes,
     sourceCode,
   })
 }
 
-function buildShouldIgnoreIdentifierComputer(
-  dependencyDetection: DependencyDetection,
-): ShouldIgnoreIdentifierComputer<SortingNodeWithoutDependencies> {
+function buildShouldIgnoreIdentifierComputer({
+  emitDecoratorMetadata,
+  dependencyDetection,
+  sortingNodes,
+}: Pick<
+  Parameters,
+  'emitDecoratorMetadata' | 'dependencyDetection' | 'sortingNodes'
+>): ShouldIgnoreIdentifierComputer<SortModulesSortingNodeWithoutDependencies> {
   return ({ referencingSortingNode, identifier }) => {
     switch (dependencyDetection) {
       case 'soft':
         return false
       case 'hard':
+        if (
+          emitDecoratorMetadata &&
+          isIdentifierInDecoratorMetadataTypePosition({
+            sortingNodes,
+            identifier,
+          })
+        ) {
+          return false
+        }
+
+        if (
+          identifier.parent.type === AST_NODE_TYPES.TSTypeReference &&
+          identifier.parent.typeName === identifier
+        ) {
+          return true
+        }
+
         return !isInRelevantClassContext()
       /* v8 ignore next 2 -- @preserve Exhaustive guard. */
       default:
@@ -121,8 +160,8 @@ function buildShouldIgnoreIdentifierComputer(
 function buildAdditionalIdentifierDependenciesComputer({
   sortingNodes,
 }: {
-  sortingNodes: SortingNodeWithoutDependencies[]
-}): AdditionalIdentifierDependenciesComputer<SortingNodeWithoutDependencies> {
+  sortingNodes: SortModulesSortingNodeWithoutDependencies[]
+}): AdditionalIdentifierDependenciesComputer<SortModulesSortingNodeWithoutDependencies> {
   return ({ referencingSortingNode, reference }) => {
     let relatedIdentifiers = [
       ...computeMemberExpressionIdentifiers(),
@@ -157,7 +196,7 @@ function buildAdditionalIdentifierDependenciesComputer({
 
 function buildShouldIgnoreSortingNodeComputer(
   dependencyDetection: DependencyDetection,
-): ShouldIgnoreSortingNodeComputer<SortingNodeWithoutDependencies> {
+): ShouldIgnoreSortingNodeComputer<SortModulesSortingNodeWithoutDependencies> {
   return sortingNode => {
     switch (dependencyDetection) {
       case 'hard':

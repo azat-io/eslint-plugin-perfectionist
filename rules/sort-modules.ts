@@ -33,12 +33,14 @@ import {
   newlinesBetweenJsonSchema,
 } from '../utils/json-schemas/common-groups-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
+import { computeDependenciesBySortingNode } from './sort-modules/dependencies/compute-dependencies-by-sorting-node'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
-import { computeDependenciesBySortingNode } from './sort-modules/compute-dependencies-by-sorting-node'
 import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
+import { readClosestTsConfigByPath } from '../utils/tsconfig/read-closest-ts-config-by-path'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
+import { tsconfigJsonSchema } from '../utils/json-schemas/tsconfig-json-schema'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
@@ -95,6 +97,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  tsconfig: { rootDir: '' },
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -125,6 +128,7 @@ export default createEslintRule<Options, MessageId>({
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewlineJsonSchema,
+          tsconfig: tsconfigJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -347,7 +351,19 @@ function analyzeModule({
   })
 
   if (options.useExperimentalDependencyDetection) {
+    let tsconfigRootDirectory = options.tsconfig.rootDir
+    let tsConfigOutput =
+      tsconfigRootDirectory ?
+        readClosestTsConfigByPath({
+          tsconfigFilename: options.tsconfig.filename ?? 'tsconfig.json',
+          tsconfigRootDir: options.tsconfig.rootDir,
+          filePath: context.physicalFilename,
+          contextCwd: context.cwd,
+        })
+      : null
     let dependenciesBySortingNode = computeDependenciesBySortingNode({
+      emitDecoratorMetadata:
+        tsConfigOutput?.compilerOptions.emitDecoratorMetadata ?? false,
       sortingNodes: sortingNodeGroups.flat(),
       dependencyDetection: 'hard',
       sourceCode,

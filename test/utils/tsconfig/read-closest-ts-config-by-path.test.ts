@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import ts from 'typescript'
 
-import type { readClosestTsConfigByPath as testedFunction } from '../../../rules/sort-imports/read-closest-ts-config-by-path'
+import type { readClosestTsConfigByPath as testedFunction } from '../../../utils/tsconfig/read-closest-ts-config-by-path'
 
 let mockExistsSync: Mock<(filePath: string) => boolean> = vi.fn()
 
@@ -48,7 +48,7 @@ vi.mock(import('node:module'), _ => ({
 
 let mockGetTypescriptImport: Mock<() => typeof ts | null> = vi.fn()
 
-vi.mock(import('../../../rules/sort-imports/get-typescript-import'), () => ({
+vi.mock(import('../../../utils/tsconfig/get-typescript-import'), () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 
@@ -68,7 +68,7 @@ describe('readClosestTsConfigByPath', () => {
 
   beforeEach(async () => {
     ;({ readClosestTsConfigByPath } =
-      await import('../../../rules/sort-imports/read-closest-ts-config-by-path'))
+      await import('../../../utils/tsconfig/read-closest-ts-config-by-path'))
     vi.clearAllMocks()
     vi.resetModules()
   })
@@ -85,7 +85,7 @@ describe('readClosestTsConfigByPath', () => {
   describe('with typescript present', () => {
     beforeEach(async () => {
       let actualGetTypescriptImport = await vi.importActual(
-        '../../../rules/sort-imports/get-typescript-import',
+        '../../../utils/tsconfig/get-typescript-import',
       )
       mockGetTypescriptImport.mockImplementation(
         actualGetTypescriptImport['getTypescriptImport'] as () => typeof ts,

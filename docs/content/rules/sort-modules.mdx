@@ -366,6 +366,24 @@ Specifies how to handle newlines between overload signatures and the implementat
 - `0` — No newlines are allowed.
 - Any other number — Enforce this number of newlines between each overload signature.
 
+### tsconfig
+
+<Important>
+  This option only has an impact with [`useExperimentalDependencyDetection: false`](#useexperimentaldependencydetection).
+</Important>
+
+<sub>
+  type: `{ rootDir: string; filename?: string }`
+</sub>
+<sub>default: `{ rootDir: '' }`</sub>
+
+Specifies the TypeScript configuration used to read compiler options.
+
+- `rootDir` — Specifies the directory of the root `tsconfig.json` file (ex: `.`).
+- `filename` — Specifies the `tsconfig` filename to search for (by default: `tsconfig.json`).
+
+When set, the rule reads `emitDecoratorMetadata` from your tsconfig and treats decorator-metadata type references as dependencies.
+
 ### groups
 
 <sub>
@@ -663,6 +681,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   partitionByNewLine: false,
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
+                  tsconfig: { rootDir: '' },
                   groups: [
                     'declare-enum',
                     'export-enum',
@@ -708,6 +727,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 partitionByNewLine: false,
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
+                tsconfig: { rootDir: '' },
                 groups: [
                   'declare-enum',
                   'export-enum',

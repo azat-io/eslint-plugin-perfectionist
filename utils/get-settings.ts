@@ -2,6 +2,7 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type { TsConfigOption } from '../types/ts-config-option'
 import type { CommonOptions } from '../types/common-options'
 
 /**
@@ -15,8 +16,9 @@ export type Settings = Partial<
   Pick<
     CommonGroupsOptions<string, unknown, unknown>,
     'newlinesBetween' | 'newlinesInside'
-  > &
-    CommonPartitionOptions &
+  > & {
+    tsconfig: TsConfigOption
+  } & CommonPartitionOptions &
     CommonOptions
 >
 
@@ -78,6 +80,7 @@ export function getSettings(
       'newlinesInside',
       'fallbackSort',
       'ignoreCase',
+      'tsconfig',
       'alphabet',
       'locales',
       'order',
