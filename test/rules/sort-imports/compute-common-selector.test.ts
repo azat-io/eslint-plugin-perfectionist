@@ -4,13 +4,13 @@ import type ts from 'typescript'
 import { describe, expect, it, vi } from 'vitest'
 import { builtinModules } from 'node:module'
 
-import type { ReadClosestTsConfigByPathValue } from '../../../rules/sort-imports/read-closest-ts-config-by-path'
+import type { ReadClosestTsConfigByPathValue } from '../../../utils/tsconfig/read-closest-ts-config-by-path'
 
 import { computeCommonSelectors } from '../../../rules/sort-imports/compute-common-selectors'
 
 let mockGetTypescriptImport: Mock<() => typeof ts> = vi.fn()
 
-vi.mock(import('../../../rules/sort-imports/get-typescript-import'), () => ({
+vi.mock(import('../../../utils/tsconfig/get-typescript-import'), () => ({
   getTypescriptImport: () => mockGetTypescriptImport(),
 }))
 
