@@ -20,7 +20,7 @@ import {
 export type Options = Partial<
   {
     /**
-     * Enables experimental dependency detection.
+     * @deprecated Enables experimental dependency detection.
      */
     useExperimentalDependencyDetection: boolean
 

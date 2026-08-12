@@ -29,7 +29,7 @@ export type Options = [
       newlinesBetweenOverloadSignatures: NewlinesBetweenOption
 
       /**
-       * Enables experimental dependency detection.
+       * @deprecated Enables experimental dependency detection.
        */
       useExperimentalDependencyDetection: boolean
 

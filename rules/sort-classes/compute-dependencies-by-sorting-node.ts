@@ -8,10 +8,9 @@ import type { SortClassesSortingNode, NodeNameDetails } from './types'
 import type { RegexOption } from '../../types/common-options'
 
 import { computeDependenciesBySortingNode as baseComputeDependenciesBySortingNode } from '../../utils/compute-dependencies-by-sorting-node'
-import { computeParentNodesWithTypes } from '../../utils/compute-parent-nodes-with-types'
+import { isNodeInsideDeferredFunction } from '../../utils/is-node-inside-deferred-function'
 import { computeIdentifierNameDetails } from './compute-identifier-name-details'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
-import { matches } from '../../utils/matches'
 
 type SortingNodeWithoutDependencies = Omit<
   SortClassesSortingNode,
@@ -71,7 +70,14 @@ function computeIdentifierOrThisExpressionDependency({
   sortingNodes: SortingNodeWithoutDependencies[]
   classElement: TSESTree.ClassElement
 }): SortingNodeWithoutDependencies | null {
-  if (shouldIgnoreCallbackDependency()) {
+  if (
+    classElement.type !== AST_NODE_TYPES.StaticBlock &&
+    isNodeInsideDeferredFunction({
+      ignoreCallbackDependenciesPatterns,
+      maxParent: classElement,
+      node,
+    })
+  ) {
     return null
   }
 
@@ -104,28 +110,6 @@ function computeIdentifierOrThisExpressionDependency({
       /* v8 ignore next 2 -- @preserve Unhandled cases */
       default:
         return null
-    }
-  }
-  function shouldIgnoreCallbackDependency(): boolean {
-    let callExpressionParents = computeParentNodesWithTypes({
-      allowedTypes: [AST_NODE_TYPES.CallExpression],
-      maxParent: classElement,
-      consecutiveOnly: false,
-      node,
-    })
-
-    return callExpressionParents.some(shouldIgnoreCallExpression)
-
-    function shouldIgnoreCallExpression(
-      callExpressionParent: TSESTree.CallExpression,
-    ): boolean {
-      return (
-        'name' in callExpressionParent.callee &&
-        matches(
-          callExpressionParent.callee.name,
-          ignoreCallbackDependenciesPatterns,
-        )
-      )
     }
   }
 }
@@ -205,30 +189,6 @@ function buildAdditionalIdentifierDependenciesComputer({
   }
 }
 
-function shouldIgnoreDependencyComputation(
-  node: TSESTree.ClassElement,
-): boolean {
-  switch (node.type) {
-    case AST_NODE_TYPES.TSAbstractPropertyDefinition:
-    case AST_NODE_TYPES.TSAbstractMethodDefinition:
-    case AST_NODE_TYPES.StaticBlock:
-      return false
-    case AST_NODE_TYPES.TSAbstractAccessorProperty:
-    case AST_NODE_TYPES.PropertyDefinition:
-    case AST_NODE_TYPES.AccessorProperty:
-      return (
-        node.value?.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-        node.value?.type === AST_NODE_TYPES.FunctionExpression
-      )
-    case AST_NODE_TYPES.MethodDefinition:
-    case AST_NODE_TYPES.TSIndexSignature:
-      return true
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(node)
-  }
-}
-
 function computeThisExpressionsInsideClassElement({
   classElement,
   sourceCode,
@@ -247,5 +207,25 @@ function computeThisExpressionsInsideClassElement({
   }
   function isThisToken(token: TSESTree.Token): boolean {
     return token.type === AST_TOKEN_TYPES.Keyword && token.value === 'this'
+  }
+}
+
+function shouldIgnoreDependencyComputation(
+  node: TSESTree.ClassElement,
+): boolean {
+  switch (node.type) {
+    case AST_NODE_TYPES.TSAbstractPropertyDefinition:
+    case AST_NODE_TYPES.TSAbstractAccessorProperty:
+    case AST_NODE_TYPES.TSAbstractMethodDefinition:
+    case AST_NODE_TYPES.PropertyDefinition:
+    case AST_NODE_TYPES.AccessorProperty:
+    case AST_NODE_TYPES.StaticBlock:
+      return false
+    case AST_NODE_TYPES.MethodDefinition:
+    case AST_NODE_TYPES.TSIndexSignature:
+      return true
+    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
+    default:
+      throw new UnreachableCaseError(node)
   }
 }

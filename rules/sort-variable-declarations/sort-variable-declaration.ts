@@ -16,7 +16,7 @@ import {
   ORDER_ERROR_ID,
   allSelectors,
 } from './types'
-import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
+import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -47,6 +47,7 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
+  ignoreCallbackDependenciesPatterns: [],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   specialCharacters: 'keep',
@@ -171,7 +172,9 @@ export function sortVariableDeclaration({
 
   if (options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
-      computeDependenciesOutsideFunctionsBySortingNode({
+      computeDependenciesOutsideDeferredFunctionsBySortingNode({
+        ignoreCallbackDependenciesPatterns:
+          options.ignoreCallbackDependenciesPatterns,
         sortingNodes: sortingNodeGroups.flat(),
         sourceCode,
       })

@@ -12,7 +12,12 @@ import { AST_NODE_TYPES } from '@typescript-eslint/utils'
  * @param node - The AST node to check.
  * @returns Whether the node is immediately called.
  */
-export function isNodeImmediatelyCalled(node: TSESTree.Expression): boolean {
+export function isNodeImmediatelyCalled(
+  node:
+    | TSESTree.ArrowFunctionExpression
+    | TSESTree.FunctionDeclaration
+    | TSESTree.FunctionExpression,
+): boolean {
   let { parent } = node
   return (
     (parent.type === AST_NODE_TYPES.CallExpression ||
