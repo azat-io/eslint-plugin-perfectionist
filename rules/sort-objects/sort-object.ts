@@ -20,7 +20,7 @@ import {
   allModifiers,
   allSelectors,
 } from './types'
-import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
+import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -55,6 +55,7 @@ let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
+  ignoreCallbackDependenciesPatterns: [],
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
   partitionByComputedKey: false,
@@ -129,8 +130,8 @@ export function sortObject({
     }
 
     if (
-      options.partitionByComputedKey &&
       !isDestructuredObject &&
+      options.partitionByComputedKey &&
       property.computed
     ) {
       sortingNodeGroups.push([])
@@ -223,7 +224,9 @@ export function sortObject({
 
   if (options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
-      computeDependenciesOutsideFunctionsBySortingNode({
+      computeDependenciesOutsideDeferredFunctionsBySortingNode({
+        ignoreCallbackDependenciesPatterns:
+          options.ignoreCallbackDependenciesPatterns,
         sortingNodes: sortingNodeGroups.flat(),
         sourceCode,
       })

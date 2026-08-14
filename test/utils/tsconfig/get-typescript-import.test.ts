@@ -3,7 +3,7 @@ import type { Mock } from 'vitest'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as ts from 'typescript'
 
-import type { getTypescriptImport as testedFunction } from '../../../rules/sort-imports/get-typescript-import'
+import type { getTypescriptImport as testedFunction } from '../../../utils/tsconfig/get-typescript-import'
 
 let mockCreateRequire: Mock<(moduleId: string) => typeof ts> = vi.fn()
 let mockRequire = mockCreateRequire as unknown as NodeJS.Require
@@ -17,7 +17,7 @@ describe('getTypescriptImport', () => {
 
   beforeEach(async () => {
     ;({ getTypescriptImport } =
-      await import('../../../rules/sort-imports/get-typescript-import'))
+      await import('../../../utils/tsconfig/get-typescript-import'))
     vi.clearAllMocks()
     vi.resetModules()
   })
@@ -46,7 +46,6 @@ describe('getTypescriptImport', () => {
 
   it("doesn't load typescript if it exists but is missing at least one required key (Typescript 7)", () => {
     mockCreateRequire.mockReturnValue({
-      convertCompilerOptionsFromJson: () => {},
       isExternalModuleNameRelative: () => {},
       createModuleResolutionCache: () => {},
       parseJsonConfigFileContent: () => {},

@@ -1,5 +1,24 @@
 # Changelog
 
+## v5.10.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.10.0...v5.10.1)
+
+### 🐞 Bug Fixes
+
+- Fix crash in typescript 7
+  ([fbbc372](https://github.com/azat-io/eslint-plugin-perfectionist/commit/fbbc372))
+- Fix complex comments cases not being auto-fixed correctly
+  ([7a35d8b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7a35d8b))
+- Respect ignored callback dependencies in nested calls
+  ([c9a119e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/c9a119e))
+- Take into account extended tsconfigs
+  ([93a267e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/93a267e))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+
 ## v5.10.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.9.1...v5.10.0)

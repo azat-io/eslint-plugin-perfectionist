@@ -119,7 +119,7 @@ export function sortNodesByGroups<
   let ignoredNodeIndices: number[] = []
   for (let [index, sortingNode] of nodes.entries()) {
     if (
-      (sortingNode.isEslintDisabled && ignoreEslintDisabledNodes) ||
+      (ignoreEslintDisabledNodes && sortingNode.isEslintDisabled) ||
       isNodeIgnored?.(sortingNode)
     ) {
       ignoredNodeIndices.push(index)

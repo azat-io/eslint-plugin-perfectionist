@@ -82,16 +82,16 @@ export function isPartitionComment({
   partitionByComment,
   comment,
 }: IsPartitionCommentParameters): boolean {
-  if (getEslintDisabledRules(comment.value) || !partitionByComment) {
+  if (!partitionByComment || getEslintDisabledRules(comment.value)) {
     return false
   }
 
   let trimmedComment = comment.value.trim()
 
   if (
-    Array.isArray(partitionByComment) ||
     typeof partitionByComment === 'boolean' ||
-    typeof partitionByComment === 'string'
+    typeof partitionByComment === 'string' ||
+    Array.isArray(partitionByComment)
   ) {
     return isTrimmedCommentPartitionComment({
       partitionByComment,

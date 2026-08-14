@@ -1352,7 +1352,150 @@ describe('sort-objects', () => {
     testDependencyDetection(true)
     testDependencyDetection(false)
 
+    describe('legacy detection specific', () => {
+      it('ignores dependencies inside functions passed as arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+            },
+          ],
+          code: dedent`
+            let {
+              a = [1].map(() => b),
+              b = 1,
+            } = obj;
+          `,
+        })
+      })
+
+      it('detects dependencies inside simple deferred callbacks', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: false,
+            },
+          ],
+          output: dedent`
+            let {
+              a = () => b,
+              b = 1,
+            } = obj;
+          `,
+          code: dedent`
+            let {
+              b = 1,
+              a = () => b,
+            } = obj;
+          `,
+          errors: [{ messageId: 'unexpectedObjectsOrder' }],
+        })
+      })
+    })
+
     describe('experimental detection specific', () => {
+      it('detects dependencies inside functions passed as arguments', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'a', right: 'b' },
+              messageId: 'unexpectedObjectsDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          output: dedent`
+            let {
+              b = 1,
+              a = [1].map(() => b),
+            } = obj;
+          `,
+          code: dedent`
+            let {
+              a = [1].map(() => b),
+              b = 1,
+            } = obj;
+          `,
+        })
+      })
+
+      it('ignores dependencies inside configured functions passed as arguments', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              ignoreCallbackDependenciesPatterns: ['^computed$'],
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let {
+              a = computed(() => b),
+              b = 1,
+            } = obj;
+          `,
+        })
+      })
+
+      it('ignores dependencies inside simple deferred callbacks', async () => {
+        await invalid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          output: dedent`
+            let {
+              a = () => b,
+              b = 1,
+            } = obj;
+          `,
+          code: dedent`
+            let {
+              b = 1,
+              a = () => b,
+            } = obj;
+          `,
+          errors: [{ messageId: 'unexpectedObjectsOrder' }],
+        })
+      })
+
+      it('ignores dependencies inside class declarations in immediately invoked functions', async () => {
+        await invalid({
+          output: dedent`
+            let {
+              a = (function() { class D { m() { return b } } return 1 })(),
+              b = 1,
+            } = obj;
+          `,
+          code: dedent`
+            let {
+              b = 1,
+              a = (function() { class D { m() { return b } } return 1 })(),
+            } = obj;
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedObjectsOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+        })
+      })
+
       it('detects dependencies inside immediately invoked function bodies', async () => {
         await valid({
           options: [
@@ -1362,7 +1505,10 @@ describe('sort-objects', () => {
             },
           ],
           code: dedent`
-            const { b = 1, a = (() => b)() } = {};
+            const {
+              b = 1,
+              a = (() => b)()
+            } = {};
           `,
         })
 
@@ -1380,10 +1526,16 @@ describe('sort-objects', () => {
             },
           ],
           output: dedent`
-            const { b = 1, a = (() => b)() } = {};
+            const {
+              b = 1,
+              a = (() => b)()
+            } = {};
           `,
           code: dedent`
-            const { a = (() => b)(), b = 1 } = {};
+            const {
+              a = (() => b)(),
+              b = 1
+            } = {};
           `,
         })
       })

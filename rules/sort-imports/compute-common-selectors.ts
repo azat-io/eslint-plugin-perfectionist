@@ -1,11 +1,11 @@
 import { builtinModules } from 'node:module'
 
-import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by-path'
+import type { ReadClosestTsConfigByPathValue } from '../../utils/tsconfig/read-closest-ts-config-by-path'
 import type { RegexOption } from '../../types/common-options'
 import type { Selector } from './types'
 
+import { getTypescriptImport } from '../../utils/tsconfig/get-typescript-import'
 import { matchesTsconfigPaths } from './matches-tsconfig-paths'
-import { getTypescriptImport } from './get-typescript-import'
 import { matches } from '../../utils/matches'
 
 /**
@@ -198,7 +198,7 @@ function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
   function clean(string_: string): string {
     return string_.replace(/^(?:node:){1,2}/u, '')
   }
-  let [basePath] = value.split('/')
+  let [basePath] = value.split('/', 1)
 
   let cleanValue = clean(value)
   let cleanBase = clean(basePath!)

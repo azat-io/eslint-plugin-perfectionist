@@ -715,7 +715,7 @@ you must write a custom group definition that does the same as what the predefin
 
 Specifies which environment's built-in modules should be recognized. If you are using [Bun](https://bun.sh), change the value to `'bun'`.
 
-### useExperimentalDependencyDetection
+### [DEPRECATED] useExperimentalDependencyDetection
 
 <sub>default: `true`</sub>
 
@@ -754,6 +754,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   newlinesBetween: 1,
                   newlinesInside: 0,
                   maxLineLength: undefined,
+                  tsconfig: { rootDir: '' },
                   groups: [
                     'type-import',
                     ['value-builtin', 'value-external'],
@@ -799,6 +800,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 newlinesBetween: 1,
                 newlinesInside: 0,
                 maxLineLength: undefined,
+                tsconfig: { rootDir: '' },
                 groups: [
                   'type-import',
                   ['value-builtin', 'value-external'],

@@ -1,4 +1,4 @@
-import type { ReadClosestTsConfigByPathValue } from './read-closest-ts-config-by-path'
+import type { ReadClosestTsConfigByPathValue } from '../../utils/tsconfig/read-closest-ts-config-by-path'
 
 /**
  * Cache for compiled regex patterns from tsconfig paths. Avoids recompiling the

@@ -4,7 +4,7 @@ import type { Comparator } from '../../utils/compare/default-comparator-by-optio
 import type { SortModulesSortingNode, SortModulesNode } from './types'
 
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
-import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
+import { computeDependenciesBySortingNode } from './dependencies/compute-dependencies-by-sorting-node'
 import { isNodeDependentOnOtherNode } from '../../utils/is-node-dependent-on-other-node'
 import { buildSortingNodeByNodeMap } from '../../utils/build-sorting-node-by-node-map'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'

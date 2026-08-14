@@ -20,6 +20,10 @@ describe('get-settings', () => {
 
   it('accepts official settings provided', () => {
     let allowedOptions: { [key in keyof Required<Settings>]: Settings[key] } = {
+      tsconfig: {
+        filename: 'tsconfig.json',
+        rootDir: '.',
+      },
       fallbackSort: { type: 'alphabetical' },
       partitionByComment: 'value',
       specialCharacters: 'keep',

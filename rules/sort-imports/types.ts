@@ -4,6 +4,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { RegexOption, TypeOption } from '../../types/common-options'
 import type { AllCommonOptions } from '../../types/all-common-options'
+import type { TsConfigOption } from '../../types/ts-config-option'
 
 import {
   buildCustomGroupModifiersJsonSchema,
@@ -19,24 +20,7 @@ import {
 export type Options = Partial<
   {
     /**
-     * TypeScript configuration for resolving module paths. Enables path alias
-     * resolution based on tsconfig.json paths configuration.
-     */
-    tsconfig: {
-      /**
-       * Optional filename of the TypeScript config file. `@default`
-       * tsconfig.json'.
-       */
-      filename?: string
-
-      /**
-       * Root directory where to search for the TypeScript config file.
-       */
-      rootDir: string
-    }
-
-    /**
-     * Enables experimental dependency detection.
+     * @deprecated Enables experimental dependency detection.
      */
     useExperimentalDependencyDetection: boolean
 
@@ -53,6 +37,12 @@ export type Options = Partial<
      * @default 'node'
      */
     environment: 'node' | 'bun'
+
+    /**
+     * TypeScript configuration for resolving module paths. Enables path alias
+     * resolution based on tsconfig.json paths configuration.
+     */
+    tsconfig: TsConfigOption
 
     /**
      * Controls whether side-effect imports should be sorted. When false,

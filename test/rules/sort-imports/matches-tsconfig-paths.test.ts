@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ReadClosestTsConfigByPathValue } from '../../../rules/sort-imports/read-closest-ts-config-by-path'
+import type { ReadClosestTsConfigByPathValue } from '../../../utils/tsconfig/read-closest-ts-config-by-path'
 
 import { matchesTsconfigPaths } from '../../../rules/sort-imports/matches-tsconfig-paths'
 

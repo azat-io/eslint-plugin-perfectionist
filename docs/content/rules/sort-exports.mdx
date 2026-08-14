@@ -16,7 +16,9 @@ import CodeExample from '../../components/CodeExample.svelte'
 import CodeTabs from '../../components/CodeTabs.svelte'
 import dedent from 'dedent'
 
-Enforce sorted exports.
+Enforce sorted re-exports.
+
+This rule sorts re-export statements (`export { ... } from '...'` and `export * from '...'`), not declaration exports like `export const foo = 1` or `export function bar() {}`.
 
 Sorting exports in a consistent manner can greatly enhance the readability and maintainability of your codebase. By alphabetically ordering exports, developers can quickly identify and correct any missing or incorrect exports.
 
@@ -289,14 +291,14 @@ The only selector possible for this rule is `'export'`.
 
 The list of modifiers is sorted from most to least important:
 
-- `'value'` — Matches value exports.
-- `'type'` — Matches type exports.
-- `'wildcard'` — Matches wildcard exports.
-- `'named'` — Matches named exports.
-- `'multiline'` — Matches exports over multiple lines.
+- `'value'` — Matches exports without the `type` keyword. E.g., `export { foo } from './bar'` or `export * from './bar'`.
+- `'type'` — Matches exports with the `type` keyword. E.g., `export type { Foo } from './bar'`.
+- `'wildcard'` — Matches `export *` and `export * as` re-exports. E.g., `export * from './bar'` or `export * as utils from './bar'`.
+- `'named'` — Matches `export { ... }` re-exports with explicit names. E.g., `export { foo, bar } from './bar'`.
+- `'multiline'` — Matches exports spanning multiple lines.
 - `'singleline'` — Matches exports on a single line.
 
-Example: `type-export`.
+Examples: `type-named-export`, `value-wildcard-export`.
 
 #### Important notes
 

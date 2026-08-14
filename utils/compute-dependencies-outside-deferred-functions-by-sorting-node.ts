@@ -1,22 +1,22 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
-
 import type { ShouldIgnoreIdentifierComputer } from './compute-dependencies-by-sorting-node'
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
+import type { RegexOption } from '../types/common-options'
 
 import { computeDependenciesBySortingNode } from './compute-dependencies-by-sorting-node'
-import { computeParentNodesWithTypes } from './compute-parent-nodes-with-types'
-import { isNodeImmediatelyCalled } from './is-node-immediately-called'
+import { isNodeInsideDeferredFunction } from './is-node-inside-deferred-function'
 
-export function computeDependenciesOutsideFunctionsBySortingNode<
+export function computeDependenciesOutsideDeferredFunctionsBySortingNode<
   Node extends TSESTree.Node,
   T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
 >({
+  ignoreCallbackDependenciesPatterns,
   sortingNodes,
   sourceCode,
 }: {
+  ignoreCallbackDependenciesPatterns: RegexOption
   sourceCode: TSESLint.SourceCode
   sortingNodes: T[]
 }): Map<T, T[]> {
@@ -27,20 +27,11 @@ export function computeDependenciesOutsideFunctionsBySortingNode<
   })
 
   function buildShouldIgnoreIdentifierComputer(): ShouldIgnoreIdentifierComputer<T> {
-    return ({ referencingSortingNode, identifier }) => {
-      let functionParentNodes = computeParentNodesWithTypes({
-        allowedTypes: [
-          AST_NODE_TYPES.FunctionExpression,
-          AST_NODE_TYPES.ArrowFunctionExpression,
-        ],
+    return ({ referencingSortingNode, identifier }) =>
+      isNodeInsideDeferredFunction({
         maxParent: referencingSortingNode.node,
-        consecutiveOnly: false,
+        ignoreCallbackDependenciesPatterns,
         node: identifier,
       })
-
-      return functionParentNodes.some(
-        functionParentNode => !isNodeImmediatelyCalled(functionParentNode),
-      )
-    }
   }
 }

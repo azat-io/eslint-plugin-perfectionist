@@ -40,8 +40,8 @@ import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-a
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeDependenciesBySortingNode } from '../utils/compute-dependencies-by-sorting-node'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
+import { readClosestTsConfigByPath } from '../utils/tsconfig/read-closest-ts-config-by-path'
 import { comparatorByOptionsComputer } from './sort-imports/comparator-by-options-computer'
-import { readClosestTsConfigByPath } from './sort-imports/read-closest-ts-config-by-path'
 import { validateSideEffectsConfig } from './sort-imports/validate-side-effects-config'
 import { computeSpecifierModifiers } from './sort-imports/compute-specifier-modifiers'
 import { getOptionsWithCleanGroups } from '../utils/get-options-with-clean-groups'
@@ -49,6 +49,7 @@ import { computeCommonSelectors } from './sort-imports/compute-common-selectors'
 import { isSideEffectOnlyGroup } from './sort-imports/is-side-effect-only-group'
 import { computeDependencyNames } from './sort-imports/compute-dependency-names'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
+import { tsconfigJsonSchema } from '../utils/json-schemas/tsconfig-json-schema'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { computeSpecifierName } from './sort-imports/compute-specifier-name'
@@ -313,21 +314,6 @@ export default createEslintRule<Options, MessageId>({
             allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
             additionalSortProperties: additionalSortOptionsJsonSchema,
           }),
-          tsconfig: {
-            properties: {
-              rootDir: {
-                description: 'Specifies the tsConfig root directory.',
-                type: 'string',
-              },
-              filename: {
-                description: 'Specifies the tsConfig filename.',
-                type: 'string',
-              },
-            },
-            additionalProperties: false,
-            required: ['rootDir'],
-            type: 'object',
-          },
           maxLineLength: {
             description: 'Specifies the maximum line length.',
             exclusiveMinimum: true,
@@ -349,6 +335,7 @@ export default createEslintRule<Options, MessageId>({
           partitionByComment: partitionByCommentJsonSchema,
           partitionByNewLine: partitionByNewlineJsonSchema,
           internalPattern: buildRegexJsonSchema(),
+          tsconfig: tsconfigJsonSchema,
         },
         additionalProperties: false,
         type: 'object',
@@ -536,6 +523,6 @@ let styleExtensions = [
   '.sss',
 ]
 function isStyle(value: string): boolean {
-  let [cleanedValue] = value.split('?')
+  let [cleanedValue] = value.split('?', 1)
   return styleExtensions.some(extension => cleanedValue?.endsWith(extension))
 }
