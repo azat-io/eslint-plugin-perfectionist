@@ -123,6 +123,36 @@ describe('readClosestTsConfigByPath', () => {
       )
     })
 
+    it('ignores benign diagnostics about missing input files', () => {
+      mockExistsSync.mockReturnValue(true)
+      mockReadConfigFileReturnValue()
+      mockParseJsonConfigFileContent.mockReturnValue({
+        errors: [{ code: 18002 }, { code: 18003 }] as Diagnostic[],
+        options: compilerOptions,
+        fileNames: [],
+      })
+
+      let result = readClosestTsConfigByPath(testInput)
+
+      expect(result?.compilerOptions).toEqual(compilerOptions)
+    })
+
+    it('throws when fatal errors are mixed with benign diagnostics', () => {
+      mockExistsSync.mockReturnValue(true)
+      mockReadConfigFileReturnValue()
+      mockParseJsonConfigFileContent.mockReturnValue({
+        errors: [{ code: 18003 }, { code: 1 }] as Diagnostic[],
+        fileNames: [],
+        options: {},
+      })
+
+      expect(() =>
+        readClosestTsConfigByPath(testInput),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Error getting compiler options: [{"code":1}]]`,
+      )
+    })
+
     describe('when caching hits', () => {
       it('returns a local tsconfig.json without calling existsSync a second time', () => {
         mockExistsSync.mockReturnValue(true)
