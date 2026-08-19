@@ -16,6 +16,7 @@ export default defineConfig({
     'keyux',
     'libc',
     'lightningcss',
+    'llms',
     'mdast',
     'mdxjs',
     'minisearch',

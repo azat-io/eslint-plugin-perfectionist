@@ -1,35 +1,9 @@
 ---
+import { DESCRIPTION, BENEFITS } from '../../data/home'
 import AboutElement from './AboutElement.astro'
 import Typography from '../Typography.astro'
 import Container from '../Container.astro'
 import Title from '../Title.astro'
-
-let data = [
-  {
-    description:
-      'Automatically fix all errors safely. No manual intervention needed!',
-    title: 'Fixable Rules',
-    icon: 'tool',
-  },
-  {
-    description:
-      'Achieve a consistent code style for better readability and maintenance.',
-    title: 'Code Uniformity',
-    icon: 'code',
-  },
-  {
-    description:
-      'Flexible configuration to match your preferences. Seamless editor integration.',
-    title: 'Easy to Use',
-    icon: 'rocket-ship',
-  },
-  {
-    description:
-      'Enjoy aesthetically pleasing code. Make it look really awesome.',
-    title: "It's Just Beautiful",
-    icon: 'color-palette',
-  },
-]
 ---
 
 <section class="about">
@@ -44,11 +18,10 @@ let data = [
       size="l"
       mbe="m"
     >
-      Automatically sort and organize objects, imports, types, enums, and JSX
-      props. Ensure a clean and maintainable codebase with minimal effort.
+      {DESCRIPTION}
     </Typography>
     <div class="data">
-      {data.map(item => <AboutElement {...item} />)}
+      {BENEFITS.map(benefit => <AboutElement {...benefit} />)}
     </div>
   </Container>
 

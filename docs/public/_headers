@@ -1,3 +1,27 @@
+/
+  Link: </llms.txt>; rel="describedby"; type="text/plain"
+  Link: </index.md>; rel="describedby"; type="text/markdown"
+  Link: </guide>; rel="service-doc"; type="text/html"
+  Vary: Accept
+
+/configs
+  Vary: Accept
+
+/configs/*
+  Vary: Accept
+
+/guide
+  Vary: Accept
+
+/guide/*
+  Vary: Accept
+
+/rules
+  Vary: Accept
+
+/rules/*
+  Vary: Accept
+
 /*
   content-security-policy: default-src 'self'; script-src 'self' cdn.usefathom.com 'unsafe-inline' 'unsafe-eval' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' cdn.usefathom.com; img-src 'self' data: cdn.usefathom.com img.shields.io;
   strict-transport-security: max-age=63072000; includeSubDomains; preload;

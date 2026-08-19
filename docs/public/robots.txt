@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
 
 Host: perfectionist.dev
 Sitemap: https://perfectionist.dev/sitemap-index.xml
