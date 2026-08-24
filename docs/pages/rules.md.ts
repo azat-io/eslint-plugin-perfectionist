@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro'
 
 import { getCollection } from 'astro:content'
 
-import { escapeTableCell } from '../utils/markdown-response'
+import { escapeTableCell } from '../utils/escape-table-cell'
 
 export const GET: APIRoute = async () => {
   let rules = await getCollection('rules')

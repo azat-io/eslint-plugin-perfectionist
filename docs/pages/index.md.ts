@@ -82,7 +82,7 @@ export const GET: APIRoute = async () => {
     '',
     ...guide.map(
       entry =>
-        `- [${entry.data.title}](/guide/${entry.id}.md) — ${entry.data.description}`,
+        `- [${entry.data.title}](/guide/${entry.id}.md) — ${entry.data.shortDescription}`,
     ),
     '',
     '## Ready-Made Configs',

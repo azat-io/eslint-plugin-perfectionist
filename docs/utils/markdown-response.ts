@@ -49,13 +49,6 @@ export function createMarkdownEndpoint(collection: SupportedCollection): {
   return { getStaticPaths, GET }
 }
 
-export function escapeTableCell(value: string): string {
-  return value
-    .replaceAll('|', String.raw`\|`)
-    .replaceAll(/\s+/gu, ' ')
-    .trim()
-}
-
 async function formatMarkdown(body: string, title: string): Promise<string> {
   let converted = (await mdxToMarkdown(body)).trimStart()
   let needsTitle = !converted.startsWith('# ')

@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
 
 import { GUIDE_ORDER, orderIndex } from '../data/collections'
-import { escapeTableCell } from '../utils/markdown-response'
+import { escapeTableCell } from '../utils/escape-table-cell'
 
 export const GET: APIRoute = async () => {
   let guide = await getCollection('guide')
@@ -20,7 +20,7 @@ export const GET: APIRoute = async () => {
     '| --- | --- |',
   ]
   for (let entry of guide) {
-    let description = escapeTableCell(entry.data.description)
+    let description = escapeTableCell(entry.data.shortDescription)
     lines.push(
       `| [${escapeTableCell(entry.data.title)}](/guide/${entry.id}.md) | ${description} |`,
     )

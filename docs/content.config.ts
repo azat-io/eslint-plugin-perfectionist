@@ -6,6 +6,7 @@ import path from 'node:path'
 let guide = defineCollection({
   schema: z.object({
     keywords: z.array(z.string()).optional(),
+    shortDescription: z.string(),
     description: z.string(),
     title: z.string(),
   }),

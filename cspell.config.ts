@@ -33,6 +33,7 @@ export default defineConfig({
     'sonarjs',
     'specv',
     'styl',
+    'subresponse',
     'tinyexec',
     'tses',
     'uncategorized',

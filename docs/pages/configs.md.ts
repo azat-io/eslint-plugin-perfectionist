@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
 
 import { CONFIG_ORDER, orderIndex } from '../data/collections'
-import { escapeTableCell } from '../utils/markdown-response'
+import { escapeTableCell } from '../utils/escape-table-cell'
 
 export const GET: APIRoute = async () => {
   let configs = await getCollection('configs')

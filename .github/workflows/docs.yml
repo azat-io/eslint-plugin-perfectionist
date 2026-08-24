@@ -16,10 +16,10 @@ jobs:
         with:
           egress-policy: block
           allowed-endpoints: >
-            api.github.com:443 api.netlify.com:443 github.com:443
-            registry.npmjs.org:443 release-assets.githubusercontent.com:443
-            telemetry.astro.build:443 dl.deno.land:443
-            storage.googleapis.com:443
+            api.github.com:443 api.netlify.com:443 cli.netlify.com:443
+            github.com:443 registry.npmjs.org:443
+            release-assets.githubusercontent.com:443 telemetry.astro.build:443
+            dl.deno.land:443 storage.googleapis.com:443
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

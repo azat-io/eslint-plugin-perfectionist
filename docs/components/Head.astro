@@ -16,14 +16,25 @@ interface Props {
   title?: string
 }
 
-let canonicalURL = new URL(Astro.url.pathname, Astro.site)
+/* The build uses format 'file', so the homepage pathname is '/index.html'. */
+let canonicalPathname = Astro.url.pathname.replace(/\.html$/u, '')
+if (canonicalPathname === '/index') {
+  canonicalPathname = '/'
+}
+let canonicalURL = new URL(canonicalPathname, Astro.site)
+
+let markdownPathname =
+  canonicalPathname === '/' ? '/index.md' : (
+    `${canonicalPathname.replace(/\/$/u, '')}.md`
+  )
+let markdownURL = new URL(markdownPathname, Astro.site)
 
 let { type = 'website', description, keywords, title } = Astro.props
 let websiteName = 'ESLint Plugin Perfectionist'
 
 let pageTitle = title ? `${title} | ${websiteName}` : websiteName
 
-let image = `${Astro.url.pathname === '/' ? '' : Astro.url.pathname.replace(/\.html$/u, '')}/open-graph.png`
+let image = `${canonicalPathname === '/' ? '' : canonicalPathname}/open-graph.png`
 let author = 'Azat S.'
 
 let isProduction = import.meta.env.PROD
@@ -103,6 +114,11 @@ let isProduction = import.meta.env.PROD
     href={canonicalURL}
     rel="canonical"
   />
+  <link
+    type="text/markdown"
+    href={markdownURL}
+    rel="alternate"
+  />
 
   <title>{pageTitle}</title>
   <meta
@@ -135,7 +151,7 @@ let isProduction = import.meta.env.PROD
     content={type}
   />
   <meta
-    content={Astro.url.href.replace(/\.html/u, '')}
+    content={canonicalURL}
     property="og:url"
   />
   <meta
@@ -198,7 +214,7 @@ let isProduction = import.meta.env.PROD
   />
   <meta
     property="twitter:url"
-    content={Astro.url}
+    content={canonicalURL}
   />
   <meta
     name="twitter:creator"

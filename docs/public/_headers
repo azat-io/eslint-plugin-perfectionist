@@ -4,6 +4,9 @@
   Link: </guide>; rel="service-doc"; type="text/html"
   Vary: Accept
 
+/404
+  Vary: Accept
+
 /configs
   Vary: Accept
 
