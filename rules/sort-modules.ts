@@ -97,6 +97,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  additionalModuleBlockTypes: [],
   tsconfig: { rootDir: '' },
   partitionByComment: false,
   partitionByNewLine: false,
@@ -123,6 +124,14 @@ export default createEslintRule<Options, MessageId>({
               additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
           }),
+          additionalModuleBlockTypes: {
+            description:
+              'Specifies the node types to analyze as module blocks, in addition to the built-in ones.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
