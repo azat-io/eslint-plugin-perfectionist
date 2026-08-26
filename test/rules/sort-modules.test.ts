@@ -4676,6 +4676,79 @@ describe('sort-modules', () => {
         })
       })
     })
+
+    describe('additionalModuleBlockTypes', () => {
+      it('analyzes the body of the given node types as a module block', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              additionalModuleBlockTypes: ['BlockStatement'],
+            },
+          ],
+          output: dedent`
+            {
+              type A = string
+              type B = string
+            }
+          `,
+          code: dedent`
+            {
+              type B = string
+              type A = string
+            }
+          `,
+        })
+      })
+
+      it('ignores the body of node types that are not listed', async () => {
+        await valid({
+          code: dedent`
+            {
+              type B = string
+              type A = string
+            }
+          `,
+          options: [options],
+        })
+      })
+
+      it('does not crash when a listed node type has no body', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              additionalModuleBlockTypes: ['TSTypeAliasDeclaration'],
+            },
+          ],
+          code: dedent`
+            type A = string
+            type B = string
+          `,
+        })
+      })
+
+      it('does not crash when a listed node type has a non-array body', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              additionalModuleBlockTypes: ['FunctionDeclaration'],
+            },
+          ],
+          code: dedent`
+            function a() {}
+            function b() {}
+          `,
+        })
+      })
+    })
   })
 
   describe('natural', () => {
