@@ -1,0 +1,58 @@
+name: Pull Request Title
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+jobs:
+  validate:
+    name: Pull Request Title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+
+      - name: Validate Pull Request Title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            should start with a lowercase character.
+          scopes: |
+            sort-array-includes
+            sort-arrays
+            sort-classes
+            sort-decorators
+            sort-enums
+            sort-export-attributes
+            sort-exports
+            sort-heritage-clauses
+            sort-import-attributes
+            sort-imports
+            sort-interfaces
+            sort-intersection-types
+            sort-jsx-props
+            sort-maps
+            sort-modules
+            sort-named-exports
+            sort-named-imports
+            sort-object-types
+            sort-objects
+            sort-sets
+            sort-switch-case
+            sort-union-types
+            sort-variable-declarations
