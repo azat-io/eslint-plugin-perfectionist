@@ -384,6 +384,17 @@ Specifies the TypeScript configuration used to read compiler options.
 
 When set, the rule reads `emitDecoratorMetadata` from your tsconfig and treats decorator-metadata type references as dependencies.
 
+### additionalModuleBlockTypes
+
+<sub>
+  type: `string[]`
+</sub>
+<sub>default: `[]`</sub>
+
+Specifies additional node types to analyze as module blocks, in addition to the built-in ones (`SvelteScriptElement`).
+
+Each node type should have a `body` property containing an array of statements.
+
 ### groups
 
 <sub>
@@ -682,6 +693,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   newlinesBetween: 'ignore',
                   newlinesInside: 'ignore',
                   tsconfig: { rootDir: '' },
+                  additionalModuleBlockTypes: [],
                   groups: [
                     'declare-enum',
                     'export-enum',
@@ -728,6 +740,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 newlinesBetween: 'ignore',
                 newlinesInside: 'ignore',
                 tsconfig: { rootDir: '' },
+                additionalModuleBlockTypes: [],
                 groups: [
                   'declare-enum',
                   'export-enum',

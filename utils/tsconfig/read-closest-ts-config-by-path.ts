@@ -30,6 +30,26 @@ export interface ReadClosestTsConfigByPathValue {
 }
 
 /**
+ * TS18002: The 'files' list in config file is empty.
+ */
+const EMPTY_FILES_LIST_DIAGNOSTIC_CODE = 18002
+
+/**
+ * TS18003: No inputs were found in config file.
+ */
+const NO_INPUTS_FOUND_DIAGNOSTIC_CODE = 18003
+
+/**
+ * Diagnostics that don't affect compiler options resolution. They only concern
+ * the list of input files, which is irrelevant here, and are commonly emitted
+ * for empty or solution-style tsconfig files.
+ */
+const IGNORED_DIAGNOSTIC_CODES = new Set([
+  EMPTY_FILES_LIST_DIAGNOSTIC_CODE,
+  NO_INPUTS_FOUND_DIAGNOSTIC_CODE,
+])
+
+/**
  * Cache mapping directories to their nearest tsconfig file path. Speeds up
  * config resolution for files in the same directory.
  */
@@ -140,9 +160,12 @@ function getCompilerOptions(
     typescriptImport.sys,
     path.dirname(filePath),
   )
-  if (parsedContent.errors.length > 0) {
+  let fatalErrors = parsedContent.errors.filter(
+    error => !IGNORED_DIAGNOSTIC_CODES.has(error.code),
+  )
+  if (fatalErrors.length > 0) {
     throw new Error(
-      `Error getting compiler options: ${JSON.stringify(parsedContent.errors)}`,
+      `Error getting compiler options: ${JSON.stringify(fatalErrors)}`,
     )
   }
 
