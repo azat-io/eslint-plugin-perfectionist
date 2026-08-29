@@ -9,6 +9,56 @@ import { buildOxlintRuleTester } from './build-oxlint-rule-tester'
 import { Alphabet } from '../../utils/alphabet'
 import rule from '../../rules/sort-modules'
 
+type ParsedProgram = ReturnType<typeof typescriptParser.parseForESLint>['ast']
+
+const UNKNOWN_MODULE_BLOCK_TYPE = 'CustomModuleBlock'
+function replaceNodeType({
+  replacementNodeType,
+  nodeTypeToReplace,
+  ast,
+}: {
+  replacementNodeType: string
+  nodeTypeToReplace: string
+  ast: ParsedProgram
+}): void {
+  let matchingNodeIndex = ast.body.findIndex(
+    node => node.type === nodeTypeToReplace,
+  )
+  if (matchingNodeIndex < 0) {
+    throw new Error(`No top-level node found with type "${nodeTypeToReplace}".`)
+  }
+
+  ast.body[matchingNodeIndex] = {
+    ...ast.body[matchingNodeIndex],
+    type: replacementNodeType,
+  } as unknown as (typeof ast.body)[number]
+}
+
+let replacedNodeTypeParser = {
+  ...typescriptParser,
+  parseForESLint(
+    code: string,
+    parserOptions?: {
+      replacementNodeType: string
+      nodeTypeToReplace: string
+    } & Parameters<typeof typescriptParser.parseForESLint>[1],
+  ) {
+    if (!parserOptions?.nodeTypeToReplace) {
+      throw new Error('parserOptions.nodeTypeToReplace option is required')
+    }
+    if (!parserOptions.replacementNodeType) {
+      throw new Error('parserOptions.replacementNodeType option is required')
+    }
+    let result = typescriptParser.parseForESLint(code, parserOptions)
+    replaceNodeType({
+      replacementNodeType: parserOptions.replacementNodeType,
+      nodeTypeToReplace: parserOptions.nodeTypeToReplace,
+      ast: result.ast,
+    })
+    return result
+  },
+}
+
 describe('sort-modules', () => {
   let { valid: validEspree } = createRuleTester({
     name: 'sort-modules (espree)',
@@ -17,6 +67,14 @@ describe('sort-modules', () => {
   let { invalid, valid } = createRuleTester({
     parser: typescriptParser,
     name: 'sort-modules',
+    rule,
+  })
+  let {
+    invalid: invalidWithReplacedNodeType,
+    valid: validWithReplacedNodeType,
+  } = createRuleTester({
+    name: 'sort-modules (unknown module block)',
+    parser: replacedNodeTypeParser,
     rule,
   })
   let oxlintRuleTester = buildOxlintRuleTester(rule)
@@ -4679,7 +4737,7 @@ describe('sort-modules', () => {
 
     describe('additionalModuleBlockTypes', () => {
       it('analyzes the body of the given node types as a module block', async () => {
-        await invalid({
+        await invalidWithReplacedNodeType({
           errors: [
             {
               messageId: 'unexpectedModulesOrder',
@@ -4689,9 +4747,13 @@ describe('sort-modules', () => {
           options: [
             {
               ...options,
-              additionalModuleBlockTypes: ['BlockStatement'],
+              additionalModuleBlockTypes: [UNKNOWN_MODULE_BLOCK_TYPE],
             },
           ],
+          parserOptions: {
+            replacementNodeType: UNKNOWN_MODULE_BLOCK_TYPE,
+            nodeTypeToReplace: 'BlockStatement',
+          },
           output: dedent`
             {
               type A = string
@@ -4708,11 +4770,11 @@ describe('sort-modules', () => {
       })
 
       it('does not sort statements across the body of an additional module block', async () => {
-        await valid({
+        await validWithReplacedNodeType({
           options: [
             {
               ...options,
-              additionalModuleBlockTypes: ['BlockStatement'],
+              additionalModuleBlockTypes: [UNKNOWN_MODULE_BLOCK_TYPE],
             },
           ],
           code: dedent`
@@ -4722,11 +4784,19 @@ describe('sort-modules', () => {
             }
             type A = string
           `,
+          parserOptions: {
+            replacementNodeType: UNKNOWN_MODULE_BLOCK_TYPE,
+            nodeTypeToReplace: 'BlockStatement',
+          },
         })
       })
 
       it('ignores the body of node types that are not listed', async () => {
-        await valid({
+        await validWithReplacedNodeType({
+          parserOptions: {
+            replacementNodeType: UNKNOWN_MODULE_BLOCK_TYPE,
+            nodeTypeToReplace: 'BlockStatement',
+          },
           code: dedent`
             {
               type B = string
@@ -4738,13 +4808,17 @@ describe('sort-modules', () => {
       })
 
       it('does not crash when a listed node type has no body', async () => {
-        await valid({
+        await validWithReplacedNodeType({
           options: [
             {
               ...options,
-              additionalModuleBlockTypes: ['TSTypeAliasDeclaration'],
+              additionalModuleBlockTypes: [UNKNOWN_MODULE_BLOCK_TYPE],
             },
           ],
+          parserOptions: {
+            replacementNodeType: UNKNOWN_MODULE_BLOCK_TYPE,
+            nodeTypeToReplace: 'TSTypeAliasDeclaration',
+          },
           code: dedent`
             type A = string
             type B = string
@@ -4753,13 +4827,17 @@ describe('sort-modules', () => {
       })
 
       it('does not crash when a listed node type has a non-array body', async () => {
-        await valid({
+        await validWithReplacedNodeType({
           options: [
             {
               ...options,
-              additionalModuleBlockTypes: ['FunctionDeclaration'],
+              additionalModuleBlockTypes: [UNKNOWN_MODULE_BLOCK_TYPE],
             },
           ],
+          parserOptions: {
+            replacementNodeType: UNKNOWN_MODULE_BLOCK_TYPE,
+            nodeTypeToReplace: 'FunctionDeclaration',
+          },
           code: dedent`
             function a() {}
             function b() {}
