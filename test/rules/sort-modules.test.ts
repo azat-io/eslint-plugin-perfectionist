@@ -4707,6 +4707,24 @@ describe('sort-modules', () => {
         })
       })
 
+      it('does not sort statements across the body of an additional module block', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              additionalModuleBlockTypes: ['BlockStatement'],
+            },
+          ],
+          code: dedent`
+            type Z = string
+            {
+              type C = string
+            }
+            type A = string
+          `,
+        })
+      })
+
       it('ignores the body of node types that are not listed', async () => {
         await valid({
           code: dedent`
