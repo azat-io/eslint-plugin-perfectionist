@@ -391,17 +391,9 @@ When set, the rule reads `emitDecoratorMetadata` from your tsconfig and treats d
 </sub>
 <sub>default: `[]`</sub>
 
-Specifies additional node types to analyze as module blocks, in addition to the built-in ones.
+Specifies additional node types to analyze as module blocks, in addition to the built-in ones (`SvelteScriptElement`).
 
 Each node type should have a `body` property containing an array of statements.
-
-For example, `svelte-eslint-parser` wraps the content of a `<script>` block in a `SvelteScriptElement` node:
-
-```ts
-{
-  additionalModuleBlockTypes: ['SvelteScriptElement']
-}
-```
 
 ### groups
 

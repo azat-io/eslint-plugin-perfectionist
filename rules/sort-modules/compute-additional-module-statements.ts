@@ -1,5 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 
+const BUILT_IN_MODULE_BLOCK_TYPES = ['SvelteScriptElement'] as const
+
 /**
  * Computes the statement list of a node that must be analyzed as a module
  * block.
@@ -18,7 +20,11 @@ export function computeAdditionalModuleStatements(
   node: TSESTree.Node,
   additionalModuleBlockTypes: string[],
 ): TSESTree.ProgramStatement[] | null {
-  if (!additionalModuleBlockTypes.includes(node.type)) {
+  let allAdditionalModuleBlockTypes = [
+    ...BUILT_IN_MODULE_BLOCK_TYPES,
+    ...additionalModuleBlockTypes,
+  ]
+  if (!allAdditionalModuleBlockTypes.includes(node.type)) {
     return null
   }
 

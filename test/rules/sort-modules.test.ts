@@ -4845,6 +4845,36 @@ describe('sort-modules', () => {
         })
       })
     })
+
+    describe('built-in module block types', () => {
+      it('analyzes the body of SvelteScriptElement nodes by default', async () => {
+        await invalidWithReplacedNodeType({
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          parserOptions: {
+            replacementNodeType: 'SvelteScriptElement',
+            nodeTypeToReplace: 'BlockStatement',
+          },
+          output: dedent`
+            {
+              type A = string
+              type B = string
+            }
+          `,
+          code: dedent`
+            {
+              type B = string
+              type A = string
+            }
+          `,
+          options: [options],
+        })
+      })
+    })
   })
 
   describe('natural', () => {
