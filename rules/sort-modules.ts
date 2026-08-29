@@ -34,6 +34,7 @@ import {
 } from '../utils/json-schemas/common-groups-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { computeDependenciesBySortingNode } from './sort-modules/dependencies/compute-dependencies-by-sorting-node'
+import { computeAdditionalModuleStatements } from './sort-modules/compute-additional-module-statements'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
@@ -97,6 +98,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesBetweenOverloadSignatures: 0,
   fallbackSort: { type: 'unsorted' },
   newlinesInside: 'newlinesBetween',
+  additionalModuleBlockTypes: [],
   tsconfig: { rootDir: '' },
   partitionByComment: false,
   partitionByNewLine: false,
@@ -123,6 +125,14 @@ export default createEslintRule<Options, MessageId>({
               additionalCustomGroupMatchOptionsJsonSchema,
             allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
           }),
+          additionalModuleBlockTypes: {
+            description:
+              'Specifies the node types to analyze as module blocks, in addition to the built-in ones.',
+            items: {
+              type: 'string',
+            },
+            type: 'array',
+          },
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
           newlinesBetweenOverloadSignatures: newlinesBetweenJsonSchema,
@@ -189,7 +199,7 @@ function analyzeModule({
   module,
 }: {
   context: TSESLint.RuleContext<MessageId, Options>
-  module: TSESTree.TSModuleBlock | TSESTree.Program
+  module: { body: TSESTree.ProgramStatement[] }
   options: Required<Options[number]>
   sourceCode: TSESLint.SourceCode
   eslintDisabledLines: number[]
@@ -205,6 +215,22 @@ function analyzeModule({
     'overloadSignatureImplementation'
   >[][] = [[]]
   for (let node of module.body) {
+    let additionalModuleStatements = computeAdditionalModuleStatements(
+      node,
+      options.additionalModuleBlockTypes,
+    )
+    if (additionalModuleStatements) {
+      sortingNodeGroupsWithoutOverloadSignature.push([])
+      analyzeModule({
+        module: { body: additionalModuleStatements },
+        eslintDisabledLines,
+        sourceCode,
+        options,
+        context,
+      })
+      continue
+    }
+
     switch (node.type) {
       case AST_NODE_TYPES.TSNamespaceExportDeclaration:
       case AST_NODE_TYPES.ExportAllDeclaration:

@@ -34,6 +34,13 @@ export type Options = [
       useExperimentalDependencyDetection: boolean
 
       /**
+       * Node types to analyze as module blocks, in addition to the built-in
+       * ones. Lets parsers that wrap top-level code in a custom node be
+       * supported.
+       */
+      additionalModuleBlockTypes: string[]
+
+      /**
        * TypeScript configuration used to read compiler options such as
        * `emitDecoratorMetadata`.
        */
