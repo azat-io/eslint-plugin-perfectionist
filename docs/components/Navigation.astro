@@ -31,7 +31,7 @@ import IconSun from '../icons/sun.svg'
         Rules
       </a>
     </li>
-    <li>
+    <li class="item separator">
       <hr class="hr" />
     </li>
     <li class="item">
@@ -45,7 +45,7 @@ import IconSun from '../icons/sun.svg'
         <IconMoon class="icon icon-light" />
       </button>
     </li>
-    <li>
+    <li class="item separator">
       <hr class="hr" />
     </li>
     <li class="item">
@@ -136,7 +136,7 @@ import IconSun from '../icons/sun.svg'
   .navigation {
     display: flex;
     flex-wrap: nowrap;
-    align-items: start;
+    align-items: center;
     justify-content: end;
   }
 
@@ -195,6 +195,7 @@ import IconSun from '../icons/sun.svg'
   }
 
   .hr,
+  .separator,
   .item-text {
     display: none;
   }
@@ -221,6 +222,7 @@ import IconSun from '../icons/sun.svg'
     }
 
     .hr,
+    .separator,
     .item-text {
       display: inline;
     }

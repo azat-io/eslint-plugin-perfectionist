@@ -34,7 +34,10 @@ let websiteName = 'ESLint Plugin Perfectionist'
 
 let pageTitle = title ? `${title} | ${websiteName}` : websiteName
 
-let image = `${canonicalPathname === '/' ? '' : canonicalPathname}/open-graph.png`
+let image = new URL(
+  `${canonicalPathname === '/' ? '' : canonicalPathname}/open-graph.png`,
+  Astro.site,
+)
 let author = 'Azat S.'
 
 let isProduction = import.meta.env.PROD
@@ -47,8 +50,12 @@ let isProduction = import.meta.env.PROD
     name="viewport"
   />
   <meta
+    content="light dark"
+    name="color-scheme"
+  />
+  <meta
     name="theme-color"
-    content="#232428"
+    content="#f4f5fb"
   />
 
   <link
@@ -122,21 +129,9 @@ let isProduction = import.meta.env.PROD
 
   <title>{pageTitle}</title>
   <meta
-    content={pageTitle}
-    name="title"
-  />
-  <meta
     content={description}
     name="description"
   />
-  {
-    keywords && keywords.length > 0 && (
-      <meta
-        content={keywords.join(', ')}
-        name="keywords"
-      />
-    )
-  }
   <meta
     content={author}
     name="author"
@@ -210,26 +205,26 @@ let isProduction = import.meta.env.PROD
 
   <meta
     content="summary_large_image"
-    property="twitter:card"
+    name="twitter:card"
   />
   <meta
-    property="twitter:url"
     content={canonicalURL}
+    name="twitter:url"
   />
   <meta
     name="twitter:creator"
     content="@azat_io_en"
   />
   <meta
-    property="twitter:title"
+    name="twitter:title"
     content={pageTitle}
   />
   <meta
-    property="twitter:description"
+    name="twitter:description"
     content={description}
   />
   <meta
-    property="twitter:image"
+    name="twitter:image"
     content={image}
   />
 
@@ -244,16 +239,35 @@ let isProduction = import.meta.env.PROD
         : 'light'
     }
 
+    let getThemeColor = theme => (theme === 'dark' ? '#232428' : '#f4f5fb')
+
+    let applyTheme = (doc, theme) => {
+      doc.documentElement.setAttribute('data-theme', theme)
+      doc
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute('content', getThemeColor(theme))
+    }
+
     let theme = getTheme()
-    document.documentElement.setAttribute('data-theme', theme)
+    applyTheme(document, theme)
     localStorage.setItem('theme', theme)
 
     let handlerKey = '__perfectionistThemeBeforeSwap__'
     if (!globalThis[handlerKey]) {
       document.addEventListener('astro:before-swap', event => {
-        let theme = getTheme()
-        event.newDocument.documentElement.setAttribute('data-theme', theme)
+        applyTheme(event.newDocument, getTheme())
       })
+
+      new MutationObserver(() => {
+        let currentTheme = document.documentElement.getAttribute('data-theme')
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute('content', getThemeColor(currentTheme))
+      }).observe(document.documentElement, {
+        attributeFilter: ['data-theme'],
+        attributes: true,
+      })
+
       globalThis[handlerKey] = true
     }
   </script>
