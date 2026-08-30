@@ -2,6 +2,7 @@
 import CodeStyleFigureOutput from './CodeStyleFigureOutput.astro'
 import CodeStyleFigureInput from './CodeStyleFigureInput.astro'
 import Typography from '../Typography.astro'
+import { CODE_STYLE } from '../../data/home'
 import Container from '../Container.astro'
 import Title from '../Title.astro'
 ---
@@ -16,19 +17,16 @@ import Title from '../Title.astro'
         class="title"
         align="start"
       >
-        Identical Code Style
+        {CODE_STYLE.title}
       </Title>
       <Typography
         class="description"
         mbe="m"
       >
-        Consistent code style fosters collaboration and improves quality.
-        Uniform style makes code readable and manageable, enabling quick
-        understanding and contribution.
+        {CODE_STYLE.paragraphs[0]}
       </Typography>
       <Typography class="description">
-        Our tool helps enforce these standards, ensuring that your codebase
-        stays neat and organized.
+        {CODE_STYLE.paragraphs[1]}
       </Typography>
     </div>
     <div class="figures">

@@ -1,0 +1,11 @@
+{
+  "include": ["./edge-functions/**/*.ts"],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "emitDeclarationOnly": false,
+    "noEmit": false,
+    "outDir": "../.netlify/edge-functions",
+    "rootDir": "./edge-functions"
+  }
+}

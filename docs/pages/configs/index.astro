@@ -1,30 +1,13 @@
 ---
+import { getCollection } from 'astro:content'
+
+import { CONFIG_ORDER, orderIndex } from '../../data/collections'
 import ContentLayout from '../../layouts/Content.astro'
 
-let configs = [
-  {
-    description:
-      'All plugin rules with alphabetical sorting in ascending order',
-    url: '/configs/recommended-alphabetical',
-    name: 'recommended-alphabetical',
-  },
-  {
-    description: 'All plugin rules with natural sorting in ascending order',
-    url: '/configs/recommended-natural',
-    name: 'recommended-natural',
-  },
-  {
-    description:
-      'All plugin rules with sorting by line length in descending order',
-    url: '/configs/recommended-line-length',
-    name: 'recommended-line-length',
-  },
-  {
-    description: 'All plugin rules with sorting by your own custom order',
-    url: '/configs/recommended-custom',
-    name: 'recommended-custom',
-  },
-]
+let configs = await getCollection('configs')
+configs.sort(
+  (a, b) => orderIndex(CONFIG_ORDER, a.id) - orderIndex(CONFIG_ORDER, b.id),
+)
 ---
 
 <ContentLayout
@@ -74,12 +57,12 @@ let configs = [
     </thead>
     <tbody>
       {
-        configs.map(({ description, name, url }) => (
+        configs.map(config => (
           <tr>
             <td>
-              <a href={url}>{name}</a>
+              <a href={`/configs/${config.id}`}>{config.data.title}</a>
             </td>
-            <td>{description}</td>
+            <td>{config.data.shortDescription}</td>
           </tr>
         ))
       }
