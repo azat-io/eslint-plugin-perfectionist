@@ -1,5 +1,28 @@
 # Changelog
 
+## v5.11.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.10.1...v5.11.0)
+
+### 🚀 Features
+
+- **sort-modules:** Support custom module block nodes
+  ([077f5d4](https://github.com/azat-io/eslint-plugin-perfectionist/commit/077f5d4))
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Detect decorator metadata dependencies
+  ([dbcd0b8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/dbcd0b8))
+- **sort-objects:** Don't ignore callback dependencies by default
+  ([7fd2e9b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7fd2e9b))
+- Don't fail on tsconfig files without input files
+  ([0418393](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0418393))
+
+### ❤️ Contributors
+
+- Hugo ([@hugop95](https://github.com/hugop95))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.10.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.10.0...v5.10.1)
