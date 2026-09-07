@@ -3620,6 +3620,71 @@ describe('sort-modules', () => {
       })
     })
 
+    describe('decorator metadata dependency detection without tsconfig', () => {
+      let noTsconfigOptions = {
+        ...options,
+        useExperimentalDependencyDetection: true,
+        groups: ['unknown'],
+      } as const
+
+      it('assumes emitDecoratorMetadata when no tsconfig option is given', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              b: B
+            }
+          `,
+          code: dedent`
+            class A {
+              @Decorator()
+              b: B
+            }
+
+            class B {}
+          `,
+          options: [noTsconfigOptions],
+        })
+      })
+
+      it('ignores an undecorated type reference when no tsconfig option is given', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              b: B
+            }
+
+            class B {}
+          `,
+          options: [noTsconfigOptions],
+        })
+      })
+
+      it('ignores metadata references when emitDecoratorMetadata is disabled', async () => {
+        mockReadClosestTsConfigByPathWith({})
+
+        await valid({
+          code: dedent`
+            class A {
+              @Decorator()
+              b: B
+            }
+
+            class B {}
+          `,
+          options: [{ ...noTsconfigOptions, tsconfig: { rootDir: '.' } }],
+        })
+      })
+    })
+
     it('supports function overload names', async () => {
       await valid({
         code: dedent`
