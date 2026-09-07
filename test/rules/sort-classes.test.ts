@@ -5037,6 +5037,146 @@ describe('sort-classes', () => {
       })
     })
 
+    it('adds a safety semicolon when the next member starts with a generator', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              left: 'Symbol.iterator',
+              rightGroup: 'property',
+              leftGroup: 'method',
+              right: 'items',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Collection {
+            items = [];
+            *[Symbol.iterator]() { yield 1 }
+          }
+        `,
+        code: dedent`
+          class Collection {
+            *[Symbol.iterator]() { yield 1 }
+            items = []
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('adds a safety semicolon when the next member starts with a computed key', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { left: 'key', right: 'a' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            a = 1;
+            [key] = 2
+          }
+        `,
+        code: dedent`
+          class Class {
+            [key] = 2
+            a = 1
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('adds a safety semicolon when the next member is an index signature', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'index-signature',
+              rightGroup: 'property',
+              left: '[key: string]',
+              right: 'b',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['property', 'index-signature'],
+          },
+        ],
+        output: dedent`
+          class Class {
+            b = 1;
+            [key: string]: string
+          }
+        `,
+        code: dedent`
+          class Class {
+            [key: string]: string
+            b = 1
+          }
+        `,
+      })
+    })
+
+    it('adds a safety semicolon to an accessor moved above a computed member', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'accessor-property',
+              leftGroup: 'method',
+              left: 'key',
+              right: 'a',
+            },
+            messageId: 'unexpectedClassesGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Class {
+            accessor a = 1;
+            [key]() {}
+          }
+        `,
+        code: dedent`
+          class Class {
+            [key]() {}
+            accessor a = 1
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('keeps a property without an initializer free of a safety semicolon', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { left: 'key', right: 'a' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            a: number
+            [key] = 2
+          }
+        `,
+        code: dedent`
+          class Class {
+            [key] = 2
+            a: number
+          }
+        `,
+        options: [options],
+      })
+    })
+
     it.each([
       '^[rgb]$',
       ['noMatch', '^[rgb]$'],
@@ -11408,7 +11548,7 @@ describe('sort-classes', () => {
         ],
         output: dedent`
           class Class {
-            static b = 'b'
+            static b = 'b';
 
             [key in O]
 

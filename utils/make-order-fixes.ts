@@ -3,6 +3,8 @@ import type { TSESLint } from '@typescript-eslint/utils'
 import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { SortingNode } from '../types/sorting-node'
 
+import { isExpressionContinuationToken } from './is-expression-continuation-token'
+import { doesNodeEndWithExpression } from './does-node-end-with-expression'
 import { getNodeRange } from './get-node-range'
 
 /**
@@ -129,11 +131,19 @@ export function makeOrderFixes({
       nextToken?.loc.start.line === node.loc.end.line
     let isNextTokenSafeCharacter =
       nextToken?.value === ';' || nextToken?.value === ','
+    let nextSortedSortingNode = sortedNodes.at(i + 1)
+    let followingToken =
+      nextSortedSortingNode ?
+        sourceCode.getFirstToken(nextSortedSortingNode.node)
+      : nextToken
+    let isFollowedByExpressionContinuation =
+      doesNodeEndWithExpression(sortedNode) &&
+      isExpressionContinuationToken(followingToken)
     if (
       addSafetySemicolonWhenInline &&
-      isNextTokenOnSameLineAsNode &&
       !sortedNextNodeEndsWithSafeCharacter &&
-      !isNextTokenSafeCharacter
+      !isNextTokenSafeCharacter &&
+      (isNextTokenOnSameLineAsNode || isFollowedByExpressionContinuation)
     ) {
       sortedNodeCode += ';'
     }
