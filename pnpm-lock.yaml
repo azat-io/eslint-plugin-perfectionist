@@ -63,8 +63,8 @@ importers:
         specifier: ^1.13.0
         version: 1.13.0(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3))
       '@azat-io/typescript-config':
-        specifier: ^1.1.1
-        version: 1.1.1(typescript@6.0.3)
+        specifier: ^1.2.1
+        version: 1.2.1(typescript@6.0.3)
       '@commitlint/cli':
         specifier: ^21.2.2
         version: 21.2.2(@types/node@26.4.0)(conventional-commits-parser@7.1.2)(typescript@6.0.3)
@@ -411,8 +411,8 @@ packages:
     peerDependencies:
       stylelint: ^17.0.0
 
-  '@azat-io/typescript-config@1.1.1':
-    resolution: {integrity: sha512-mCWpM1y1X5F1n8I4NAPVxidxnvDfB8gmj/ZHhVSWpv6QCMNwozFS2QjhnidFla77uUCb8p3niyTSQnv1fN3hjw==}
+  '@azat-io/typescript-config@1.2.1':
+    resolution: {integrity: sha512-guikCSlUPAYz9JI9c6KsOTuDKWq5HsJe1lEcuAhhLfRFGmbwdJapfbtVBxvRumXQ7mJy++FSshOd/nBn5IWPSA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       typescript: ^5.8.0
@@ -9646,7 +9646,7 @@ snapshots:
       stylelint-plugin-logical-css: 2.1.0(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3))
       stylelint-use-nesting: 6.0.2(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3))
 
-  '@azat-io/typescript-config@1.1.1(typescript@6.0.3)':
+  '@azat-io/typescript-config@1.2.1(typescript@6.0.3)':
     dependencies:
       typescript: 6.0.3
 
