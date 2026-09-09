@@ -12217,6 +12217,92 @@ describe('sort-objects', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          let obj = {
+            b = 'b',
+            c = 'c',
+            // eslint-disable-next-line rule-to-test/sort-objects -- Pinned.
+            a = 'a'
+          }
+        `,
+        code: dedent`
+          let obj = {
+            c = 'c',
+            b = 'b',
+            // eslint-disable-next-line rule-to-test/sort-objects -- Pinned.
+            a = 'a'
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          let obj = {
+            b = 'b',
+            c = 'c',
+            a = 'a' // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          let obj = {
+            c = 'c',
+            b = 'b',
+            a = 'a' // eslint-disable-line -- Pinned.
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          let obj = {
+            a = 'a',
+            d = 'd',
+            /* eslint-disable rule-to-test/sort-objects -- Pinned. */
+            c = 'c',
+            b = 'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-objects -- Done. */
+            e = 'e'
+          }
+        `,
+        code: dedent`
+          let obj = {
+            d = 'd',
+            e = 'e',
+            /* eslint-disable rule-to-test/sort-objects -- Pinned. */
+            c = 'c',
+            b = 'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-objects -- Done. */
+            a = 'a'
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

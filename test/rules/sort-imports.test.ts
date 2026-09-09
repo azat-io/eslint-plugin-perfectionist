@@ -11942,6 +11942,30 @@ describe('sort-imports', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          import { b } from './b'
+          import { c } from './c'
+          // eslint-disable-next-line rule-to-test/sort-imports -- Pinned.
+          import { a } from './a'
+        `,
+        code: dedent`
+          import { c } from './c'
+          import { b } from './b'
+          // eslint-disable-next-line rule-to-test/sort-imports -- Pinned.
+          import { a } from './a'
+        `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     it('defaults missing importKind to value', async () => {
       let { valid: validEspree } = createRuleTester({
         parserOptions: {
