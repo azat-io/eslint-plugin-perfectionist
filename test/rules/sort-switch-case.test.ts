@@ -4022,6 +4022,23 @@ describe('sort-switch-case', () => {
         })
       })
 
+      it('lets an eslint-disable comment override an earlier eslint-enable', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'z':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */ /* eslint-disable rule-to-test/sort-switch-case */ case 'y':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
       it('keeps a case preceded by a plain comment in place', async () => {
         await valid({
           code: dedent`

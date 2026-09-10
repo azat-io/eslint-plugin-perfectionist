@@ -384,6 +384,48 @@ export default createEslintRule<Options, MessageId>({
 })
 
 /**
+ * Checks if a switch case sits on a line where the rule is disabled.
+ *
+ * `getEslintDisabledLines` reports whole lines, while ESLint opens and closes a
+ * disabled block at the exact position of the comment. What counts for a case
+ * is therefore the last directive written before it on its own line: holding a
+ * case in place that ESLint does not cover would raise an error that nothing
+ * suppresses and no fix can clear.
+ *
+ * @param props - Configuration object.
+ * @param props.eslintDisabledLines - Lines where the rule is disabled.
+ * @param props.sourceCode - The ESLint source code object.
+ * @param props.caseNode - The switch case AST node.
+ * @param props.ruleName - Name of the rule to check for disable directives.
+ * @returns True if ESLint has the rule disabled for this case.
+ */
+function isCaseEslintDisabled({
+  eslintDisabledLines,
+  sourceCode,
+  caseNode,
+  ruleName,
+}: {
+  sourceCode: TSESLint.SourceCode
+  caseNode: TSESTree.SwitchCase
+  eslintDisabledLines: number[]
+  ruleName: string
+}): boolean {
+  if (!isNodeEslintDisabled(caseNode, eslintDisabledLines)) {
+    return false
+  }
+
+  let directivesBeforeCase = sourceCode
+    .getCommentsBefore(caseNode)
+    .filter(comment => comment.loc.end.line === caseNode.loc.start.line)
+    .map(comment => getEslintDisabledRules(comment.value))
+    .filter(eslintDisabledRules =>
+      doesDirectiveApplyToRule(eslintDisabledRules, ruleName),
+    )
+
+  return directivesBeforeCase.at(-1)?.eslintDisableDirective !== 'eslint-enable'
+}
+
+/**
  * Keeps the case blocks holding an ESLint disable directive at their position.
  *
  * The fixer moves whole blocks of cases at once, so a block is held in place as
@@ -448,43 +490,6 @@ function reduceCaseSortingNodes(
 }
 
 /**
- * Checks if a switch case sits on a line where the rule is disabled.
- *
- * `getEslintDisabledLines` reports whole lines, while ESLint ends a disabled
- * block at the exact position of the `eslint-enable` comment. A case written
- * after such a comment on the same line is therefore not disabled, even though
- * its line is, and holding it in place would raise an error that nothing
- * suppresses and no fix can clear.
- *
- * @param props - Configuration object.
- * @param props.eslintDisabledLines - Lines where the rule is disabled.
- * @param props.sourceCode - The ESLint source code object.
- * @param props.caseNode - The switch case AST node.
- * @param props.ruleName - Name of the rule to check for disable directives.
- * @returns True if ESLint has the rule disabled for this case.
- */
-function isCaseEslintDisabled({
-  eslintDisabledLines,
-  sourceCode,
-  caseNode,
-  ruleName,
-}: {
-  sourceCode: TSESLint.SourceCode
-  caseNode: TSESTree.SwitchCase
-  eslintDisabledLines: number[]
-  ruleName: string
-}): boolean {
-  if (!isNodeEslintDisabled(caseNode, eslintDisabledLines)) {
-    return false
-  }
-
-  return sourceCode
-    .getCommentsBefore(caseNode)
-    .filter(comment => comment.loc.end.line === caseNode.loc.start.line)
-    .every(comment => !isEslintEnableComment(comment.value, ruleName))
-}
-
-/**
  * Reports an order error on a case that an ESLint disable directive holds in
  * place.
  *
@@ -521,24 +526,6 @@ function reportEslintDisabledCase({
 }
 
 /**
- * Checks if a comment enables a rule that an `eslint-disable` comment disabled.
- *
- * @param comment - Text of the comment to parse.
- * @param ruleName - Name of the rule to check for enable directives.
- * @returns True if the comment enables the rule again.
- */
-function isEslintEnableComment(comment: string, ruleName: string): boolean {
-  let eslintDisabledRules = getEslintDisabledRules(comment)
-  if (eslintDisabledRules?.eslintDisableDirective !== 'eslint-enable') {
-    return false
-  }
-  return (
-    eslintDisabledRules.rules === 'all' ||
-    eslintDisabledRules.rules.includes(ruleName)
-  )
-}
-
-/**
  * Extracts the name of a switch case for sorting purposes.
  *
  * For literal test values, returns the string representation of the value. For
@@ -560,6 +547,26 @@ function getCaseName(
     return 'default'
   }
   return sourceCode.getText(caseNode.test)
+}
+
+/**
+ * Checks if an ESLint disable directive applies to a given rule.
+ *
+ * @param eslintDisabledRules - Directive parsed out of a comment.
+ * @param ruleName - Name of the rule the directive has to apply to.
+ * @returns True if the directive covers the rule.
+ */
+function doesDirectiveApplyToRule(
+  eslintDisabledRules: ReturnType<typeof getEslintDisabledRules>,
+  ruleName: string,
+): boolean {
+  if (!eslintDisabledRules) {
+    return false
+  }
+  return (
+    eslintDisabledRules.rules === 'all' ||
+    eslintDisabledRules.rules.includes(ruleName)
+  )
 }
 
 /**
