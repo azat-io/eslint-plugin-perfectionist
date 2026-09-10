@@ -12,6 +12,9 @@ import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schema
 import { isConditionExpression } from './sort-switch-case/is-condition-expression'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
+import { getEslintDisabledRules } from '../utils/get-eslint-disabled-rules'
+import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
+import { isNodeEslintDisabled } from '../utils/is-node-eslint-disabled'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
@@ -24,6 +27,10 @@ import { complete } from '../utils/complete'
 
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
+}
+
+interface SortSwitchCaseNameSortingNode extends SortingNode {
+  caseNode: TSESTree.SwitchCase
 }
 
 const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
@@ -54,7 +61,7 @@ export default createEslintRule<Options, MessageId>({
 
       validateCustomSortConfig(options)
 
-      let { sourceCode } = context
+      let { sourceCode, id } = context
       let isConditionCaseSwitch =
         isConditionExpression(switchNode.discriminant) ||
         switchNode.cases.some(
@@ -65,20 +72,31 @@ export default createEslintRule<Options, MessageId>({
         return
       }
 
+      let eslintDisabledLines = getEslintDisabledLines({
+        ruleName: id,
+        sourceCode,
+      })
+
       let caseNameSortingNodeGroups = switchNode.cases.reduce(
         (
-          accumulator: SortingNode[][],
+          accumulator: SortSwitchCaseNameSortingNode[][],
           caseNode: TSESTree.SwitchCase,
           index: number,
         ) => {
           if (caseNode.test) {
             accumulator.at(-1)!.push({
+              isEslintDisabled: isCaseEslintDisabled({
+                eslintDisabledLines,
+                ruleName: id,
+                sourceCode,
+                caseNode,
+              }),
               size: rangeToDiff(caseNode.test, sourceCode),
               name: getCaseName(sourceCode, caseNode),
               partitionId: accumulator.length,
-              isEslintDisabled: false,
               node: caseNode.test,
               group: 'unknown',
+              caseNode,
             })
           }
           if (
@@ -95,15 +113,13 @@ export default createEslintRule<Options, MessageId>({
       // For each case group, ensure the nodes are in the correct order.
       let hasUnsortedNodes = false
       for (let caseNodesSortingNodeGroup of caseNameSortingNodeGroups) {
-        let sortedCaseNameSortingNodes = sortNodes({
-          comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
-          nodes: caseNodesSortingNodeGroup,
-          ignoreEslintDisabledNodes: false,
-          options,
-        })
-        hasUnsortedNodes ||= sortedCaseNameSortingNodes.some(
-          (node, index) => node !== caseNodesSortingNodeGroup[index],
-        )
+        let sortedCaseNameSortingNodes = sortCaseNameSortingNodes(false)
+        let sortedCaseNameSortingNodesExcludingEslintDisabled =
+          sortCaseNameSortingNodes(true)
+        hasUnsortedNodes ||=
+          sortedCaseNameSortingNodesExcludingEslintDisabled.some(
+            (node, index) => node !== caseNodesSortingNodeGroup[index],
+          )
 
         let nodeIndexMap = createNodeIndexMap(sortedCaseNameSortingNodes)
 
@@ -112,15 +128,31 @@ export default createEslintRule<Options, MessageId>({
             return
           }
 
-          let leftIndex = nodeIndexMap.get(left)!
-          let rightIndex = nodeIndexMap.get(right)!
+          if (nodeIndexMap.get(left)! > nodeIndexMap.get(right)!) {
+            let eslintDisabledNodes = getEslintDisabledNodes([left, right])
+            for (let sortingNode of eslintDisabledNodes) {
+              reportEslintDisabledCase({
+                node: sortingNode.caseNode,
+                context,
+                right,
+                left,
+              })
+            }
+          }
 
-          if (leftIndex < rightIndex) {
+          if (
+            isPairInSortedOrder({
+              sortedNodes: sortedCaseNameSortingNodesExcludingEslintDisabled,
+              right,
+              left,
+            })
+          ) {
             return
           }
 
           reportErrors({
-            sortedNodes: sortedCaseNameSortingNodes,
+            sortedNodes: sortedCaseNameSortingNodesExcludingEslintDisabled,
+            reportNode: right.isEslintDisabled ? left.node : undefined,
             nodes: caseNodesSortingNodeGroup,
             messageIds: [ORDER_ERROR_ID],
             sourceCode,
@@ -129,10 +161,27 @@ export default createEslintRule<Options, MessageId>({
             left,
           })
         })
+
+        function sortCaseNameSortingNodes(
+          ignoreEslintDisabledNodes: boolean,
+        ): SortSwitchCaseNameSortingNode[] {
+          return sortNodes({
+            comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+            nodes: caseNodesSortingNodeGroup,
+            ignoreEslintDisabledNodes,
+            options,
+          })
+        }
       }
 
       let sortingNodes: SortSwitchCaseSortingNode[] = switchNode.cases.map(
         (caseNode: TSESTree.SwitchCase) => ({
+          isEslintDisabled: isCaseEslintDisabled({
+            eslintDisabledLines,
+            ruleName: id,
+            sourceCode,
+            caseNode,
+          }),
           size:
             caseNode.test ?
               rangeToDiff(caseNode.test, sourceCode)
@@ -140,7 +189,6 @@ export default createEslintRule<Options, MessageId>({
           name: getCaseName(sourceCode, caseNode),
           addSafetySemicolonWhenInline: true,
           isDefaultClause: !caseNode.test,
-          isEslintDisabled: false,
           group: 'unknown',
           partitionId: 0,
           node: caseNode,
@@ -199,8 +247,8 @@ export default createEslintRule<Options, MessageId>({
             [LEFT]: defaultCase.name,
             [RIGHT]: lastCase.name,
           },
+          node: lastCase.isEslintDisabled ? lastCase.node : defaultCase.node,
           messageId: ORDER_ERROR_ID,
-          node: defaultCase.node,
         })
       }
 
@@ -217,10 +265,8 @@ export default createEslintRule<Options, MessageId>({
       let lastBlockCaseShouldStayInPlace = !caseHasBreakOrReturn(
         lastNodeGroup!.at(-1)!.node,
       )
-      let sortedSortingNodeGroupsForBlockSort = [
-        ...sortingNodeGroupsForBlockSort,
-      ]
-        .toSorted((a, b) => {
+      let sortedNodeGroups = [...sortingNodeGroupsForBlockSort].toSorted(
+        (a, b) => {
           if (lastBlockCaseShouldStayInPlace) {
             if (a === lastNodeGroup) {
               return 1
@@ -239,10 +285,25 @@ export default createEslintRule<Options, MessageId>({
           }
 
           return defaultComparator(a.at(0)!, b.at(0)!)
-        })
-        .flat()
+        },
+      )
+      let sortedSortingNodeGroupsForBlockSort = sortedNodeGroups.flat()
+      let sortedNodesExcludingEslintDisabled = pinEslintDisabledNodeGroups(
+        sortingNodeGroupsForBlockSort,
+        sortedNodeGroups,
+      ).flat()
       let sortingNodeGroupsForBlockSortFlat =
         sortingNodeGroupsForBlockSort.flat()
+      let nodeGroupByNode = new Map<
+        SortSwitchCaseSortingNode,
+        SortSwitchCaseSortingNode[]
+      >()
+      for (let nodeGroup of sortingNodeGroupsForBlockSort) {
+        for (let sortingNode of nodeGroup) {
+          nodeGroupByNode.set(sortingNode, nodeGroup)
+        }
+      }
+      let reportedEslintDisabledNodes = new Set<SortSwitchCaseSortingNode>()
       pairwise(sortingNodeGroupsForBlockSortFlat, (left, right) => {
         if (!left) {
           return
@@ -250,15 +311,40 @@ export default createEslintRule<Options, MessageId>({
 
         let indexOfLeft = sortedSortingNodeGroupsForBlockSort.indexOf(left)
         let indexOfRight = sortedSortingNodeGroupsForBlockSort.indexOf(right)
-        if (indexOfLeft < indexOfRight) {
+        if (indexOfLeft > indexOfRight) {
+          let eslintDisabledNodes = getEslintDisabledNodes([
+            ...nodeGroupByNode.get(left)!,
+            ...nodeGroupByNode.get(right)!,
+          ])
+          for (let sortingNode of eslintDisabledNodes) {
+            if (!reportedEslintDisabledNodes.has(sortingNode)) {
+              reportedEslintDisabledNodes.add(sortingNode)
+              reportEslintDisabledCase({
+                node: sortingNode.node,
+                context,
+                right,
+                left,
+              })
+            }
+          }
+        }
+
+        if (
+          isPairInSortedOrder({
+            sortedNodes: sortedNodesExcludingEslintDisabled,
+            right,
+            left,
+          })
+        ) {
           return
         }
+
         context.report({
           fix: fixer =>
             hasUnsortedNodes ?
               [] /* Raise errors but only sort on second iteration. */
             : makeFixes({
-                sortedNodes: sortedSortingNodeGroupsForBlockSort,
+                sortedNodes: sortedNodesExcludingEslintDisabled,
                 nodes: sortingNodeGroupsForBlockSortFlat,
                 hasCommentAboveMissing: false,
                 sourceCode,
@@ -268,8 +354,8 @@ export default createEslintRule<Options, MessageId>({
             [RIGHT]: right.name,
             [LEFT]: left.name,
           },
+          node: right.isEslintDisabled ? left.node : right.node,
           messageId: ORDER_ERROR_ID,
-          node: right.node,
         })
       })
     },
@@ -296,6 +382,39 @@ export default createEslintRule<Options, MessageId>({
   defaultOptions: [defaultOptions],
   name: 'sort-switch-case',
 })
+
+/**
+ * Keeps the case blocks holding an ESLint disable directive at their position.
+ *
+ * The fixer moves whole blocks of cases at once, so a block is held in place as
+ * soon as one of its cases sits on a line where the rule is disabled: pinning a
+ * single case of a moving block would separate the fallthrough labels from the
+ * body they fall into.
+ *
+ * Held blocks are taken out of the sorted blocks and put back at the index they
+ * had in the source code, the way `sortNodes` does it for single nodes.
+ *
+ * @param nodeGroups - Blocks of cases in source code order.
+ * @param sortedNodeGroups - The same blocks in sorted order.
+ * @returns The sorted blocks with the disabled ones back at their position.
+ */
+function pinEslintDisabledNodeGroups(
+  nodeGroups: SortSwitchCaseSortingNode[][],
+  sortedNodeGroups: SortSwitchCaseSortingNode[][],
+): SortSwitchCaseSortingNode[][] {
+  let sortedNodeGroupsExcludingEslintDisabled = sortedNodeGroups.filter(
+    nodeGroup => getEslintDisabledNodes(nodeGroup).length === 0,
+  )
+
+  /* Add ignored nodes at the same position as they were before linting. */
+  for (let [index, nodeGroup] of nodeGroups.entries()) {
+    if (getEslintDisabledNodes(nodeGroup).length > 0) {
+      sortedNodeGroupsExcludingEslintDisabled.splice(index, 0, nodeGroup)
+    }
+  }
+
+  return sortedNodeGroupsExcludingEslintDisabled
+}
 
 /**
  * Groups consecutive switch case nodes into blocks for sorting.
@@ -325,6 +444,97 @@ function reduceCaseSortingNodes(
       return accumulator
     },
     [[]],
+  )
+}
+
+/**
+ * Checks if a switch case sits on a line where the rule is disabled.
+ *
+ * `getEslintDisabledLines` reports whole lines, while ESLint ends a disabled
+ * block at the exact position of the `eslint-enable` comment. A case written
+ * after such a comment on the same line is therefore not disabled, even though
+ * its line is, and holding it in place would raise an error that nothing
+ * suppresses and no fix can clear.
+ *
+ * @param props - Configuration object.
+ * @param props.eslintDisabledLines - Lines where the rule is disabled.
+ * @param props.sourceCode - The ESLint source code object.
+ * @param props.caseNode - The switch case AST node.
+ * @param props.ruleName - Name of the rule to check for disable directives.
+ * @returns True if ESLint has the rule disabled for this case.
+ */
+function isCaseEslintDisabled({
+  eslintDisabledLines,
+  sourceCode,
+  caseNode,
+  ruleName,
+}: {
+  sourceCode: TSESLint.SourceCode
+  caseNode: TSESTree.SwitchCase
+  eslintDisabledLines: number[]
+  ruleName: string
+}): boolean {
+  if (!isNodeEslintDisabled(caseNode, eslintDisabledLines)) {
+    return false
+  }
+
+  return sourceCode
+    .getCommentsBefore(caseNode)
+    .filter(comment => comment.loc.end.line === caseNode.loc.start.line)
+    .every(comment => !isEslintEnableComment(comment.value, ruleName))
+}
+
+/**
+ * Reports an order error on a case that an ESLint disable directive holds in
+ * place.
+ *
+ * ESLint suppresses this report, and that is what keeps the directive from
+ * being reported as unused and removed, which would let the case it protects be
+ * sorted on the next run. The report carries no fix: moving the cases that may
+ * move is the job of the report on the case that has to move.
+ *
+ * @param props - Configuration object.
+ * @param props.context - ESLint rule context used to report the error.
+ * @param props.node - Case node to report the error on.
+ * @param props.right - Right node of the unordered pair.
+ * @param props.left - Left node of the unordered pair.
+ */
+function reportEslintDisabledCase({
+  context,
+  right,
+  node,
+  left,
+}: {
+  context: TSESLint.RuleContext<MessageId, Options>
+  node: TSESTree.Node
+  right: SortingNode
+  left: SortingNode
+}): void {
+  context.report({
+    data: {
+      [RIGHT]: right.name,
+      [LEFT]: left.name,
+    },
+    messageId: ORDER_ERROR_ID,
+    node,
+  })
+}
+
+/**
+ * Checks if a comment enables a rule that an `eslint-disable` comment disabled.
+ *
+ * @param comment - Text of the comment to parse.
+ * @param ruleName - Name of the rule to check for enable directives.
+ * @returns True if the comment enables the rule again.
+ */
+function isEslintEnableComment(comment: string, ruleName: string): boolean {
+  let eslintDisabledRules = getEslintDisabledRules(comment)
+  if (eslintDisabledRules?.eslintDisableDirective !== 'eslint-enable') {
+    return false
+  }
+  return (
+    eslintDisabledRules.rules === 'all' ||
+    eslintDisabledRules.rules.includes(ruleName)
   )
 }
 
@@ -383,4 +593,40 @@ function statementIsBreakOrReturn(
     statement.type === AST_NODE_TYPES.BreakStatement ||
     statement.type === AST_NODE_TYPES.ReturnStatement
   )
+}
+
+/**
+ * Checks if a pair of nodes is already in the order the fixer would produce.
+ *
+ * The pair can be unordered against the plain sorting and still be final here:
+ * that happens when an ESLint disable directive holds one of the two cases at
+ * its position.
+ *
+ * @param props - Configuration object.
+ * @param props.sortedNodes - Nodes in sorted order, with the ones an ESLint
+ *   disable directive holds in place kept at their position.
+ * @param props.right - Right node of the pair.
+ * @param props.left - Left node of the pair.
+ * @returns True if the fixer would leave the pair in its current order.
+ */
+function isPairInSortedOrder<T extends SortingNode>({
+  sortedNodes,
+  right,
+  left,
+}: {
+  sortedNodes: T[]
+  right: T
+  left: T
+}): boolean {
+  return sortedNodes.indexOf(left) < sortedNodes.indexOf(right)
+}
+
+/**
+ * Finds the cases that an ESLint disable directive holds in place.
+ *
+ * @param nodeGroup - Block of switch case sorting nodes.
+ * @returns The cases the rule is disabled for.
+ */
+function getEslintDisabledNodes<T extends SortingNode>(nodeGroup: T[]): T[] {
+  return nodeGroup.filter(sortingNode => sortingNode.isEslintDisabled)
 }
