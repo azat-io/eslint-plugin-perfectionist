@@ -4058,6 +4058,23 @@ describe('sort-switch-case', () => {
         })
       })
 
+      it('lets an eslint-disable comment override an earlier eslint-enable', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'z':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */ /* eslint-disable rule-to-test/sort-switch-case */ case 'y':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
       it('keeps a case preceded by a plain comment in place', async () => {
         await valid({
           code: dedent`
@@ -4263,6 +4280,127 @@ describe('sort-switch-case', () => {
               data: {
                 right: 'm',
                 left: 'zz',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('honors a disable directive that carries a description', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'b':
+                break
+              case 'c':
+                break
+              // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+              case 'a':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+                break
+              case 'b':
+                break
+              // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'c': // eslint-disable-line -- Pinned.
+                break
+              case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c': // eslint-disable-line -- Pinned.
+                break
+              case 'b':
+                break
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'a':
+                break
+              case 'd':
+                break
+              /* eslint-disable rule-to-test/sort-switch-case -- Pinned. */
+              case 'c':
+                break
+              case 'b':
+                break
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-switch-case -- Done. */
+              case 'e':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'd':
+                break
+              case 'e':
+                break
+              /* eslint-disable rule-to-test/sort-switch-case -- Pinned. */
+              case 'c':
+                break
+              case 'b':
+                break
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-switch-case -- Done. */
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'e',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'a',
+                left: 'b',
               },
               messageId: 'unexpectedSwitchCaseOrder',
             },
