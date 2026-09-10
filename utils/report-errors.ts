@@ -1,3 +1,4 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { FixProvider } from './create-fix-provider'
@@ -46,6 +47,7 @@ interface ReportErrorsParameters<
   context: TSESLint.RuleContext<MessageIds, unknown[]>
   firstUnorderedNodeDependentOnRight?: T
   commentAboveMissing?: string
+  reportNode?: TSESTree.Node
   messageIds: MessageIds[]
   getFix: FixProvider
   left: null | T
@@ -113,6 +115,7 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
   commentAboveMissing,
   messageIds,
+  reportNode,
   context,
   getFix,
   right,
@@ -133,7 +136,7 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
           hasCommentAboveMissing: !!commentAboveMissing,
           fixer,
         }),
-      node: right.node,
+      node: reportNode ?? right.node,
       messageId,
     })
   }
