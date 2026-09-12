@@ -736,6 +736,28 @@ describe('sort-imports', () => {
       })
     })
 
+    it('adds a safety semicolon when the statement after the imports starts with a computed member access', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          const a = require('a');
+          const b = require('b');
+          [1].forEach(element => element)
+        `,
+        code: dedent`
+          const b = require('b')
+          const a = require('a');
+          [1].forEach(element => element)
+        `,
+        options: [options],
+      })
+    })
+
     it('groups and sorts CommonJS require imports by type and source', async () => {
       await valid({
         code: dedent`
