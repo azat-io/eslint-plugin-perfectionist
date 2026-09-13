@@ -446,6 +446,42 @@ describe('sort-switch-case', () => {
       })
     })
 
+    it('sorts several unsorted case name groups in one pass', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'a1', left: 'a2' },
+          },
+          {
+            messageId: 'unexpectedSwitchCaseOrder',
+            data: { right: 'b1', left: 'b2' },
+          },
+        ],
+        output: dedent`
+          switch (value) {
+            case 'a1':
+            case 'a2':
+              return 'a'
+            case 'b1':
+            case 'b2':
+              return 'b'
+          }
+        `,
+        code: dedent`
+          switch (value) {
+            case 'a2':
+            case 'a1':
+              return 'a'
+            case 'b2':
+            case 'b1':
+              return 'b'
+          }
+        `,
+        options: [options],
+      })
+    })
+
     it('works with grouped cases with default', async () => {
       await valid({
         code: dedent`
@@ -3572,6 +3608,47 @@ describe('sort-switch-case', () => {
                 data: { right: 'a', left: 'b' },
               },
             ],
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+          {
+            errors: [
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: { right: 'c', left: 'd' },
+              },
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: { right: 'b', left: 'c' },
+              },
+              {
+                messageId: 'unexpectedSwitchCaseOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              switch (x) {
+                case 'a': // a
+                  break
+                case 'b': // b
+                  break
+                case 'c': // c
+                  break
+                case 'd': // d
+                  break
+              }
+            `,
+            code: dedent`
+              switch (x) {
+                case 'd': // d
+                  break
+                case 'c': // c
+                  break
+                case 'b': // b
+                  break
+                case 'a': // a
+                  break
+              }
+            `,
             options: [{ type: 'alphabetical', order: 'asc' }],
           },
         ],

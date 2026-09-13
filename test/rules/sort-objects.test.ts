@@ -12241,6 +12241,45 @@ describe('sort-objects', () => {
             `,
             options: [{ type: 'alphabetical', order: 'asc' }],
           },
+          {
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'd', left: 'e' },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'c', left: 'd' },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'b', left: 'c' },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              let obj = {
+                a: 5,
+                b: 4, // trailing b
+                c: 3,
+                d: 2,
+                e: 1 // trailing e
+              }
+            `,
+            code: dedent`
+              let obj = {
+                e: 1, // trailing e
+                d: 2,
+                c: 3,
+                b: 4, // trailing b
+                a: 5
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
         ],
         valid: [
           {

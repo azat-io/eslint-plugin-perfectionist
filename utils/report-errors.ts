@@ -1,11 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
-import type { CommonPartitionOptions } from '../types/common-partition-options'
-import type { CommonGroupsOptions } from '../types/common-groups-options'
+import type { FixProvider } from './create-fix-provider'
 import type { SortingNode } from '../types/sorting-node'
-
-import { makeFixes } from './make-fixes'
 
 const NODE_DEPENDENT_ON_RIGHT = 'nodeDependentOnRight'
 
@@ -47,18 +43,12 @@ interface ReportErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
-  options?: Pick<CommonPartitionOptions, 'partitionByComment'> &
-    CommonGroupsOptions<string, unknown, unknown>
-  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
   context: TSESLint.RuleContext<MessageIds, unknown[]>
-  ignoreFirstNodeHighestBlockComment?: boolean
   firstUnorderedNodeDependentOnRight?: T
-  sourceCode: TSESLint.SourceCode
   commentAboveMissing?: string
   messageIds: MessageIds[]
-  sortedNodes: T[]
+  getFix: FixProvider
   left: null | T
-  nodes: T[]
   right: T
 }
 
@@ -121,15 +111,10 @@ interface ReportErrorsParameters<
  */
 export function reportErrors<MessageIds extends string, T extends SortingNode>({
   firstUnorderedNodeDependentOnRight,
-  ignoreFirstNodeHighestBlockComment,
-  newlinesBetweenValueGetter,
   commentAboveMissing,
-  sortedNodes,
   messageIds,
-  sourceCode,
   context,
-  options,
-  nodes,
+  getFix,
   right,
   left,
 }: ReportErrorsParameters<MessageIds, T>): void {
@@ -144,15 +129,9 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
         [LEFT_GROUP]: left?.group,
       },
       fix: (fixer: TSESLint.RuleFixer) =>
-        makeFixes({
+        getFix({
           hasCommentAboveMissing: !!commentAboveMissing,
-          ignoreFirstNodeHighestBlockComment,
-          newlinesBetweenValueGetter,
-          sortedNodes,
-          sourceCode,
-          options,
           fixer,
-          nodes,
         }),
       node: right.node,
       messageId,
