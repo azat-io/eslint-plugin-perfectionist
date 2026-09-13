@@ -15,7 +15,7 @@ import { makeOrderFixes } from './make-order-fixes'
  *
  * @template T - Type of sorting node extending the base SortingNode.
  */
-interface MakeFixesParameters<T extends SortingNode> {
+export interface MakeFixesParameters<T extends SortingNode> {
   /**
    * Optional configuration for various sorting behaviors.
    */

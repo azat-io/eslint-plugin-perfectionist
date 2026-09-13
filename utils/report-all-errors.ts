@@ -11,6 +11,7 @@ import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
 import { createNodeIndexMap } from './create-node-index-map'
+import { createFixProvider } from './create-fix-provider'
 import { getGroupIndex } from './get-group-index'
 import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
@@ -238,6 +239,15 @@ export function reportAllErrors<
       )
     : new Set<SortingNodeWithDependencies>()
 
+  let getFix = createFixProvider({
+    sortedNodes: sortedNodesExcludingEslintDisabled,
+    ignoreFirstNodeHighestBlockComment,
+    newlinesBetweenValueGetter,
+    sourceCode,
+    options,
+    nodes,
+  })
+
   pairwise(nodes, (left, right) => {
     let leftInfo =
       left ?
@@ -324,16 +334,11 @@ export function reportAllErrors<
     }
 
     reportErrors({
-      sortedNodes: sortedNodesExcludingEslintDisabled,
-      ignoreFirstNodeHighestBlockComment,
       firstUnorderedNodeDependentOnRight,
-      newlinesBetweenValueGetter,
       commentAboveMissing,
       messageIds,
-      sourceCode,
-      options,
       context,
-      nodes,
+      getFix,
       right,
       left,
     })
