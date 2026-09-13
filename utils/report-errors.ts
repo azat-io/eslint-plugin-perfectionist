@@ -1,3 +1,4 @@
+import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
@@ -55,6 +56,7 @@ interface ReportErrorsParameters<
   firstUnorderedNodeDependentOnRight?: T
   sourceCode: TSESLint.SourceCode
   commentAboveMissing?: string
+  reportNode?: TSESTree.Node
   messageIds: MessageIds[]
   sortedNodes: T[]
   left: null | T
@@ -127,6 +129,7 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
   sortedNodes,
   messageIds,
   sourceCode,
+  reportNode,
   context,
   options,
   nodes,
@@ -154,7 +157,7 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
           fixer,
           nodes,
         }),
-      node: right.node,
+      node: reportNode ?? right.node,
       messageId,
     })
   }
