@@ -495,6 +495,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          ;
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           ;
@@ -512,6 +517,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          debugger
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           debugger
@@ -529,6 +539,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          import 'x'
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           import 'x'
@@ -546,6 +561,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          export * from 'x'
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           export * from 'x'
@@ -563,6 +583,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          export as namespace Foo
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           export as namespace Foo

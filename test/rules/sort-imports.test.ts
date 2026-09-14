@@ -6,6 +6,7 @@ import type {
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it, vi } from 'vitest'
+import { fileURLToPath } from 'node:url'
 import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-imports/types'
@@ -11460,17 +11461,17 @@ describe('sort-imports', () => {
 
     it('classifies TypeScript configured imports as internal', async () => {
       await valid({
+        before: () => {
+          mockReadClosestTsConfigByPathWith({
+            baseUrl: fileURLToPath(new URL('../../rules/', import.meta.url)),
+          })
+        },
         options: [
           {
             groups: ['internal', 'unknown'],
             tsconfig: { rootDir: '.' },
           },
         ],
-        before: () => {
-          mockReadClosestTsConfigByPathWith({
-            baseUrl: './rules/',
-          })
-        },
         code: dedent`
           import { x } from 'sort-imports'
 
@@ -11568,7 +11569,7 @@ describe('sort-imports', () => {
         ],
         before: () => {
           mockReadClosestTsConfigByPathWith({
-            baseUrl: './rules/',
+            baseUrl: fileURLToPath(new URL('../../rules/', import.meta.url)),
           })
         },
         code: dedent`
