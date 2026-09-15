@@ -47,6 +47,7 @@ export default defineConfig({
     rolldownOptions: {
       output: {
         preserveModules: true,
+        topLevelVar: false,
         exports: 'auto',
       },
       external: (id: string) => !id.startsWith('.') && !path.isAbsolute(id),
