@@ -1,5 +1,25 @@
 # Changelog
 
+## v5.11.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.11.0...v5.11.1)
+
+### 🏎 Performance Improvements
+
+- Build a sortable list's fix once instead of once per report
+  ([784725a](https://github.com/azat-io/eslint-plugin-perfectionist/commit/784725a))
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Detect decorator metadata dependencies without tsconfig
+  ([be18b94](https://github.com/azat-io/eslint-plugin-perfectionist/commit/be18b94))
+- Add safety semicolon when the next element continues an expression
+  ([bbb4db2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/bbb4db2))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.11.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.10.1...v5.11.0)
