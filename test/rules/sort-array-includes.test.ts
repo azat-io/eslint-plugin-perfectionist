@@ -6197,6 +6197,92 @@ describe('sort-array-includes', () => {
         })
       })
 
+      it('honors a disable directive that carries a description', async () => {
+        await invalid({
+          output: dedent`
+            [
+              'b',
+              'c',
+              // eslint-disable-next-line rule-to-test/sort-array-includes -- Pinned.
+              'a',
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              'c',
+              'b',
+              // eslint-disable-next-line rule-to-test/sort-array-includes -- Pinned.
+              'a',
+            ].includes(value)
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
+          options: [{}],
+        })
+
+        await invalid({
+          output: dedent`
+            [
+              'b',
+              'c',
+              'a', // eslint-disable-line -- Pinned.
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', // eslint-disable-line -- Pinned.
+            ].includes(value)
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
+          options: [{}],
+        })
+
+        await invalid({
+          output: dedent`
+            [
+              'a',
+              'd',
+              /* eslint-disable rule-to-test/sort-array-includes -- Pinned. */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-array-includes -- Done. */
+              'e',
+            ].includes(value)
+          `,
+          code: dedent`
+            [
+              'd',
+              'e',
+              /* eslint-disable rule-to-test/sort-array-includes -- Pinned. */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-array-includes -- Done. */
+              'a',
+            ].includes(value)
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedArrayIncludesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [{}],
+        })
+      })
+
       it('ignores arrays with other methods', async () => {
         await valid({
           code: dedent`

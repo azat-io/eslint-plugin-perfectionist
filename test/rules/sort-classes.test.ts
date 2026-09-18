@@ -17203,6 +17203,92 @@ describe('sort-classes', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          class Class {
+            b
+            c
+            // eslint-disable-next-line rule-to-test/sort-classes -- Pinned.
+            a
+          }
+        `,
+        code: dedent`
+          class Class {
+            c
+            b
+            // eslint-disable-next-line rule-to-test/sort-classes -- Pinned.
+            a
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          class Class {
+            b
+            c
+            a // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          class Class {
+            c
+            b
+            a // eslint-disable-line -- Pinned.
+          }
+        `,
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          class Class {
+            a
+            d
+            /* eslint-disable rule-to-test/sort-classes -- Pinned. */
+            c
+            b
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-classes -- Done. */
+            e
+          }
+        `,
+        code: dedent`
+          class Class {
+            d
+            e
+            /* eslint-disable rule-to-test/sort-classes -- Pinned. */
+            c
+            b
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-classes -- Done. */
+            a
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedClassesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     it('handles non typescript-eslint parser', async () => {
       await validEspree({
         code: dedent`

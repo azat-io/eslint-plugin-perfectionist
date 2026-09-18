@@ -11987,6 +11987,56 @@ describe('sort-imports', () => {
         ],
         options: [{}],
       })
+
+      await invalid({
+        output: dedent`
+          import { b } from './b'
+          import { c } from './c'
+          import { a } from './a' // eslint-disable-line -- Pinned.
+        `,
+        code: dedent`
+          import { c } from './c'
+          import { b } from './b'
+          import { a } from './a' // eslint-disable-line -- Pinned.
+        `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import { a } from './a'
+          import { d } from './d'
+          /* eslint-disable rule-to-test/sort-imports -- Pinned. */
+          import { c } from './c'
+          import { b } from './b'
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-imports -- Done. */
+          import { e } from './e'
+        `,
+        code: dedent`
+          import { d } from './d'
+          import { e } from './e'
+          /* eslint-disable rule-to-test/sort-imports -- Pinned. */
+          import { c } from './c'
+          import { b } from './b'
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-imports -- Done. */
+          import { a } from './a'
+        `,
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [{}],
+      })
     })
 
     it('defaults missing importKind to value', async () => {

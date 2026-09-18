@@ -4966,6 +4966,92 @@ describe('sort-jsx-props', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          <Element
+            b="b"
+            c="c"
+            // eslint-disable-next-line rule-to-test/sort-jsx-props -- Pinned.
+            a="a"
+          />
+        `,
+        code: dedent`
+          <Element
+            c="c"
+            b="b"
+            // eslint-disable-next-line rule-to-test/sort-jsx-props -- Pinned.
+            a="a"
+          />
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          <Element
+            b="b"
+            c="c"
+            a="a" // eslint-disable-line -- Pinned.
+          />
+        `,
+        code: dedent`
+          <Element
+            c="c"
+            b="b"
+            a="a" // eslint-disable-line -- Pinned.
+          />
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          <Element
+            a="a"
+            d="d"
+            /* eslint-disable rule-to-test/sort-jsx-props -- Pinned. */
+            c="c"
+            b="b"
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-jsx-props -- Done. */
+            e="e"
+          />
+        `,
+        code: dedent`
+          <Element
+            d="d"
+            e="e"
+            /* eslint-disable rule-to-test/sort-jsx-props -- Pinned. */
+            c="c"
+            b="b"
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-jsx-props -- Done. */
+            a="a"
+          />
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedJSXPropsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [
