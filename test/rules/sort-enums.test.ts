@@ -6562,6 +6562,92 @@ describe('sort-enums', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          enum Enum {
+            B = 'B',
+            C = 'C',
+            // eslint-disable-next-line rule-to-test/sort-enums -- Pinned.
+            A = 'A'
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            C = 'C',
+            B = 'B',
+            // eslint-disable-next-line rule-to-test/sort-enums -- Pinned.
+            A = 'A'
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          enum Enum {
+            B = 'B',
+            C = 'C',
+            A = 'A' // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            C = 'C',
+            B = 'B',
+            A = 'A' // eslint-disable-line -- Pinned.
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          enum Enum {
+            A = 'A',
+            D = 'D',
+            /* eslint-disable rule-to-test/sort-enums -- Pinned. */
+            C = 'C',
+            B = 'B',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-enums -- Done. */
+            E = 'E'
+          }
+        `,
+        code: dedent`
+          enum Enum {
+            D = 'D',
+            E = 'E',
+            /* eslint-disable rule-to-test/sort-enums -- Pinned. */
+            C = 'C',
+            B = 'B',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-enums -- Done. */
+            A = 'A'
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedEnumsOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

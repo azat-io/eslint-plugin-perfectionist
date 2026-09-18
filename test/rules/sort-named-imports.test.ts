@@ -5444,6 +5444,92 @@ describe('sort-named-imports', () => {
         options: [{}],
       })
     })
+
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          import {
+            b,
+            c,
+            // eslint-disable-next-line rule-to-test/sort-named-imports -- Pinned.
+            a
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            c,
+            b,
+            // eslint-disable-next-line rule-to-test/sort-named-imports -- Pinned.
+            a
+          } from 'module'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import {
+            b,
+            c,
+            a // eslint-disable-line -- Pinned.
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            c,
+            b,
+            a // eslint-disable-line -- Pinned.
+          } from 'module'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import {
+            a,
+            d,
+            /* eslint-disable rule-to-test/sort-named-imports -- Pinned. */
+            c,
+            b,
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-named-imports -- Done. */
+            e,
+          } from 'module'
+        `,
+        code: dedent`
+          import {
+            d,
+            e,
+            /* eslint-disable rule-to-test/sort-named-imports -- Pinned. */
+            c,
+            b,
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-named-imports -- Done. */
+            a,
+          } from 'module'
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedNamedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
     it('defaults missing importKind to value', async () => {
       let { valid: validEspree } = createRuleTester({
         parserOptions: {

@@ -5927,6 +5927,86 @@ describe('sort-intersection-types', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          type T =
+            B
+            & C
+            // eslint-disable-next-line rule-to-test/sort-intersection-types -- Pinned.
+            & A
+        `,
+        code: dedent`
+          type T =
+            C
+            & B
+            // eslint-disable-next-line rule-to-test/sort-intersection-types -- Pinned.
+            & A
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ],
+        output: dedent`
+          type T =
+            B
+            & C
+            & A // eslint-disable-line -- Pinned.
+        `,
+        code: dedent`
+          type T =
+            C
+            & B
+            & A // eslint-disable-line -- Pinned.
+        `,
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          type Type =
+            A
+            & D
+            /* eslint-disable rule-to-test/sort-intersection-types -- Pinned. */
+            & C
+            & B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-intersection-types -- Done. */
+            & E
+        `,
+        code: dedent`
+          type Type =
+            D
+            & E
+            /* eslint-disable rule-to-test/sort-intersection-types -- Pinned. */
+            & C
+            & B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-intersection-types -- Done. */
+            & A
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedIntersectionTypesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [
