@@ -1,15 +1,13 @@
 import type { ComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
-import type { CommonOptions, TypeOption } from '../../types/common-options'
+import type { CommonOptions } from '../../types/common-options'
 import type { SortImportsSortingNode, Options } from './types'
 
-import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
-import { buildLineLengthComparator } from '../../utils/compare/build-line-length-comparator'
-import { compareAlphabetically } from '../../utils/compare/compare-alphabetically'
-import { compareByCustomSort } from '../../utils/compare/compare-by-custom-sort'
+import {
+  buildStringComparatorByOptionsComputer,
+  defaultComparatorByOptionsComputer,
+} from '../../utils/compare/default-comparator-by-options-computer'
 import { computeOrderedValue } from '../../utils/compare/compute-ordered-value'
-import { unsortedComparator } from '../../utils/compare/unsorted-comparator'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
-import { compareNaturally } from '../../utils/compare/compare-naturally'
 
 export let comparatorByOptionsComputer: ComparatorByOptionsComputer<
   Required<Options[number]>,
@@ -71,37 +69,7 @@ function compareTypeImportFirst(
   return computeOrderedValue(a.isTypeImport ? -1 : 1, options.order)
 }
 
-let bySpecifierComparatorByOptionsComputer: ComparatorByOptionsComputer<
-  Omit<Required<Options[number]>, 'type'> & { type: TypeOption },
-  SortImportsSortingNode
-> = options => {
-  switch (options.type) {
-    /* v8 ignore next 2 -- @preserve Untested for now as not a relevant sort for this rule. */
-    case 'subgroup-order':
-      return defaultComparatorByOptionsComputer(options)
-    case 'alphabetical':
-      return (a, b) =>
-        compareAlphabetically(
-          a.specifierName ?? '',
-          b.specifierName ?? '',
-          options,
-        )
-    case 'line-length':
-      return buildLineLengthComparator(options)
-    case 'unsorted':
-      return unsortedComparator
-    case 'natural':
-      return (a, b) =>
-        compareNaturally(a.specifierName ?? '', b.specifierName ?? '', options)
-    case 'custom':
-      return (a, b) =>
-        compareByCustomSort(
-          a.specifierName ?? '',
-          b.specifierName ?? '',
-          options,
-        )
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(options.type)
-  }
-}
+let bySpecifierComparatorByOptionsComputer =
+  buildStringComparatorByOptionsComputer<SortImportsSortingNode>(
+    node => node.specifierName ?? '',
+  )
