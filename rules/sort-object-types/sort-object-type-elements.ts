@@ -12,13 +12,13 @@ import {
   allSelectors,
   type Options,
 } from './types'
+import { nameOrValueComparatorByOptionsComputer } from '../../utils/compare/name-or-value-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
-import { comparatorByOptionsComputer } from './comparator-by-options-computer'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { validateGroupsConfig } from '../../utils/validate-groups-config'
@@ -213,8 +213,8 @@ export function sortObjectTypeElements<MessageIds extends string>({
               throw new UnreachableCaseError(groupOptions.sortBy)
           }
         },
+        comparatorByOptionsComputer: nameOrValueComparatorByOptionsComputer,
         optionsByGroupIndexComputer,
-        comparatorByOptionsComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
         nodes: groupedNodes,
