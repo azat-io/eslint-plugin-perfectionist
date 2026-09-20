@@ -21,6 +21,7 @@ import {
   allSelectors,
 } from './types'
 import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
+import { nameOrValueComparatorByOptionsComputer } from '../../utils/compare/name-or-value-comparator-by-options-computer'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { computePropertyOrVariableDeclaratorName } from './compute-property-or-variable-declarator-name'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -30,7 +31,6 @@ import { generatePredefinedGroups } from '../../utils/generate-predefined-groups
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
-import { comparatorByOptionsComputer } from './comparator-by-options-computer'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { validateGroupsConfig } from '../../utils/validate-groups-config'
@@ -256,7 +256,7 @@ export function sortObject({
   ): SortObjectsSortingNode[] {
     let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
       sortNodesByGroups({
-        comparatorByOptionsComputer,
+        comparatorByOptionsComputer: nameOrValueComparatorByOptionsComputer,
         optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,
         groups: options.groups,
