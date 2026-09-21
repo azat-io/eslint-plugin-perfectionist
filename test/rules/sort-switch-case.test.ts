@@ -3127,6 +3127,26 @@ describe('sort-switch-case', () => {
       })
     })
 
+    it('preserves block order when only the fallback sort differs', async () => {
+      await valid({
+        options: [
+          {
+            fallbackSort: { type: 'alphabetical' },
+            type: 'line-length',
+            order: 'asc',
+          },
+        ],
+        code: dedent`
+          switch (value) {
+            case 'b':
+              break
+            case 'a':
+              break
+          }
+        `,
+      })
+    })
+
     it('sorts even when literals share the same runtime value', async () => {
       await invalid({
         output: dedent`
@@ -3468,6 +3488,38 @@ describe('sort-switch-case', () => {
         `,
         options: [{ type: 'alphabetical', order: 'asc' }],
         settings,
+      })
+    })
+
+    it('reports multiline case names on a single line', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Foo .aaa',
+              left: 'Foo.zzz',
+            },
+            messageId: 'unexpectedSwitchCaseOrder',
+          },
+        ],
+        output: dedent`
+          switch (value) {
+            case Foo
+              .aaa:
+            case Foo.zzz:
+              doIt()
+              break
+          }
+        `,
+        code: dedent`
+          switch (value) {
+            case Foo.zzz:
+            case Foo
+              .aaa:
+              doIt()
+              break
+          }
+        `,
       })
     })
 
@@ -4240,6 +4292,94 @@ describe('sort-switch-case', () => {
           `,
         })
       })
+
+      it.each([
+        {
+          lastBlock: dedent`
+            case 'x':
+            case 'z':
+              last()
+              break
+          `,
+          firstBlock: dedent`
+            case 'a':
+              first()
+              break
+          `,
+          description: 'a shorter block first',
+          middleBlockLine: 7,
+          firstBlockLine: 13,
+        },
+        {
+          firstBlock: dedent`
+            case 'a':
+            case 'b':
+              first()
+              break
+          `,
+          lastBlock: dedent`
+            case 'z':
+              last()
+              break
+          `,
+          description: 'a longer block first',
+          middleBlockLine: 6,
+          firstBlockLine: 12,
+        },
+      ])(
+        'sorts blocks around an internally disabled label with $description',
+        async ({ middleBlockLine, firstBlockLine, firstBlock, lastBlock }) => {
+          let alignedDedent = dedent.withOptions({ alignValues: true })
+          await invalid({
+            errors: [
+              {
+                data: {
+                  right: 'm',
+                  left: 'z',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+                line: middleBlockLine,
+                column: 3,
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'o',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+                line: firstBlockLine,
+                column: 3,
+              },
+            ],
+            output: alignedDedent`
+              switch (value) {
+                ${firstBlock}
+                // Middle block.
+                case 'm':
+                // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+                case 'j':
+                case 'o':
+                  middle()
+                  break
+                ${lastBlock}
+              }
+            `,
+            code: alignedDedent`
+              switch (value) {
+                ${lastBlock}
+                // Middle block.
+                case 'm':
+                // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+                case 'j':
+                case 'o':
+                  middle()
+                  break
+                ${firstBlock}
+              }
+            `,
+          })
+        },
+      )
 
       it('sorts case blocks around a disabled fallthrough label', async () => {
         await invalid({
