@@ -11,10 +11,11 @@ export default eslintConfig({
         'no-restricted-imports': [
           'error',
           {
-            paths: [
+            patterns: [
               {
+                regex:
+                  '^@typescript-eslint/utils(/(?!ast-utils$|eslint-utils$).*)?$',
                 message: 'Only type imports are allowed.',
-                name: '@typescript-eslint/utils',
                 allowTypeImports: true,
               },
             ],
