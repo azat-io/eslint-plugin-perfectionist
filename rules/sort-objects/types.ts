@@ -1,7 +1,7 @@
 import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { SortingNodeWithDependencies } from '../../utils/sort-nodes-by-dependencies'
 import type { RegexOption, TypeOption } from '../../types/common-options'

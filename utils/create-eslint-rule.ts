@@ -1,4 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils'
+import * as ESLintUtils from '@typescript-eslint/utils/eslint-utils'
 
 /**
  * Factory function for creating ESLint rules with consistent structure and
