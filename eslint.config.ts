@@ -14,7 +14,7 @@ export default eslintConfig({
             paths: [
               {
                 message: 'Only type imports are allowed.',
-                name: '@typescript-eslint/types',
+                name: '@typescript-eslint/utils',
                 allowTypeImports: true,
               },
             ],

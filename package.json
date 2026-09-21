@@ -61,6 +61,7 @@
     "test:usage": "knip"
   },
   "dependencies": {
+    "@typescript-eslint/types": "^8.70.0",
     "@typescript-eslint/utils": "^8.70.0",
     "natural-orderby": "^5.0.0"
   },
@@ -88,7 +89,6 @@
     "@types/node": "^26.5.1",
     "@types/unist": "^3.0.3",
     "@typescript-eslint/parser": "^8.70.0",
-    "@typescript-eslint/types": "^8.70.0",
     "@vercel/og": "^1.0.1",
     "@vitest/coverage-v8": "^5.0.0",
     "ajv-draft-04": "^1.0.0",
