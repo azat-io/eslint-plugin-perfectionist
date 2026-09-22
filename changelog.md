@@ -1,5 +1,24 @@
 # Changelog
 
+## v5.12.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.11.1...v5.12.0)
+
+### 🚀 Features
+
+- Support oxlint without an eslint installation
+  ([5488d84](https://github.com/azat-io/eslint-plugin-perfectionist/commit/5488d84))
+
+### 🐞 Bug Fixes
+
+- Honor eslint-disable directives with a description
+  ([e3d11cc](https://github.com/azat-io/eslint-plugin-perfectionist/commit/e3d11cc))
+
+### ❤️ Contributors
+
+- Dom Porada ([@porada](https://github.com/porada))
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.11.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.11.0...v5.11.1)
