@@ -241,7 +241,7 @@ describe('compute-common-selector', () => {
     resolveModuleName?: { isExternalLibraryImport: boolean }
     isExternalModuleNameRelative: boolean
   }): void {
-    mockGetTypescriptImport.mockReturnValueOnce({
+    let typescriptImport: unknown = {
       resolveModuleName: () => ({
         resolvedModule: {
           isExternalLibraryImport:
@@ -249,6 +249,8 @@ describe('compute-common-selector', () => {
         },
       }),
       isExternalModuleNameRelative: () => isExternalModuleNameRelative,
-    } as unknown as typeof ts)
+    }
+
+    mockGetTypescriptImport.mockReturnValueOnce(typescriptImport as typeof ts)
   }
 })

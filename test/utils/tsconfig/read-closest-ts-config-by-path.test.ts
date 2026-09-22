@@ -22,6 +22,8 @@ let mockParseJsonConfigFileContent: Mock<
   (content: object) => ts.ParsedCommandLine
 > = vi.fn()
 
+let mockModuleResolutionCache: unknown = vi.fn()
+
 let mockRequire: Mock<(moduleId: string) => typeof ts> = vi.fn(
   () =>
     ({
@@ -32,18 +34,22 @@ let mockRequire: Mock<(moduleId: string) => typeof ts> = vi.fn(
         _options: unknown,
       ) => {
         getCanonicalFileName('test.ts')
-        return vi.fn()
+        return mockModuleResolutionCache as ts.ModuleResolutionCache
       },
       parseJsonConfigFileContent: (content: object): ts.ParsedCommandLine =>
         mockParseJsonConfigFileContent(content),
       readConfigFile: (filePath: string): ts.ParsedCommandLine =>
         mockReadConfigFile(filePath),
-    }) as unknown as typeof ts,
+    }) as typeof ts,
 )
 
+/**
+ * A bare mock function does not carry `Require`'s own members.
+ */
+let mockRequireModule: unknown = mockRequire
+
 vi.mock(import('node:module'), _ => ({
-  createRequire: (_path: string | URL) =>
-    mockRequire as unknown as NodeJS.Require,
+  createRequire: (_path: string | URL) => mockRequireModule as NodeJS.Require,
 }))
 
 let mockGetTypescriptImport: Mock<() => typeof ts | null> = vi.fn()

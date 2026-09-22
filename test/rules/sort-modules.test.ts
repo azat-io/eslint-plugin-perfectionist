@@ -31,7 +31,7 @@ function replaceNodeType({
   ast.body[matchingNodeIndex] = {
     ...ast.body[matchingNodeIndex],
     type: replacementNodeType,
-  } as unknown as (typeof ast.body)[number]
+  } as (typeof ast.body)[number]
 }
 
 let replacedNodeTypeParser = {

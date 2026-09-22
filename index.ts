@@ -69,11 +69,19 @@ let recommendedRules = {
   'sort-enums': sortEnums,
   'sort-sets': sortSets,
   'sort-maps': sortMaps,
-} as unknown as ESLint.Plugin['rules']
-export let rules = {
+}
+
+/**
+ * Rules are built with `@typescript-eslint`'s rule creator, whose `RuleModule`
+ * describes a stricter context than ESLint's own `RuleDefinition`. The record
+ * crosses to ESLint's types here, once for the whole plugin.
+ */
+let pluginRules: unknown = {
   ...recommendedRules,
   'sort-arrays': sortArrays,
-} as unknown as ESLint.Plugin['rules']
+}
+
+export let rules = pluginRules as ESLint.Plugin['rules']
 
 let plugin = {
   meta: {
@@ -81,11 +89,11 @@ let plugin = {
     name: packageName,
   },
   rules,
-} as unknown as ESLint.Plugin
+} as ESLint.Plugin
 
 function getRules(options: BaseOptions): Linter.RulesRecord {
   return Object.fromEntries(
-    Object.keys(recommendedRules!).map(ruleName => [
+    Object.keys(recommendedRules).map(ruleName => [
       `${pluginName}/${ruleName}`,
       ['error', options],
     ]),

@@ -56,7 +56,7 @@ export const GET: APIRoute = async () => {
     '',
     '### Why teams use it',
     '',
-    ...BENEFITS.map(benefit => `- ${benefit.title} — ${benefit.description}`),
+    ...BENEFITS.map(benefit => `- ${benefit.title}: ${benefit.description}`),
     '',
     '## Installation',
     '',
@@ -82,14 +82,14 @@ export const GET: APIRoute = async () => {
     '',
     ...guide.map(
       entry =>
-        `- [${entry.data.title}](/guide/${entry.id}.md) — ${entry.data.shortDescription}`,
+        `- [${entry.data.title}](/guide/${entry.id}.md): ${entry.data.shortDescription}`,
     ),
     '',
     '## Ready-Made Configs',
     '',
     ...configs.map(
       config =>
-        `- [${config.data.title}](/configs/${config.id}.md) — ${config.data.shortDescription}`,
+        `- [${config.data.title}](/configs/${config.id}.md): ${config.data.shortDescription}`,
     ),
     '',
     '## Rules Reference',

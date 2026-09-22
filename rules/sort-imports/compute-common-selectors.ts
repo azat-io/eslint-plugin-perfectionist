@@ -82,7 +82,7 @@ export function computeCommonSelectors({
     commonSelectors.push('tsconfig-path')
   }
 
-  if (isIndex(name)) {
+  if (indexModules.has(name)) {
     commonSelectors.push('index')
   }
 
@@ -126,6 +126,19 @@ let bunModules = new Set([
 ])
 
 let nodeBuiltinModules = new Set(builtinModules)
+
+/**
+ * Import paths that resolve to an index file.
+ */
+let indexModules = new Set([
+  './index.d.js',
+  './index.d.ts',
+  './index.js',
+  './index.ts',
+  './index',
+  './',
+  '.',
+])
 
 /**
  * Node.js builtin modules that can only be imported with the `node:` prefix.
@@ -227,24 +240,6 @@ function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
   }
 
   return environment === 'bun' && bunModules.has(value)
-}
-
-/**
- * Checks if an import is an index file import.
- *
- * @param value - Import path to check.
- * @returns True if importing an index file.
- */
-function isIndex(value: string): boolean {
-  return [
-    './index.d.js',
-    './index.d.ts',
-    './index.js',
-    './index.ts',
-    './index',
-    './',
-    '.',
-  ].includes(value)
 }
 
 /**

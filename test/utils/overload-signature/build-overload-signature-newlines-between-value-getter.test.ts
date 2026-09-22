@@ -65,7 +65,7 @@ describe('build-overload-signature-newlines-between-value-getter', () => {
   ): SortingNodeWithOverloadSignatureImplementation<TSESTree.Node> {
     return {
       overloadSignatureImplementation,
-    } as unknown as SortingNodeWithOverloadSignatureImplementation<TSESTree.Node>
+    } as SortingNodeWithOverloadSignatureImplementation<TSESTree.Node>
   }
 
   function buildImplementation(): Record<string, never> {

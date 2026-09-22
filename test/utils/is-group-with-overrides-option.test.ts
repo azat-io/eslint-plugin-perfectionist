@@ -13,9 +13,7 @@ describe('is-group-with-overrides-option', () => {
   it.each(['group', ['group'], {}, { foo: 'bar' }, { newlinesBetween: 1 }])(
     'should return `false` if the element is not a group with overrides option (%s)',
     option => {
-      expect(
-        isGroupWithOverridesOption(option as unknown as string),
-      ).toBeFalsy()
+      expect(isGroupWithOverridesOption(option as string)).toBeFalsy()
     },
   )
 })

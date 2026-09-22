@@ -6,10 +6,14 @@ import * as ts from 'typescript'
 import type { getTypescriptImport as testedFunction } from '../../../utils/tsconfig/get-typescript-import'
 
 let mockCreateRequire: Mock<(moduleId: string) => typeof ts> = vi.fn()
-let mockRequire = mockCreateRequire as unknown as NodeJS.Require
+
+/**
+ * A bare mock function does not carry `Require`'s own members.
+ */
+let mockRequire: unknown = mockCreateRequire
 
 vi.mock(import('node:module'), _ => ({
-  createRequire: (_path: string | URL) => mockRequire,
+  createRequire: (_path: string | URL) => mockRequire as NodeJS.Require,
 }))
 
 describe('getTypescriptImport', () => {
@@ -45,13 +49,15 @@ describe('getTypescriptImport', () => {
   })
 
   it("doesn't load typescript if it exists but is missing at least one required key (Typescript 7)", () => {
-    mockCreateRequire.mockReturnValue({
+    let incompleteTypescript: unknown = {
       isExternalModuleNameRelative: () => {},
       createModuleResolutionCache: () => {},
       parseJsonConfigFileContent: () => {},
       readConfigFile: () => {},
       sys: {},
-    } as unknown as typeof ts)
+    }
+
+    mockCreateRequire.mockReturnValue(incompleteTypescript as typeof ts)
 
     let result = getTypescriptImport()
 

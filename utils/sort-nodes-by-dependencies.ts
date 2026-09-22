@@ -41,8 +41,8 @@ interface ExtraOptions {
  * Sorts nodes using topological sorting based on their dependencies.
  *
  * Implements a depth-first search algorithm to ensure that dependencies appear
- * before the nodes that depend on them. This is crucial for maintaining logical
- * order in code where some elements reference others.
+ * before the nodes that depend on them. This is important for maintaining
+ * logical order in code where some elements reference others.
  *
  * Nodes involved in circular dependencies are excluded from dependency-based
  * ordering and retain their original relative positions.
