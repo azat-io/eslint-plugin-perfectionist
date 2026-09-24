@@ -1,5 +1,18 @@
 # Changelog
 
+## v5.12.1
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.12.0...v5.12.1)
+
+### 🐞 Bug Fixes
+
+- Make eslint an optional peer dependency
+  ([41b088e](https://github.com/azat-io/eslint-plugin-perfectionist/commit/41b088e))
+
+### ❤️ Contributors
+
+- Dom Porada ([@porada](https://github.com/porada))
+
 ## v5.12.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.11.1...v5.12.0)
