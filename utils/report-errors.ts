@@ -160,6 +160,6 @@ export function reportErrors<MessageIds extends string, T extends SortingNode>({
  * @param string - Multi-line string to normalize.
  * @returns Single-line string with normalized whitespace.
  */
-function toSingleLine(string: string): string {
+export function toSingleLine(string: string): string {
   return string.replaceAll(/\s{2,}/gu, ' ').trim()
 }

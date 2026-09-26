@@ -3127,6 +3127,26 @@ describe('sort-switch-case', () => {
       })
     })
 
+    it('preserves block order when only the fallback sort differs', async () => {
+      await valid({
+        options: [
+          {
+            fallbackSort: { type: 'alphabetical' },
+            type: 'line-length',
+            order: 'asc',
+          },
+        ],
+        code: dedent`
+          switch (value) {
+            case 'b':
+              break
+            case 'a':
+              break
+          }
+        `,
+      })
+    })
+
     it('sorts even when literals share the same runtime value', async () => {
       await invalid({
         output: dedent`
@@ -3471,6 +3491,38 @@ describe('sort-switch-case', () => {
       })
     })
 
+    it('reports multiline case names on a single line', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              right: 'Foo .aaa',
+              left: 'Foo.zzz',
+            },
+            messageId: 'unexpectedSwitchCaseOrder',
+          },
+        ],
+        output: dedent`
+          switch (value) {
+            case Foo
+              .aaa:
+            case Foo.zzz:
+              doIt()
+              break
+          }
+        `,
+        code: dedent`
+          switch (value) {
+            case Foo.zzz:
+            case Foo
+              .aaa:
+              doIt()
+              break
+          }
+        `,
+      })
+    })
+
     describe('condition-shaped switches', () => {
       it('does not sort switches where discriminant and case tests are comparisons', async () => {
         await valid({
@@ -3578,6 +3630,921 @@ describe('sort-switch-case', () => {
                 return 'a'
             }
           `,
+        })
+      })
+    })
+
+    describe('with eslint-disable comments', () => {
+      it('excludes disabled cases from sorting', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              case 'b':
+                break
+              case 'c':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+            }
+          `,
+        })
+
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'b':
+                break
+              case 'c':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+                break
+              case 'b':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('handles inline eslint-disable comments', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'c': // eslint-disable-line
+                break
+              case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c': // eslint-disable-line
+                break
+              case 'b':
+                break
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('keeps the cases of an eslint-disable block in place', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              /* eslint-disable */
+              case 'c':
+                break
+              case 'b':
+                break
+              // Shouldn't move
+              /* eslint-enable */
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
+      it('handles rule-specific eslint-disable comments', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'b':
+                break
+              case 'c':
+                break
+              // eslint-disable-next-line rule-to-test/sort-switch-case
+              case 'a':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+                break
+              case 'b':
+                break
+              // eslint-disable-next-line rule-to-test/sort-switch-case
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('keeps a case disabled after its neighbors in place', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              case 'a':
+                break
+              // eslint-disable-next-line
+              case 'z':
+                break
+              case 'b':
+                break
+            }
+          `,
+        })
+      })
+
+      it('keeps a disabled case of a fallthrough block in place', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              // eslint-disable-next-line
+              case 'c':
+              case 'a':
+              case 'b':
+                handle()
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (value) {
+              case 'b':
+              // eslint-disable-next-line
+              case 'a':
+                handle()
+            }
+          `,
+        })
+
+        await valid({
+          code: dedent`
+            switch (value) {
+              // eslint-disable-next-line
+              case
+                'c':
+              case 'a':
+              case 'b':
+                handle()
+            }
+          `,
+        })
+      })
+
+      it('keeps a disabled default clause in place', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'default',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                left: 'default',
+                right: 'a',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          output: dedent`
+            switch (value) {
+              case 'a':
+                break
+              // eslint-disable-next-line
+              default:
+                break
+              case 'b':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'b':
+                break
+              // eslint-disable-next-line
+              default:
+                break
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
+      it('keeps a disabled case before the default clause in place', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              case 'b':
+                b()
+                break
+              default:
+              // eslint-disable-next-line
+              case 'a':
+                handle()
+                break
+            }
+          `,
+        })
+      })
+
+      it('keeps several disabled case blocks in place', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'q',
+                left: 'm',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'q',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          output: dedent`
+            switch (value) {
+              // eslint-disable-next-line
+              case 'z':
+                break
+              case 'b':
+                break
+              // eslint-disable-next-line
+              case 'q':
+                break
+              case 'm':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              // eslint-disable-next-line
+              case 'z':
+                break
+              case 'm':
+                break
+              // eslint-disable-next-line
+              case 'q':
+                break
+              case 'b':
+                break
+            }
+          `,
+        })
+      })
+
+      it('ignores a case written after an eslint-enable comment', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              /* eslint-disable */
+              case 'c':
+                break
+              /* eslint-enable */ case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              /* eslint-disable */
+              case 'c':
+                break
+              /* eslint-enable */ case 'b':
+                break
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('sorts enabled cases on both sides of a disabled case', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          output: dedent`
+            switch (value) {
+              case 'b':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+              case 'c':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+        })
+      })
+
+      it('sorts enabled labels around a disabled label of the same block', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'm',
+                left: 'zz',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          output: dedent`
+            switch (value) {
+              case 'b':
+              // eslint-disable-next-line
+              case 'a':
+              case 'c':
+                handle()
+                break
+              case 'm':
+                m()
+                break
+              case 'zz':
+                zz()
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+              // eslint-disable-next-line
+              case 'a':
+              case 'b':
+                handle()
+                break
+              case 'zz':
+                zz()
+                break
+              case 'm':
+                m()
+                break
+            }
+          `,
+        })
+      })
+
+      it('keeps a block whose first label only is disabled in place', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              // eslint-disable-next-line
+              case 'c':
+              case 'd':
+                break
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
+      it('ignores an eslint-enable comment of another rule', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'c':
+                break
+              /* eslint-enable no-console */ case 'b':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */
+              case 'a':
+                break
+            }
+          `,
+          linterOptions: {
+            reportUnusedDisableDirectives: 'off',
+          },
+        })
+      })
+
+      it('lets an eslint-disable comment override an earlier eslint-enable', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'z':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */ /* eslint-disable rule-to-test/sort-switch-case */ case 'y':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
+      it('keeps a case preceded by a plain comment in place', async () => {
+        await valid({
+          code: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'c':
+                break
+              /* why */ case 'b':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */
+              case 'a':
+                break
+            }
+          `,
+        })
+      })
+
+      it('handles an eslint-enable comment followed by another comment', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'c':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */ /* why */ case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              /* eslint-disable rule-to-test/sort-switch-case */
+              case 'c':
+                break
+              /* eslint-enable rule-to-test/sort-switch-case */ /* why */ case 'b':
+                break
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('sorts enabled cases across two disabled cases', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'z',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          output: dedent`
+            switch (value) {
+              case 'b':
+                break
+              // eslint-disable-next-line
+              case 'z':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+              case 'c':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+                break
+              // eslint-disable-next-line
+              case 'z':
+                break
+              // eslint-disable-next-line
+              case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+        })
+      })
+
+      it('sorts enabled labels across two disabled labels', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                right: 'z',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'b',
+                left: 'a',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'm',
+                left: 'zz',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+          output: dedent`
+            switch (value) {
+              case 'b':
+              // eslint-disable-next-line
+              case 'z':
+              // eslint-disable-next-line
+              case 'a':
+              case 'c':
+                handle()
+                break
+              case 'm':
+                m()
+                break
+              case 'zz':
+                zz()
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+              // eslint-disable-next-line
+              case 'z':
+              // eslint-disable-next-line
+              case 'a':
+              case 'b':
+                handle()
+                break
+              case 'zz':
+                zz()
+                break
+              case 'm':
+                m()
+                break
+            }
+          `,
+        })
+      })
+
+      it.each([
+        {
+          lastBlock: dedent`
+            case 'x':
+            case 'z':
+              last()
+              break
+          `,
+          firstBlock: dedent`
+            case 'a':
+              first()
+              break
+          `,
+          description: 'a shorter block first',
+          middleBlockLine: 7,
+          firstBlockLine: 13,
+        },
+        {
+          firstBlock: dedent`
+            case 'a':
+            case 'b':
+              first()
+              break
+          `,
+          lastBlock: dedent`
+            case 'z':
+              last()
+              break
+          `,
+          description: 'a longer block first',
+          middleBlockLine: 6,
+          firstBlockLine: 12,
+        },
+      ])(
+        'sorts blocks around an internally disabled label with $description',
+        async ({ middleBlockLine, firstBlockLine, firstBlock, lastBlock }) => {
+          let alignedDedent = dedent.withOptions({ alignValues: true })
+          await invalid({
+            errors: [
+              {
+                data: {
+                  right: 'm',
+                  left: 'z',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+                line: middleBlockLine,
+                column: 3,
+              },
+              {
+                data: {
+                  right: 'a',
+                  left: 'o',
+                },
+                messageId: 'unexpectedSwitchCaseOrder',
+                line: firstBlockLine,
+                column: 3,
+              },
+            ],
+            output: alignedDedent`
+              switch (value) {
+                ${firstBlock}
+                // Middle block.
+                case 'm':
+                // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+                case 'j':
+                case 'o':
+                  middle()
+                  break
+                ${lastBlock}
+              }
+            `,
+            code: alignedDedent`
+              switch (value) {
+                ${lastBlock}
+                // Middle block.
+                case 'm':
+                // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+                case 'j':
+                case 'o':
+                  middle()
+                  break
+                ${firstBlock}
+              }
+            `,
+          })
+        },
+      )
+
+      it('sorts case blocks around a disabled fallthrough label', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'b':
+              case 'c':
+              // eslint-disable-next-line
+              case 'a':
+                handle()
+                break
+              case 'm':
+                m()
+                break
+              case 'zz':
+                zz()
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'b':
+              case 'c':
+              // eslint-disable-next-line
+              case 'a':
+                handle()
+                break
+              case 'zz':
+                zz()
+                break
+              case 'm':
+                m()
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'm',
+                left: 'zz',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+      })
+
+      it('honors a disable directive that carries a description', async () => {
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'b':
+                break
+              case 'c':
+                break
+              // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+              case 'a':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c':
+                break
+              case 'b':
+                break
+              // eslint-disable-next-line rule-to-test/sort-switch-case -- Pinned.
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'c': // eslint-disable-line -- Pinned.
+                break
+              case 'a':
+                break
+              case 'b':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'c': // eslint-disable-line -- Pinned.
+                break
+              case 'b':
+                break
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
+        })
+
+        await invalid({
+          output: dedent`
+            switch (value) {
+              case 'a':
+                break
+              case 'd':
+                break
+              /* eslint-disable rule-to-test/sort-switch-case -- Pinned. */
+              case 'c':
+                break
+              case 'b':
+                break
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-switch-case -- Done. */
+              case 'e':
+                break
+            }
+          `,
+          code: dedent`
+            switch (value) {
+              case 'd':
+                break
+              case 'e':
+                break
+              /* eslint-disable rule-to-test/sort-switch-case -- Pinned. */
+              case 'c':
+                break
+              case 'b':
+                break
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-switch-case -- Done. */
+              case 'a':
+                break
+            }
+          `,
+          errors: [
+            {
+              data: {
+                right: 'c',
+                left: 'e',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+            {
+              data: {
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedSwitchCaseOrder',
+            },
+          ],
         })
       })
     })
