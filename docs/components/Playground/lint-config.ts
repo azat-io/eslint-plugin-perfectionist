@@ -250,6 +250,17 @@ function createLintConfig({
   ]
 }
 
+/**
+ * Maps an exception from linting to a result.
+ *
+ * ESLint throws for rule options it rejects, both from the config and from
+ * `eslint` comments in the code. If linting succeeds with comments ignored, the
+ * comment was the cause, which is the user's mistake rather than a bug.
+ *
+ * @param message - Error message without ESLint's location note.
+ * @param lintWithoutComments - Runs `verify` with inline config disabled.
+ * @returns A `config-error` or `crash` result.
+ */
 function classifyError(
   message: string,
   lintWithoutComments: () => unknown,
@@ -328,17 +339,6 @@ function isInlineConfigNotice(message: Linter.LintMessage): boolean {
   )
 }
 
-/**
- * Maps an exception from linting to a result.
- *
- * ESLint throws for rule options it rejects, both from the config and from
- * `eslint` comments in the code. If linting succeeds with comments ignored, the
- * comment was the cause, which is the user's mistake rather than a bug.
- *
- * @param message - Error message without ESLint's location note.
- * @param lintWithoutComments - Runs `verify` with inline config disabled.
- * @returns A `config-error` or `crash` result.
- */
 /**
  * Returns the message of an error thrown while linting, without the file
  * location ESLint appends.
