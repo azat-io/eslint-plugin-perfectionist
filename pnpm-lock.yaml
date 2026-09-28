@@ -93,6 +93,9 @@ importers:
       '@shikijs/langs':
         specifier: ^4.4.3
         version: 4.4.3
+      '@shikijs/magic-move':
+        specifier: 4.4.3
+        version: 4.4.3(shiki@4.4.3)(svelte@5.57.1(@typescript-eslint/types@8.70.0))
       '@shikijs/transformers':
         specifier: ^4.4.3
         version: 4.4.3
@@ -213,9 +216,6 @@ importers:
       shiki:
         specifier: ^4.4.3
         version: 4.4.3
-      shiki-magic-move:
-        specifier: ^1.4.0
-        version: 1.4.0(shiki@4.4.3)(svelte@5.57.1(@typescript-eslint/types@8.70.0))
       simple-git-hooks:
         specifier: ^2.14.0
         version: 2.14.0
@@ -7897,28 +7897,6 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
-
-  shiki-magic-move@1.4.0:
-    resolution: {integrity: sha512-DDEv7khyBMAQghQEfQ6Ab3KZxT5ub6tVNe8+NcvglWauKVV9jxiRYC055DoiFLgvs6Hd9+LuBndeaSPNOSxgSg==}
-    engines: {node: '>=20'}
-    deprecated: shiki-magic-move is now @shikijs/magic-move, please migrate by renaming the package
-    peerDependencies:
-      react: ^18.2.0 || ^19.0.0
-      shiki: ^4.0.0
-      solid-js: ^1.9.1
-      svelte: ^5.0.0-0
-      vue: ^3.4.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      shiki:
-        optional: true
-      solid-js:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
 
   shiki@4.4.3:
     resolution: {integrity: sha512-Mb/GvXPHBAXdgGIcnfU5L3ldpn1XcxrGkPHwqgRx17/I2XRfqlFKk2vGkHWINn1kdXvzJZeuO3is6I9KLPFm0g==}
@@ -18162,13 +18140,6 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
-
-  shiki-magic-move@1.4.0(shiki@4.4.3)(svelte@5.57.1(@typescript-eslint/types@8.70.0)):
-    dependencies:
-      '@shikijs/magic-move': 4.4.3(shiki@4.4.3)(svelte@5.57.1(@typescript-eslint/types@8.70.0))
-    optionalDependencies:
-      shiki: 4.4.3
-      svelte: 5.57.1(@typescript-eslint/types@8.70.0)
 
   shiki@4.4.3:
     dependencies:

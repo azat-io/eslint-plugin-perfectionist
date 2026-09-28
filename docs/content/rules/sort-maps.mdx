@@ -26,6 +26,7 @@ By maintaining a consistent structure across Map objects, this rule improves rea
 ## Try it out
 
 <CodeExample
+  rule="sort-maps"
   alphabetical={dedent`
     const products = new Map([
       ['keyboard', { name: 'Keyboard', price: 50 }],
@@ -50,8 +51,8 @@ By maintaining a consistent structure across Map objects, this rule improves rea
     ])
 
     const categories = new Map([
-      ['accessories', { name: 'Accessories' }],
       ['electronics', { name: 'Electronics' }],
+      ['accessories', { name: 'Accessories' }],
       ['furniture', { name: 'Furniture' }],
       ['clothing', { name: 'Clothing' }],
     ])

@@ -26,6 +26,7 @@ export default defineConfig({
     'pcss',
     'playform',
     'poppanator',
+    'prerenderingchange',
     'rehype',
     'renminbi',
     'shiki',

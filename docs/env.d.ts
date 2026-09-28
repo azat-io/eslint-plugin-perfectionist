@@ -7,3 +7,23 @@ declare module '*.svg?raw' {
   let content: string
   export default content
 }
+
+declare module 'virtual:playground-builtin-modules' {
+  let builtinModules: string[]
+  export default builtinModules
+}
+
+declare module 'virtual:playground-build-info' {
+  let buildInfo: {
+    perfectionist: string
+    commit: string | null
+    typescript: string
+    release: boolean
+    parser: string
+  }
+  export default buildInfo
+}
+
+interface Document {
+  prerendering?: boolean
+}

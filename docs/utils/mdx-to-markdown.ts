@@ -1,7 +1,7 @@
 import type { Parent, Node } from 'unist'
 import type { Plugin } from 'unified'
 
-import { SKIP as skip, visit } from 'unist-util-visit'
+import { SKIP as skip, EXIT as exit, visit } from 'unist-util-visit'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkStringify from 'remark-stringify'
 import remarkParse from 'remark-parse'
@@ -60,6 +60,26 @@ const TRANSFORMERS: Record<
   CodeExample: transformCodeExample,
   Important: transformImportant,
   CodeTabs: transformCodeTabs,
+}
+
+/**
+ * Reads the unsorted code of the first `CodeExample` on a page.
+ *
+ * @param mdx - Page source.
+ * @returns The `initial` code, or `null` when the page has no example.
+ */
+export function extractExampleCode(mdx: string): string | null {
+  let tree = unified().use(remarkParse).use(remarkMdx).parse(mdx)
+  let code: string | null = null
+  visit(tree, 'mdxJsxFlowElement', node => {
+    let element = node as JsxElement
+    if (element.name !== 'CodeExample') {
+      return
+    }
+    code = getStringAttribute(element, 'initial')
+    return exit
+  })
+  return code
 }
 
 export async function mdxToMarkdown(mdx: string): Promise<string> {

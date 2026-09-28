@@ -1,0 +1,163 @@
+---
+import { getCollection } from 'astro:content'
+import { Code } from 'astro:components'
+
+import Playground from '../../components/Playground/Playground.svelte'
+import { extractExampleCode } from '../../utils/mdx-to-markdown'
+import Sidebar from '../../components/Sidebar/Sidebar.astro'
+import Typography from '../../components/Typography.astro'
+import Container from '../../components/Container.astro'
+import { colorTheme } from '../../utils/shiki-theme'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+import Head from '../../components/Head.astro'
+import Html from '../../components/Html.astro'
+import Body from '../../components/Body.astro'
+import { DEMO_EXAMPLE } from '../../data/demo'
+
+let initialLines = DEMO_EXAMPLE.initial.split('\n').length
+let rules = (await getCollection('rules')).toSorted((first, second) =>
+  first.id.localeCompare(second.id),
+)
+let examples: Record<string, string> = {}
+for (let rule of rules) {
+  let example = extractExampleCode(rule.body ?? '')
+  if (!example) {
+    console.warn(
+      `Playground: ${rule.id} has no CodeExample, the homepage example is used`,
+    )
+  }
+  examples[rule.id] = example ?? DEMO_EXAMPLE.initial
+}
+---
+
+<Html>
+  <Head
+    keywords={[
+      'eslint',
+      'eslint playground',
+      'eslint plugin',
+      'sort imports',
+      'autofix',
+      'online',
+    ]}
+    description="Try ESLint Plugin Perfectionist in your browser: paste code, pick a sorting style and watch the autofix sort it."
+    title="Playground"
+    type="website"
+  />
+  <Body>
+    <Header border />
+    <Sidebar isMobileOnly />
+    <main class="main">
+      <Container>
+        <h1 class="title">Playground</h1>
+        <Typography
+          color="secondary"
+          mbe="l"
+        >
+          Paste your code, pick a sorting style and press Sort. Everything runs
+          in your browser.
+        </Typography>
+        <Playground
+          initial={DEMO_EXAMPLE.initial}
+          client:only="svelte"
+          {examples}
+        >
+          <div
+            style={`--lines: ${initialLines}`}
+            class="skeleton"
+            slot="fallback"
+          >
+            <div class="skeleton-toolbar"></div>
+            <div class="skeleton-card"></div>
+            <noscript>
+              <p>The Playground needs JavaScript.</p>
+              <Code
+                code={DEMO_EXAMPLE.initial}
+                theme={colorTheme}
+                lang="tsx"
+              />
+            </noscript>
+          </div>
+        </Playground>
+      </Container>
+    </main>
+    <Footer />
+  </Body>
+</Html>
+
+<style>
+  .main {
+    padding-block: var(--space-l) var(--space-xl);
+  }
+
+  .title {
+    margin-block: 0 var(--space-2xs);
+  }
+
+  /*
+   * The sticky action strip covers the bottom of the viewport, so the caret
+   * of a line typed there must stop above it.
+   */
+  :global(html) {
+    scroll-padding-block-end: 6rem;
+  }
+
+  /*
+   * Sizes match the mounted Playground: toolbar rows above the card, and the
+   * card header and action strip around the code.
+   */
+  .skeleton {
+    @media (width >= 1200px) {
+      display: grid;
+      grid-template-columns: [editor] minmax(0, 1fr) [side] clamp(
+          22rem,
+          34%,
+          26rem
+        );
+      gap: var(--space-l);
+      align-items: start;
+    }
+  }
+
+  .skeleton-toolbar {
+    block-size: 6.25rem;
+
+    @media (width < 900px) {
+      block-size: 8.75rem;
+    }
+
+    @media (width < 800px) {
+      block-size: 13rem;
+    }
+
+    @media (width >= 1200px) {
+      grid-row: 1;
+      grid-column: side;
+    }
+  }
+
+  .skeleton-card {
+    block-size: calc(var(--lines) * 1lh + var(--space-m) * 2 + 7.25rem);
+    font: var(--font-code);
+    background: var(--color-code-background);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius);
+
+    @media (width < 800px), (pointer: coarse) {
+      font: normal 1rem / 1.7 var(--font-family-code);
+    }
+
+    @media (width >= 1200px) {
+      grid-row: 1;
+      grid-column: editor;
+    }
+  }
+
+  .skeleton-toolbar,
+  .skeleton-card {
+    @media (scripting: none) {
+      display: none;
+    }
+  }
+</style>
