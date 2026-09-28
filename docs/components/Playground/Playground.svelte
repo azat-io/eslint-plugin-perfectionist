@@ -186,6 +186,19 @@
   const IDLE_ANNOUNCE_DELAY = 1500
 
   /**
+   * A lint whose result comes later than this after the last change shows that
+   * it is running. Typing gets its result sooner, so the previous result stays
+   * on screen without blinking.
+   */
+  const SLOW_LINT_DELAY = 500
+
+  /**
+   * A change of more characters than this, such as pasting a file, shows that
+   * linting runs at once: its result takes a while.
+   */
+  const LARGE_EDIT = 5000
+
+  /**
    * From this width the controls and the problems move to a column next to the
    * editor. Keep it in sync with the skeleton styles.
    */
@@ -298,6 +311,13 @@
   let hashPending = false
 
   let copiedTimer: ReturnType<typeof setTimeout> | undefined
+  let slowLintTimer: ReturnType<typeof setTimeout> | undefined
+
+  /**
+   * The result for the current input has taken longer than `SLOW_LINT_DELAY`.
+   * The previous result on screen is then out of date.
+   */
+  let lintSlow = $state(false)
   let idleTimer: ReturnType<typeof setTimeout> | undefined
   let announcePending = false
   let announceForce = false
@@ -307,6 +327,7 @@
   let client = createLintClient({
     onChange: state => {
       lint = state
+      watchSlowLint(state)
       if (state.result) {
         lastResult = state.result
         lastResultCode = code
@@ -448,7 +469,7 @@
         details: [],
       }
     }
-    if (!result) {
+    if (!result || lintSlow) {
       return { text: 'Linting…', tone: 'loading', details: [] }
     }
     switch (result.kind) {
@@ -879,6 +900,20 @@
     announceForce = false
   }
 
+  function handleCode(value: string): void {
+    let large = Math.abs(value.length - code.length) > LARGE_EDIT
+    code = value
+    pristine &&= value === example || value === sorted?.code
+    notice = null
+    requestLint(sorting)
+    if (large && !tooLarge && lint.result === null) {
+      lintSlow = true
+    }
+    scheduleHashWrite()
+    clearTimeout(idleTimer)
+    idleTimer = setTimeout(() => queueAnnouncement(), IDLE_ANNOUNCE_DELAY)
+  }
+
   /**
    * Explains why the options can't be used, from the last result.
    *
@@ -1003,16 +1038,6 @@
     }
   }
 
-  function handleCode(value: string): void {
-    code = value
-    pristine &&= value === example || value === sorted?.code
-    notice = null
-    requestLint(sorting)
-    scheduleHashWrite()
-    clearTimeout(idleTimer)
-    idleTimer = setTimeout(() => queueAnnouncement(), IDLE_ANNOUNCE_DELAY)
-  }
-
   function requestLint(immediate = false): void {
     sortRequested = false
     if (code.length > CODE_SIZE_LIMIT) {
@@ -1036,6 +1061,24 @@
     idleTimer = setTimeout(() => queueAnnouncement(), IDLE_ANNOUNCE_DELAY)
   }
 
+  /**
+   * Marks the lint as slow once the result for the current input is late, and
+   * clears the mark when it arrives. Every change starts the wait again, so
+   * typing does not count as waiting.
+   *
+   * @param state - New state of the lint client.
+   */
+  function watchSlowLint(state: LintState): void {
+    clearTimeout(slowLintTimer)
+    if (state.status !== 'ready' || state.result !== null) {
+      lintSlow = false
+      return
+    }
+    slowLintTimer = setTimeout(() => {
+      lintSlow = true
+    }, SLOW_LINT_DELAY)
+  }
+
   async function undo(): Promise<void> {
     if (!sorted || sorting) {
       return
@@ -1049,6 +1092,23 @@
     }
     sorted = null
     queueAnnouncement(true)
+  }
+
+  /**
+   * Returns what the problem list says when the code has no problems.
+   *
+   * @returns Text, or `null` when the code is empty or was not linted.
+   */
+  function getEmptyText(): string | null {
+    if (
+      tooLarge ||
+      lintSlow ||
+      lastResult?.kind !== 'result' ||
+      code.trim() === ''
+    ) {
+      return null
+    }
+    return canUndo ? 'No problems left.' : 'No problems.'
   }
 
   function getActionLabel(): string {
@@ -1079,18 +1139,6 @@
       return null
     }
     return lastResultSettings === settings ? lastResult.config : null
-  }
-
-  /**
-   * Returns what the problem list says when the code has no problems.
-   *
-   * @returns Text, or `null` when the code is empty or was not linted.
-   */
-  function getEmptyText(): string | null {
-    if (tooLarge || lastResult?.kind !== 'result' || code.trim() === '') {
-      return null
-    }
-    return canUndo ? 'No problems left.' : 'No problems.'
   }
 
   function scheduleHashWrite(): void {
@@ -1256,6 +1304,7 @@
       }
       clearTimeout(copiedTimer)
       clearTimeout(idleTimer)
+      clearTimeout(slowLintTimer)
       for (let cleanup of cleanups) {
         cleanup()
       }
@@ -1342,8 +1391,8 @@
       empty={getEmptyText()}
       loading={!lastResult && lint.status !== 'failed' && !tooLarge}
       showRules={rule === null}
+      settling={settling || (lintSlow && !tooLarge)}
       {problems}
-      {settling}
     />
   {/snippet}
 
@@ -1519,7 +1568,7 @@
               onclick={act}
               type="button"
             >
-              {#if busy}
+              {#if busy || (lintSlow && !tooLarge && mode !== 'undo')}
                 <SpinnerIcon class="action-icon spinner" />
               {:else if mode === 'undo'}
                 <RotateLeftIcon class="action-icon" />
