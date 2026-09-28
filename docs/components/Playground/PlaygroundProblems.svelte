@@ -3,10 +3,18 @@
 
   import type { LintProblem } from './lint-config'
 
-  import { getRuleName, toSegments } from './problem-text'
+  import { hasGroupHint, getRuleName, toSegments } from './problem-text'
+  import PlaygroundGroups from './PlaygroundGroups.svelte'
 
   interface Props {
+    /**
+     * Called with the 1-based position of a problem the user picked.
+     */
     onselect(line: number, column: number): void
+
+    /**
+     * Problems to list, in order of position.
+     */
     problems: LintProblem[]
 
     /**
@@ -19,6 +27,10 @@
      * keeps its height and fades, then shrinks to the new result.
      */
     settling: boolean
+
+    /**
+     * The linter is still loading; placeholder rows are shown.
+     */
     loading: boolean
   }
 
@@ -77,6 +89,9 @@
                 {segment.text}
               {/if}
             {/each}
+            {#if hasGroupHint(problem) && problem.groups}
+              <PlaygroundGroups groups={problem.groups} />
+            {/if}
           </span>
           {#if ruleName}
             <a

@@ -9,6 +9,7 @@
     SortingType,
     LintResult,
   } from './lint-config'
+  import type { ExportInput } from './export-text'
   import type { DecodedState } from './url-state'
   import type { LintState } from './lint-client'
 
@@ -23,6 +24,9 @@
   import CopyDefaultIcon from '../../icons/copy-default.svg?component'
   import { INITIAL_LINT_STATE, createLintClient } from './lint-client'
   import RotateRightIcon from '../../icons/rotate-right.svg?component'
+  import { findInlineOptions, getConfigFile } from './config-snippet'
+  import { toIssueBody, toMarkdown, toRuleTest } from './export-text'
+  import ArrowRightIcon from '../../icons/arrow-right.svg?component'
   import CopyCopiedIcon from '../../icons/copy-copied.svg?component'
   import RotateLeftIcon from '../../icons/rotate-left.svg?component'
   import PlaygroundProblems from './PlaygroundProblems.svelte'
@@ -32,9 +36,51 @@
   import PlaygroundToolbar from './PlaygroundToolbar.svelte'
   import DeleteIcon from '../../icons/delete.svg?component'
   import PencilIcon from '../../icons/pencil.svg?component'
+  import { codeSettings } from '../../stores/code-settings'
   import PlaygroundEditor from './PlaygroundEditor.svelte'
   import AlertIcon from '../../icons/alert.svg?component'
   import { CODE_SIZE_LIMIT } from './frame'
+
+  interface EditorApi {
+    /**
+     * Animates the code to `target` and writes it as one undo step.
+     */
+    transition(target: string, signal: AbortSignal): Promise<void>
+
+    /**
+     * Moves the caret to a 1-based position and scrolls it into view.
+     */
+    select(line: number, column: number): void
+
+    /**
+     * Underlines the problems of the code on screen.
+     */
+    setProblems(problems: LintProblem[]): void
+
+    /**
+     * Replaces the code the way typing would, keeping native undo.
+     */
+    replaceAll(text: string): void
+  }
+
+  interface Status {
+    /**
+     * Picks the icon and its color: problems to fix, work in progress, a clean
+     * result, a failure, or nothing to lint yet.
+     */
+    tone: 'problems' | 'loading' | 'success' | 'error' | 'idle'
+
+    /**
+     * Longer explanations shown under the editor, such as ESLint messages and
+     * ignored comments. The sticky status line keeps only the headline.
+     */
+    details: string[]
+
+    /**
+     * Headline in the sticky status line.
+     */
+    text: string
+  }
 
   interface SortedState {
     /**
@@ -51,25 +97,11 @@
      * Rule, type and order the last Sort used.
      */
     settings: string
-    code: string
-  }
-
-  interface Status {
-    tone: 'problems' | 'loading' | 'success' | 'error'
 
     /**
-     * Longer explanations shown under the editor, such as ESLint messages and
-     * ignored comments. The sticky status line keeps only the headline.
+     * Code the last Sort produced.
      */
-    details: string[]
-    text: string
-  }
-
-  interface EditorApi {
-    transition(target: string, signal: AbortSignal): Promise<void>
-    select(line: number, column: number): void
-    setProblems(problems: LintProblem[]): void
-    replaceAll(text: string): void
+    code: string
   }
 
   interface Props {
@@ -84,6 +116,16 @@
     initial: string
   }
 
+  /**
+   * Copy actions the toolbar shows.
+   */
+  type ShareKind = 'markdown' | 'link' | 'test'
+
+  /**
+   * Texts the Playground can copy.
+   */
+  type CopyKind = keyof typeof COPY_NAMES
+
   const STORAGE_KEY = 'playground:state'
 
   const NEW_ISSUE_URL =
@@ -96,6 +138,36 @@
     "This link has settings the Playground doesn't know, so defaults are used for them."
 
   const LONG_LINK = 'This link is long and may be cut off in some apps.'
+
+  const CLIPBOARD_REPORT =
+    'The code, config and output are in your clipboard. Paste them into Code example.'
+
+  /**
+   * Install commands for the package manager chosen on other docs pages.
+   */
+  const INSTALL_COMMANDS: Partial<Record<string, string>> = {
+    npm: 'npm install --save-dev eslint-plugin-perfectionist',
+    pnpm: 'pnpm add --save-dev eslint-plugin-perfectionist',
+    bun: 'bun install --dev eslint-plugin-perfectionist',
+    yarn: 'yarn add --dev eslint-plugin-perfectionist',
+  }
+
+  /**
+   * Copy actions the toolbar shows.
+   */
+  const SHARE_KINDS = new Set<CopyKind | null>(['markdown', 'link', 'test'])
+
+  /**
+   * What each copy action copies, as named in its messages.
+   */
+  const COPY_NAMES = {
+    install: 'install command',
+    markdown: 'Markdown',
+    config: 'config',
+    link: 'link',
+    code: 'code',
+    test: 'test',
+  }
 
   /**
    * GitHub rejects issue URLs much longer than this, so a longer playground
@@ -143,7 +215,7 @@
   let awaitingResult = $state(false)
   let sortRequested = $state(false)
   let undoing = $state(false)
-  let copied = $state<'link' | 'code' | null>(null)
+  let copied = $state<CopyKind | null>(null)
   let notice = $state<string | null>(null)
   let shareLink = $state('')
   let appleKeys = $state(false)
@@ -258,7 +330,18 @@
       code !== example &&
       (lint.result?.kind === 'result' || lint.result === null),
   )
-  let reportHref = $derived(getReportHref())
+  let inline = $derived(findInlineOptions(code))
+  let configFile = $derived(getConfigFile({ inline, order, rule, type }))
+  let installCommand = $derived(
+    INSTALL_COMMANDS[$codeSettings['package-manager'] ?? 'npm'] ??
+      INSTALL_COMMANDS['npm']!,
+  )
+  let currentResult = $derived(
+    lint.result?.kind === 'result' ? lint.result : null,
+  )
+  let testReady = $derived(rule !== null && currentResult !== null)
+  let showSetup = $derived(mode === 'undo' && !busy)
+  let report = $derived(getReport())
 
   /**
    * Describes the state in one line for the status bar. While new code is
@@ -307,6 +390,13 @@
             'Still loading the linter… Slow connection?'
           : 'Loading linter…',
         tone: 'loading',
+        details: [],
+      }
+    }
+    if (code.trim() === '') {
+      return {
+        text: 'Paste some code, or load an example.',
+        tone: 'idle',
         details: [],
       }
     }
@@ -422,6 +512,119 @@
   }
 
   /**
+   * Builds a link to a new bug report with the versions, the playground link,
+   * the rule in the title and the code, config and output in "Code example".
+   * GitHub fills issue form fields from query parameters named after their ids.
+   * When the whole text does not fit into a URL, the link leaves the code out
+   * and the text goes to the clipboard on click instead.
+   *
+   * @returns Link and, when it did not fit, the text to copy.
+   */
+  function getReport(): { body: string | null; href: string } {
+    let version = `v${buildInfo.perfectionist}`
+    if (!buildInfo.release && buildInfo.commit) {
+      version += ` + main@${buildInfo.commit}`
+    }
+    let fields = [
+      ['template', 'bug-report.yml'],
+      ['eslint-plugin-perfectionist-version', version],
+    ]
+    let reportedRule =
+      rule ?? problems[0]?.ruleId?.replace('perfectionist/', '') ?? null
+    if (reportedRule) {
+      fields.push(['title', `Bug: (${reportedRule}) `])
+    }
+    if (lint.eslintVersion) {
+      fields.push(['eslint-version', `v${lint.eslintVersion}`])
+    }
+    if (shareLink.length <= REPORT_LINK_LIMIT) {
+      fields.push(['playground-link', shareLink])
+    }
+    let body = toIssueBody(getExportInput())
+    let withBody = new URLSearchParams([...fields, ['code-example', body]])
+    let href = `${NEW_ISSUE_URL}?${withBody.toString()}`
+    if (href.length <= REPORT_LINK_LIMIT) {
+      return { body: null, href }
+    }
+    let query = new URLSearchParams(fields)
+    return { href: `${NEW_ISSUE_URL}?${query.toString()}`, body }
+  }
+
+  async function copy(kind: CopyKind): Promise<void> {
+    let linked = true
+    if (kind === 'link' || kind === 'markdown') {
+      linked = await writeHash()
+    }
+    if (kind === 'link' && !linked) {
+      notice = "The link can't hold this much code."
+      announce(notice)
+      return
+    }
+    let text = getCopyText(kind, linked)
+    if (text === null) {
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch {
+      notice = `Couldn't copy the ${COPY_NAMES[kind]}.`
+      announce(notice)
+      return
+    }
+    copied = kind
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => {
+      copied = null
+    }, 2000)
+    track(`playground: ${kind} copied`)
+    let name = COPY_NAMES[kind]
+    let message = `${name.charAt(0).toUpperCase()}${name.slice(1)} copied.`
+    if (kind === 'link' && text.length > LONG_LINK_LENGTH) {
+      notice = LONG_LINK
+      message += ` ${LONG_LINK}`
+    }
+    announce(message)
+  }
+
+  /**
+   * Returns the text a copy action puts into the clipboard.
+   *
+   * @param kind - What to copy.
+   * @param linked - The URL holds the current state.
+   * @returns Text, or `null` when it cannot be built right now.
+   */
+  function getCopyText(kind: CopyKind, linked: boolean): string | null {
+    switch (kind) {
+      case 'markdown':
+        return toMarkdown({
+          ...getExportInput(),
+          link: linked ? location.href : null,
+        })
+      case 'install':
+        return installCommand
+      case 'config':
+        return configFile
+      case 'link':
+        return location.href
+      case 'code':
+        return code
+      case 'test':
+        return rule && currentResult ?
+            toRuleTest({
+              problems: currentResult.problems.filter(
+                problem => problem.ruleId === `perfectionist/${rule}`,
+              ),
+              output: currentResult.output,
+              order,
+              rule,
+              type,
+              code,
+            })
+          : null
+    }
+  }
+
+  /**
    * Writes the state to the URL hash and the session copy. It replaces the
    * history entry and keeps its state, which the router needs for Back.
    *
@@ -457,34 +660,6 @@
     lastHash = hash
     shareLink = location.href
     return true
-  }
-
-  async function copy(kind: 'link' | 'code'): Promise<void> {
-    if (kind === 'link' && !(await writeHash())) {
-      notice = "The link can't hold this much code."
-      announce(notice)
-      return
-    }
-    let text = kind === 'link' ? location.href : code
-    try {
-      await navigator.clipboard.writeText(text)
-    } catch {
-      notice = `Couldn't copy the ${kind}.`
-      announce(notice)
-      return
-    }
-    copied = kind
-    clearTimeout(copiedTimer)
-    copiedTimer = setTimeout(() => {
-      copied = null
-    }, 2000)
-    track(`playground: ${kind} copied`)
-    let message = kind === 'link' ? 'Link copied.' : 'Code copied.'
-    if (kind === 'link' && text.length > LONG_LINK_LENGTH) {
-      notice = LONG_LINK
-      message += ` ${LONG_LINK}`
-    }
-    announce(message)
   }
 
   async function sort(): Promise<void> {
@@ -573,29 +748,26 @@
   }
 
   /**
-   * Builds a link to a new bug report with the versions and the playground link
-   * filled in. GitHub fills issue form fields from query parameters named after
-   * their ids.
+   * Collects the state the exported texts describe.
    *
-   * @returns URL of the bug report form.
+   * @returns Code, output, config, versions and link.
    */
-  function getReportHref(): string {
-    let version = `v${buildInfo.perfectionist}`
-    if (!buildInfo.release && buildInfo.commit) {
-      version += ` + main@${buildInfo.commit}`
+  function getExportInput(): ExportInput {
+    let perfectionistVersion =
+      !buildInfo.release && buildInfo.commit ?
+        `${buildInfo.perfectionist} + main@${buildInfo.commit}`
+      : buildInfo.perfectionist
+    return {
+      versions: [
+        `ESLint ${lint.eslintVersion ?? 'unknown'}`,
+        `Perfectionist ${perfectionistVersion}`,
+        `TypeScript ${buildInfo.typescript}`,
+      ].join(', '),
+      link: shareLink.length <= LONG_LINK_LENGTH ? shareLink : null,
+      output: currentResult?.output ?? null,
+      config: configFile,
+      code,
     }
-    let fields = [
-      ['template', 'bug-report.yml'],
-      ['eslint-plugin-perfectionist-version', version],
-    ]
-    if (lint.eslintVersion) {
-      fields.push(['eslint-version', `v${lint.eslintVersion}`])
-    }
-    if (shareLink.length <= REPORT_LINK_LIMIT) {
-      fields.push(['playground-link', shareLink])
-    }
-    let query = new URLSearchParams(fields)
-    return `${NEW_ISSUE_URL}?${query.toString()}`
   }
 
   function flushAnnouncement(): void {
@@ -646,6 +818,24 @@
         break
       }
       // No default
+    }
+  }
+
+  /**
+   * Tracks a click on a report link and copies the report text when it did not
+   * fit into the link.
+   */
+  function openReport(): void {
+    track('playground: report clicked')
+    let { body } = report
+    if (body) {
+      void navigator.clipboard
+        .writeText(body)
+        .catch(() => {})
+        .then(() => {
+          notice = CLIPBOARD_REPORT
+          announce(CLIPBOARD_REPORT)
+        })
     }
   }
 
@@ -797,6 +987,16 @@
   }
 
   /**
+   * Tells whether a copy action is one the toolbar shows.
+   *
+   * @param kind - Copy action, if any.
+   * @returns Whether the toolbar shows it.
+   */
+  function isShareKind(kind: CopyKind | null): kind is ShareKind {
+    return SHARE_KINDS.has(kind)
+  }
+
+  /**
    * Joins the lines of an ESLint message, which may hold line breaks and tabs.
    *
    * @param message - Message text.
@@ -897,8 +1097,10 @@
   {#snippet controls()}
     <div inert={sorting}>
       <PlaygroundToolbar
-        linkCopied={copied === 'link'}
-        onCopyLink={() => copy('link')}
+        shared={isShareKind(copied) ? copied : null}
+        onShare={copy}
+        {testReady}
+        {inline}
         onAnnounce={announce}
         onOrderChange={changeOrder}
         onRuleChange={changeRule}
@@ -916,6 +1118,61 @@
   {/snippet}
 
   {#snippet diagnostics()}
+    {#if showSetup}
+      <section
+        aria-labelledby="{id}-setup"
+        class="setup"
+      >
+        <h2
+          id="{id}-setup"
+          class="setup-title"
+        >
+          Get this result in your project
+        </h2>
+        <p class="setup-step">Install the plugin:</p>
+        <div class="setup-code">
+          <code class="setup-command">{installCommand}</code>
+          <button
+            aria-label={copied === 'install' ?
+              'Install command copied'
+            : 'Copy install command'}
+            onclick={() => copy('install')}
+            class="setup-copy"
+            type="button"
+          >
+            {#if copied === 'install'}
+              <CopyCopiedIcon class="tool-icon" />
+            {:else}
+              <CopyDefaultIcon class="tool-icon" />
+            {/if}
+          </button>
+        </div>
+        <p class="setup-step">Add it to your ESLint config:</p>
+        <div class="setup-code">
+          <pre class="setup-config">{configFile}</pre>
+          <button
+            aria-label={copied === 'config' ? 'Config copied' : 'Copy config'}
+            onclick={() => copy('config')}
+            class="setup-copy"
+            type="button"
+          >
+            {#if copied === 'config'}
+              <CopyCopiedIcon class="tool-icon" />
+            {:else}
+              <CopyDefaultIcon class="tool-icon" />
+            {/if}
+          </button>
+        </div>
+        <a
+          href="/guide/getting-started"
+          class="setup-link"
+        >
+          Getting Started
+          <ArrowRightIcon class="inline-icon" />
+        </a>
+      </section>
+    {/if}
+
     {#if status.details.length > 0}
       <ul
         id={detailsId}
@@ -994,6 +1251,8 @@
                 <SparkleIcon class="status-icon status-icon-success" />
               {:else if status.tone === 'loading'}
                 <SpinnerIcon class="status-icon spinner" />
+              {:else if status.tone === 'idle'}
+                <PencilIcon class="status-icon" />
               {:else}
                 <AlertIcon class="status-icon" />
               {/if}
@@ -1013,15 +1272,26 @@
               </button>
             {:else if !settling && (lint.result?.kind === 'crash' || lint.result?.kind === 'internal')}
               <a
-                onclick={() => track('playground: report clicked')}
                 class="inline-action"
-                href={reportHref}
+                href={report.href}
+                onclick={openReport}
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 Report the bug
                 <ExternalLinkIcon class="inline-icon" />
               </a>
+            {:else if !settling && code.trim() === ''}
+              <button
+                onclick={() => {
+                  actionButton?.focus({ preventScroll: true })
+                  loadExample()
+                }}
+                class="inline-action"
+                type="button"
+              >
+                {rule ? `Load the ${rule} example` : 'Load an example'}
+              </button>
             {:else if !settling && showLoadExample}
               <button
                 onclick={() => {
@@ -1117,9 +1387,9 @@
     {/if}
     · TypeScript {buildInfo.typescript} ·
     <a
-      onclick={() => track('playground: report clicked')}
       class="external-link"
-      href={reportHref}
+      href={report.href}
+      onclick={openReport}
       rel="noopener noreferrer"
       target="_blank"
     >
@@ -1388,6 +1658,10 @@
     &[data-tone='success'] :global(.status-icon) {
       color: var(--color-status-success);
     }
+
+    &[data-tone='idle'] :global(.status-icon) {
+      color: var(--color-content-tertiary);
+    }
   }
 
   .status-text {
@@ -1555,6 +1829,95 @@
     @media (hover: hover) {
       display: inline;
     }
+  }
+
+  .setup {
+    padding: var(--space-s);
+    margin-block: var(--space-m);
+    font: var(--font-xs);
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius);
+  }
+
+  .setup-title {
+    margin-block: 0 var(--space-xs);
+    font: var(--font-m);
+    font-family: var(--font-family-title);
+    font-weight: 600;
+    color: var(--color-content-secondary);
+  }
+
+  .setup-step {
+    margin-block: var(--space-xs) var(--space-2xs);
+  }
+
+  .setup-code {
+    position: relative;
+  }
+
+  .setup-command,
+  .setup-config {
+    display: block;
+    padding: var(--space-2xs) calc(var(--space-s) + var(--size-icon-xs))
+      var(--space-2xs) var(--space-xs);
+    margin: 0;
+    font-size: 0.85em;
+  }
+
+  .setup-command {
+    overflow-wrap: anywhere;
+  }
+
+  .setup-config {
+    overflow: auto;
+    white-space: pre;
+    scrollbar-width: thin;
+  }
+
+  .setup-copy {
+    position: absolute;
+    inset-block-start: var(--space-4xs);
+    inset-inline-end: var(--space-4xs);
+    display: inline-flex;
+    flex-wrap: nowrap;
+    padding: var(--space-4xs);
+    color: var(--color-content-secondary);
+    outline: none;
+    background: var(--color-code-background);
+    border: none;
+    border-radius: var(--border-radius);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        color 200ms,
+        box-shadow 200ms;
+    }
+
+    &:focus-visible {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 3px var(--color-border-brand);
+    }
+  }
+
+  .setup-link {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: var(--space-4xs);
+    align-items: center;
+    margin-block-start: var(--space-xs);
+  }
+
+  .setup :global(.inline-icon) {
+    inline-size: 1.1em;
+    block-size: 1.1em;
+  }
+
+  .setup :global(.tool-icon) {
+    flex-shrink: 0;
+    inline-size: var(--size-icon-xs);
+    block-size: var(--size-icon-xs);
   }
 
   .versions {

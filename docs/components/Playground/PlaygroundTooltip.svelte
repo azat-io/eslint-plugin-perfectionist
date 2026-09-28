@@ -1,9 +1,13 @@
 <script lang="ts">
   import type { LintProblem } from './lint-config'
 
-  import { getRuleName, toSegments } from './problem-text'
+  import { hasGroupHint, getRuleName, toSegments } from './problem-text'
+  import PlaygroundGroups from './PlaygroundGroups.svelte'
 
   interface Props {
+    /**
+     * Problems of the hovered code.
+     */
     problems: LintProblem[]
 
     /**
@@ -18,8 +22,19 @@
   }
 
   interface Anchor {
+    /**
+     * Bottom edge of the hovered line, in viewport pixels.
+     */
     bottom: number
+
+    /**
+     * Left edge of the underline on that line, in viewport pixels.
+     */
     left: number
+
+    /**
+     * Top edge of the hovered line, in viewport pixels.
+     */
     top: number
   }
 
@@ -101,6 +116,9 @@
       {#if ruleName}
         <span class="rule">{ruleName}</span>
       {/if}
+      {#if hasGroupHint(problem) && problem.groups}
+        <PlaygroundGroups groups={problem.groups} />
+      {/if}
     </p>
   {/each}
 </div>
@@ -126,6 +144,9 @@
     border: 1px solid var(--color-border-primary);
     border-radius: var(--border-radius);
     box-shadow: 0 4px 16px var(--color-overlay-primary);
+
+    /* Group chips have the tooltip's background by default. */
+    --group-background: var(--color-background-primary);
 
     @media (prefers-reduced-motion: no-preference) {
       animation: appear 120ms ease-out;

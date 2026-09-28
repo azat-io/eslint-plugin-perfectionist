@@ -1,28 +1,83 @@
 <script lang="ts">
   import type { SortingOrder, SortingType } from './lint-config'
 
+  import {
+    getSettingsSnippet,
+    getRuleSnippet,
+    getConfigFile,
+    getPreset,
+  } from './config-snippet'
   import CopyDefaultIcon from '../../icons/copy-default.svg?component'
   import ChevronDownIcon from '../../icons/chevron-down.svg?component'
   import CopyCopiedIcon from '../../icons/copy-copied.svg?component'
   import LinkChainIcon from '../../icons/link-chain.svg?component'
-  import { REQUIRED_OPTIONS } from './rule-options'
 
   interface Props {
+    /**
+     * Called when the user picks another order.
+     */
     onOrderChange(order: SortingOrder): void
 
+    /**
+     * Called when the user picks another rule, or `null` for all rules.
+     */
     onRuleChange(rule: string | null): void
+
+    /**
+     * Called when the user picks another sorting type.
+     */
     onTypeChange(type: SortingType): void
+
     /**
      * Reads the result of copying the config aloud.
      */
     onAnnounce(message: string): void
+
+    /**
+     * Copies the link, a Markdown summary or a rule test.
+     */
+    onShare(kind: ShareKind): void
+
+    /**
+     * Options from `eslint` comments in the code, by rule name.
+     */
+    inline: Map<string, string>
+
+    /**
+     * Which share text was copied a moment ago, to confirm it on its button.
+     */
+    shared: ShareKind | null
+
+    /**
+     * Selected rule, or `null` for all rules of the recommended configs.
+     */
     rule: string | null
-    linkCopied: boolean
+
+    /**
+     * Selected sorting order.
+     */
     order: SortingOrder
-    onCopyLink(): void
+
+    /**
+     * A rule test can be built: one rule is selected and its result is known.
+     */
+    testReady: boolean
+
+    /**
+     * Selected sorting type.
+     */
     type: SortingType
+
+    /**
+     * Rules to choose from.
+     */
     rules: string[]
   }
+
+  /**
+   * Texts the toolbar can copy through the Playground.
+   */
+  type ShareKind = 'markdown' | 'link' | 'test'
 
   const TYPES: { value: SortingType; label: string }[] = [
     { value: 'alphabetical', label: 'Alphabetical' },
@@ -35,19 +90,15 @@
     { label: 'Descending', value: 'desc' },
   ]
 
-  const PRESETS: Partial<Record<string, string>> = {
-    'alphabetical asc': 'recommended-alphabetical',
-    'line-length desc': 'recommended-line-length',
-    'natural asc': 'recommended-natural',
-  }
-
   let {
     onOrderChange,
     onRuleChange,
     onTypeChange,
     onAnnounce,
-    onCopyLink,
-    linkCopied,
+    testReady,
+    onShare,
+    shared,
+    inline,
     order,
     rules,
     rule,
@@ -58,35 +109,28 @@
   let snippetCopied = $state(false)
   let snippetTimer: ReturnType<typeof setTimeout> | undefined
 
-  let preset = $derived(rule ? undefined : PRESETS[`${type} ${order}`])
+  /**
+   * Rules whose options come from a comment in the code. The controls do not
+   * describe them fully, so the hint says so instead of showing a snippet.
+   */
+  let inlineRules = $derived(
+    inline
+      .keys()
+      .filter(name => rule === null || name === rule)
+      .toArray(),
+  )
+  let preset = $derived(rule ? undefined : getPreset(type, order))
   let snippet = $derived(
-    rule ?
-      `'perfectionist/${rule}': ['error', ${format({ order, type, ...REQUIRED_OPTIONS[rule] })}]`
-    : `settings: { perfectionist: ${format({ order, type })} }`,
+    rule ? getRuleSnippet(rule, type, order) : getSettingsSnippet(type, order),
   )
 
-  /**
-   * Formats options the way the docs write them in a config.
-   *
-   * @param value - Options or a single value.
-   * @returns JavaScript source of the value.
-   */
-  function format(value: unknown): string {
-    if (typeof value === 'string') {
-      return `'${value.replaceAll('\\', '\\\\').replaceAll("'", String.raw`\'`)}'`
-    }
-    if (value && typeof value === 'object') {
-      let entries = Object.entries(value).map(
-        ([key, entry]) => `${key}: ${format(entry)}`,
-      )
-      return `{ ${entries.join(', ')} }`
-    }
-    return String(value)
-  }
-
   async function copySnippet(): Promise<void> {
+    let text =
+      inlineRules.length > 0 ?
+        getConfigFile({ inline, order, rule, type })
+      : snippet
     try {
-      await navigator.clipboard.writeText(snippet)
+      await navigator.clipboard.writeText(text)
     } catch {
       onAnnounce("Couldn't copy the config.")
       return
@@ -153,7 +197,23 @@
 
 <div class="details">
   <p class="hint">
-    {#if preset}
+    {#if inlineRules.length > 0}
+      Options for {inlineRules.join(', ')} come from the
+      <code>/* eslint */</code>
+      comment in your code.
+      <button
+        aria-label={snippetCopied ? 'Config copied' : 'Copy config'}
+        onclick={copySnippet}
+        class="copy-snippet"
+        type="button"
+      >
+        {#if snippetCopied}
+          <CopyCopiedIcon class="copy-icon" />
+        {:else}
+          <CopyDefaultIcon class="copy-icon" />
+        {/if}
+      </button>
+    {:else if preset}
       Same as <a href="/configs/{preset}">{preset}</a>
     {:else}
       <code class="snippet">{snippet}</code>
@@ -171,19 +231,49 @@
       </button>
     {/if}
   </p>
-  <button
-    onclick={onCopyLink}
-    class="copy-link"
-    type="button"
-  >
-    {#if linkCopied}
-      <CopyCopiedIcon class="copy-icon" />
-      Link copied
-    {:else}
-      <LinkChainIcon class="copy-icon" />
-      Copy link
+  <div class="share">
+    <button
+      onclick={() => onShare('link')}
+      class="share-button copy-link"
+      type="button"
+    >
+      {#if shared === 'link'}
+        <CopyCopiedIcon class="copy-icon" />
+        Link copied
+      {:else}
+        <LinkChainIcon class="copy-icon" />
+        Copy link
+      {/if}
+    </button>
+    <button
+      onclick={() => onShare('markdown')}
+      class="share-button"
+      type="button"
+    >
+      {#if shared === 'markdown'}
+        <CopyCopiedIcon class="copy-icon" />
+        Markdown copied
+      {:else}
+        <CopyDefaultIcon class="copy-icon" />
+        Copy as Markdown
+      {/if}
+    </button>
+    {#if testReady}
+      <button
+        onclick={() => onShare('test')}
+        class="share-button"
+        type="button"
+      >
+        {#if shared === 'test'}
+          <CopyCopiedIcon class="copy-icon" />
+          Test copied
+        {:else}
+          <CopyDefaultIcon class="copy-icon" />
+          Copy as test
+        {/if}
+      </button>
     {/if}
-  </button>
+  </div>
 </div>
 
 <style>
@@ -366,14 +456,20 @@
     opacity: 0%;
   }
 
-  .copy-link {
+  .share {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    align-self: start;
+    margin-inline-start: auto;
+  }
+
+  .share-button {
     display: inline-flex;
     flex-wrap: nowrap;
     gap: var(--space-2xs);
     align-items: center;
-    align-self: start;
     padding: var(--space-2xs) var(--space-s);
-    margin-inline-start: auto;
     font: var(--font-xs);
     line-height: 1.25;
     color: var(--color-content-secondary);
@@ -415,11 +511,15 @@
     margin-block: var(--space-xs) var(--space-m);
   }
 
+  /*
+   * Body text color: the tertiary one has a contrast of about 3.7:1 on the
+   * light background, below the 4.5:1 small text needs.
+   */
   .hint {
     flex: 1 1 20rem;
     margin: 0;
     font: var(--font-xs);
-    color: var(--color-content-tertiary);
+    color: var(--color-content-primary);
   }
 
   .snippet {

@@ -24,18 +24,29 @@
   import { syncKeys } from './key-sync'
 
   interface Props {
+    /**
+     * Called with the new code after every change.
+     */
     oninput(code: string): void
 
     /**
      * Id of the element that describes the code, such as the status line.
      */
     describedby: string
+
+    /**
+     * Text shown while the editor is empty.
+     */
     placeholder: string
 
     /**
      * Name the rule of each problem in the hover tooltip.
      */
     showRules: boolean
+
+    /**
+     * Code the editor starts with.
+     */
     initial: string
   }
 
