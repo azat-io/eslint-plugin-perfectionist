@@ -3,6 +3,7 @@ import type { Plugin } from 'vite'
 import { builtinModules, createRequire } from 'node:module'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 
 interface BuildInfo {
   perfectionist: string
@@ -30,6 +31,22 @@ let require = createRequire(import.meta.url)
  */
 let esqueryPath = createRequire(require.resolve('eslint/package.json')).resolve(
   'esquery',
+)
+
+/**
+ * The plugin's helper that every sorting rule except `sort-switch-case` calls
+ * with the elements of a block and their groups.
+ */
+let reportAllErrorsPath = fileURLToPath(
+  new URL('../../utils/report-all-errors.ts', import.meta.url),
+)
+
+/**
+ * Wrapper that records each block for the groups inspector and then calls the
+ * helper.
+ */
+let inspectReportPath = fileURLToPath(
+  new URL('../components/Playground/inspect-report.ts', import.meta.url),
 )
 
 /**
@@ -61,8 +78,9 @@ let shims = new Map(
  *
  * It also replaces the map of ESLint's built-in rules with an empty one. The
  * playground lints only with Perfectionist, and the core rules make up about
- * half of the linter bundle. ESLint's `esquery` import gets the CommonJS
- * build.
+ * half of the linter bundle. ESLint's `esquery` import gets the CommonJS build.
+ * Imports of `utils/report-all-errors` from the rules go to a wrapper that
+ * shows the groups of each element in the Playground.
  *
  * Register it for the client environment, for worker bundles and for the
  * dependency optimizer. Server-side environments must keep the real modules.
@@ -86,6 +104,9 @@ export function playgroundShims(): Plugin {
         importer?.endsWith('/eslint/lib/linter/esquery.js')
       ) {
         return esqueryPath
+      }
+      if (importer && isReportAllErrorsImport(id, importer)) {
+        return inspectReportPath
       }
       return shims.get(id)
     },
@@ -132,6 +153,23 @@ function readBuildInfo(): BuildInfo {
     perfectionist,
     commit,
   }
+}
+
+/**
+ * Tells whether a rule imports `utils/report-all-errors`. The wrapper imports
+ * it too, and keeps the real module.
+ *
+ * @param id - Imported path.
+ * @param importer - File that imports it.
+ * @returns Whether to resolve the import to the wrapper.
+ */
+function isReportAllErrorsImport(id: string, importer: string): boolean {
+  let [file = importer] = importer.split('?', 1)
+  if (file === inspectReportPath || !id.startsWith('.')) {
+    return false
+  }
+  let resolved = path.resolve(path.dirname(file), id)
+  return [`${resolved}.ts`, resolved].includes(reportAllErrorsPath)
 }
 
 function runGit(parameters: string[]): string | null {

@@ -9,16 +9,32 @@
   }
 
   let { groups }: Props = $props()
+
+  /*
+   * Pairs follow the order of the message, so the first name there comes
+   * first here.
+   */
+  let pairs = $derived(
+    groups.leftFirst ?
+      [
+        { name: groups.leftName, group: groups.left },
+        { name: groups.rightName, group: groups.right },
+      ]
+    : [
+        { name: groups.rightName, group: groups.right },
+        { name: groups.leftName, group: groups.left },
+      ],
+  )
 </script>
 
 <span class="groups">
   {#if groups.right === groups.left}
     Both in <span class="group">{groups.right}</span>
   {:else}
-    <code class="name">{groups.rightName}</code> in
-    <span class="group">{groups.right}</span>,
-    <code class="name">{groups.leftName}</code> in
-    <span class="group">{groups.left}</span>
+    <code class="name">{pairs[0]!.name}</code> in
+    <span class="group">{pairs[0]!.group}</span>,
+    <code class="name">{pairs[1]!.name}</code> in
+    <span class="group">{pairs[1]!.group}</span>
   {/if}
 </span>
 
@@ -42,7 +58,8 @@
     padding-inline: var(--space-2xs);
     font: var(--font-code);
     font-size: 0.8em;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    box-decoration-break: clone;
     background: var(--group-background, var(--color-background-tertiary));
     border-radius: var(--border-radius);
   }

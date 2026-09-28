@@ -1,6 +1,36 @@
 import type { SortingOrder, SortingType } from './lint-config'
 
 /**
+ * What a playground link restores.
+ */
+export interface PlaygroundState {
+  /**
+   * Single rule to run, or `null` for all recommended rules.
+   */
+  rule: string | null
+
+  /**
+   * Sorting order from the controls.
+   */
+  order: SortingOrder
+
+  /**
+   * Sorting type from the controls.
+   */
+  type: SortingType
+
+  /**
+   * Text of the Options field. Only a single rule has options.
+   */
+  options: string
+
+  /**
+   * Code in the editor.
+   */
+  code: string
+}
+
+/**
  * State read from a link. Fields the link does not set hold their defaults.
  */
 export interface DecodedState extends Omit<PlaygroundState, 'code'> {
@@ -18,19 +48,6 @@ export interface DecodedState extends Omit<PlaygroundState, 'code'> {
    * The code in the link could not be read.
    */
   broken: boolean
-}
-
-/**
- * What a playground link restores.
- */
-export interface PlaygroundState {
-  /**
-   * Single rule to run, or `null` for all recommended rules.
-   */
-  rule: string | null
-  order: SortingOrder
-  type: SortingType
-  code: string
 }
 
 const SORTING_TYPES: SortingType[] = ['alphabetical', 'natural', 'line-length']
@@ -67,7 +84,8 @@ const INPUT_CHUNK_SIZE = 1024
 
 /**
  * Reads the state from a URL hash. Unknown values fall back to their defaults
- * and set `invalid`; unreadable code sets `broken`.
+ * and set `invalid`; unreadable code or options set `broken`. Options without a
+ * rule are ignored.
  *
  * @param hash - Hash with or without `#`.
  * @param rules - Rule ids the playground knows.
@@ -83,6 +101,7 @@ export async function decodeState(
     invalid: false,
     broken: false,
     order: 'asc',
+    options: '',
     rule: null,
     code: null,
   }
@@ -114,6 +133,15 @@ export async function decodeState(
     result.order = order
   } else if (order !== null) {
     result.invalid = true
+  }
+
+  let options = parameters.get('options')
+  if (options !== null && result.rule !== null) {
+    try {
+      result.options = await decompress(options)
+    } catch {
+      result.broken = true
+    }
   }
 
   let code = parameters.get('code')
@@ -150,6 +178,9 @@ export async function encodeState(
   }
   if (state.order !== getDefaultOrder(state.type)) {
     parameters.set('order', state.order)
+  }
+  if (state.rule && state.options.trim() !== '') {
+    parameters.set('options', await compress(state.options))
   }
   if (state.code !== example) {
     parameters.set('code', await compress(state.code))

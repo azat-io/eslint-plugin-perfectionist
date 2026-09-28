@@ -4,11 +4,14 @@
   import { on } from 'svelte/events'
 
   import type {
+    AppliedConfig,
     SortingOrder,
     LintProblem,
     SortingType,
     LintResult,
   } from './lint-config'
+  import type { OptionsProblem } from './problem-text'
+  import type { InspectedBlock } from './inspection'
   import type { ExportInput } from './export-text'
   import type { DecodedState } from './url-state'
   import type { LintState } from './lint-client'
@@ -20,25 +23,28 @@
     decodeState,
     isSupported,
   } from './url-state'
+  import { toInspectorView, findBlockAt, shiftBlocks } from './inspector-view'
+  import { getDefaultOptionsText, getConfigFile } from './config-snippet'
   import ExternalLinkIcon from '../../icons/external-link.svg?component'
+  import ColorPaletteIcon from '../../icons/color-palette.svg?component'
   import CopyDefaultIcon from '../../icons/copy-default.svg?component'
   import { INITIAL_LINT_STATE, createLintClient } from './lint-client'
   import RotateRightIcon from '../../icons/rotate-right.svg?component'
-  import { findInlineOptions, getConfigFile } from './config-snippet'
   import { toIssueBody, toMarkdown, toRuleTest } from './export-text'
-  import ArrowRightIcon from '../../icons/arrow-right.svg?component'
   import CopyCopiedIcon from '../../icons/copy-copied.svg?component'
   import RotateLeftIcon from '../../icons/rotate-left.svg?component'
   import PlaygroundProblems from './PlaygroundProblems.svelte'
   import SparkleIcon from '../../icons/sparkle.svg?component'
   import SpinnerIcon from '../../icons/spinner.svg?component'
   import RefreshIcon from '../../icons/refresh.svg?component'
+  import PlaygroundOptions from './PlaygroundOptions.svelte'
   import PlaygroundToolbar from './PlaygroundToolbar.svelte'
   import DeleteIcon from '../../icons/delete.svg?component'
   import PencilIcon from '../../icons/pencil.svg?component'
-  import { codeSettings } from '../../stores/code-settings'
+  import PlaygroundLegend from './PlaygroundLegend.svelte'
   import PlaygroundEditor from './PlaygroundEditor.svelte'
   import AlertIcon from '../../icons/alert.svg?component'
+  import { toOptionsErrors } from './problem-text'
   import { CODE_SIZE_LIMIT } from './frame'
 
   interface EditorApi {
@@ -119,7 +125,7 @@
   /**
    * Copy actions the toolbar shows.
    */
-  type ShareKind = 'markdown' | 'link' | 'test'
+  type ShareKind = 'markdown' | 'config' | 'link' | 'test'
 
   /**
    * Texts the Playground can copy.
@@ -143,25 +149,19 @@
     'The code, config and output are in your clipboard. Paste them into Code example.'
 
   /**
-   * Install commands for the package manager chosen on other docs pages.
-   */
-  const INSTALL_COMMANDS: Partial<Record<string, string>> = {
-    npm: 'npm install --save-dev eslint-plugin-perfectionist',
-    pnpm: 'pnpm add --save-dev eslint-plugin-perfectionist',
-    bun: 'bun install --dev eslint-plugin-perfectionist',
-    yarn: 'yarn add --dev eslint-plugin-perfectionist',
-  }
-
-  /**
    * Copy actions the toolbar shows.
    */
-  const SHARE_KINDS = new Set<CopyKind | null>(['markdown', 'link', 'test'])
+  const SHARE_KINDS = new Set<CopyKind | null>([
+    'markdown',
+    'config',
+    'link',
+    'test',
+  ])
 
   /**
    * What each copy action copies, as named in its messages.
    */
   const COPY_NAMES = {
-    install: 'install command',
     markdown: 'Markdown',
     config: 'config',
     link: 'link',
@@ -201,6 +201,13 @@
   let rule = $state<string | null>(null)
   let type = $state<SortingType>('alphabetical')
   let order = $state<SortingOrder>('asc')
+  let optionsText = $state('')
+
+  /**
+   * Options of rules other than the current one, so choosing a rule again
+   * brings its options back.
+   */
+  let optionsByRule: Partial<Record<string, string>> = {}
   let lint = $state<LintState>(INITIAL_LINT_STATE)
   let lastResult = $state<LintState['result']>(null)
 
@@ -209,6 +216,11 @@
    * being linted.
    */
   let lastResultCode = ''
+
+  /**
+   * Rule settings the last result belongs to, in the form of `settings`.
+   */
+  let lastResultSettings = $state('')
   let problems = $state<LintProblem[]>([])
   let sorted = $state<SortedState | null>(null)
   let sorting = $state(false)
@@ -216,6 +228,29 @@
   let sortRequested = $state(false)
   let undoing = $state(false)
   let copied = $state<CopyKind | null>(null)
+
+  /**
+   * The groups inspector is on.
+   */
+  let inspecting = $state(false)
+
+  /**
+   * Blocks of the last parsed code and that code. Edits move them until the
+   * next result.
+   */
+  let inspected = $state<{ blocks: InspectedBlock[]; code: string } | null>(
+    null,
+  )
+
+  /**
+   * Caret offset in the editor, or `null` before it was placed.
+   */
+  let caret = $state<number | null>(null)
+
+  /**
+   * Group entry under the pointer in the legend.
+   */
+  let highlightedSlot = $state<number | null>(null)
   let notice = $state<string | null>(null)
   let shareLink = $state('')
   let appleKeys = $state(false)
@@ -275,6 +310,10 @@
       if (state.result) {
         lastResult = state.result
         lastResultCode = code
+        lastResultSettings = settings
+        if (state.result.kind === 'result') {
+          inspected = { blocks: state.result.blocks, code }
+        }
         problems = getProblems(state.result)
         editor?.setProblems(problems)
         if (!sorting) {
@@ -304,7 +343,7 @@
   })
 
   let tooLarge = $derived(code.length > CODE_SIZE_LIMIT)
-  let settings = $derived(JSON.stringify([rule, type, order]))
+  let settings = $derived(JSON.stringify([rule, type, order, optionsText]))
   let example = $derived(getExample(rule))
   let canUndo = $derived(
     sorted !== null && sorted.code === code && sorted.settings === settings,
@@ -330,17 +369,26 @@
       code !== example &&
       (lint.result?.kind === 'result' || lint.result === null),
   )
-  let inline = $derived(findInlineOptions(code))
-  let configFile = $derived(getConfigFile({ inline, order, rule, type }))
-  let installCommand = $derived(
-    INSTALL_COMMANDS[$codeSettings['package-manager'] ?? 'npm'] ??
-      INSTALL_COMMANDS['npm']!,
+  let appliedConfig = $derived(getAppliedConfig())
+  let inlineRules = $derived(Object.keys(appliedConfig?.inline ?? {}))
+  let configFile = $derived(
+    getConfigFile({ config: appliedConfig, order, rule, type }),
+  )
+  let overrides = $derived(getOverrides())
+  let optionsProblem = $derived(getOptionsProblem())
+  let inspectedBlocks = $derived(getInspectedBlocks())
+  let activeBlock = $derived(findBlockAt(inspectedBlocks, caret))
+  let inspectorView = $derived(
+    inspecting ? toInspectorView(code, inspectedBlocks) : null,
   )
   let currentResult = $derived(
     lint.result?.kind === 'result' ? lint.result : null,
   )
-  let testReady = $derived(rule !== null && currentResult !== null)
-  let showSetup = $derived(mode === 'undo' && !busy)
+  /*
+   * Based on the last finished result, so the button stays while new input is
+   * linted. The test itself is built only from the current result.
+   */
+  let testReady = $derived(rule !== null && lastResult?.kind === 'result')
   let report = $derived(getReport())
 
   /**
@@ -404,10 +452,23 @@
       return { text: 'Linting…', tone: 'loading', details: [] }
     }
     switch (result.kind) {
+      case 'options-error':
+        return {
+          text: "The options can't be read.",
+          tone: 'error',
+          details: [],
+        }
       case 'config-error':
+        if (result.source === 'options') {
+          return {
+            text: 'These options are invalid.',
+            tone: 'error',
+            details: [],
+          }
+        }
         return {
           text:
-            result.inline ?
+            result.source === 'inline' ?
               'A /* eslint */ comment in your code sets invalid options.'
             : "This rule setup can't run.",
           details: [clean(result.message)],
@@ -587,44 +648,6 @@
   }
 
   /**
-   * Returns the text a copy action puts into the clipboard.
-   *
-   * @param kind - What to copy.
-   * @param linked - The URL holds the current state.
-   * @returns Text, or `null` when it cannot be built right now.
-   */
-  function getCopyText(kind: CopyKind, linked: boolean): string | null {
-    switch (kind) {
-      case 'markdown':
-        return toMarkdown({
-          ...getExportInput(),
-          link: linked ? location.href : null,
-        })
-      case 'install':
-        return installCommand
-      case 'config':
-        return configFile
-      case 'link':
-        return location.href
-      case 'code':
-        return code
-      case 'test':
-        return rule && currentResult ?
-            toRuleTest({
-              problems: currentResult.problems.filter(
-                problem => problem.ruleId === `perfectionist/${rule}`,
-              ),
-              output: currentResult.output,
-              order,
-              rule,
-              type,
-              code,
-            })
-          : null
-    }
-  }
-
-  /**
    * Writes the state to the URL hash and the session copy. It replaces the
    * history entry and keeps its state, which the router needs for Back.
    *
@@ -637,7 +660,14 @@
       return false
     }
     let write = ++hashWrites
-    let encoded = await encodeState({ order, code, rule, type }, example)
+    let options =
+      rule && optionsText.trim() !== getDefaultOptionsText(rule) ?
+        optionsText
+      : ''
+    let encoded = await encodeState(
+      { options, order, code, rule, type },
+      example,
+    )
     if (write !== hashWrites) {
       return false
     }
@@ -660,6 +690,69 @@
     lastHash = hash
     shareLink = location.href
     return true
+  }
+
+  /**
+   * Returns the text a copy action puts into the clipboard.
+   *
+   * @param kind - What to copy.
+   * @param linked - The URL holds the current state.
+   * @returns Text, or `null` when it cannot be built right now.
+   */
+  function getCopyText(kind: CopyKind, linked: boolean): string | null {
+    switch (kind) {
+      case 'markdown':
+        return toMarkdown({
+          ...getExportInput(),
+          link: linked ? location.href : null,
+        })
+      case 'config':
+        return configFile
+      case 'link':
+        return location.href
+      case 'code':
+        return code
+      case 'test':
+        return rule && currentResult?.config ?
+            toRuleTest({
+              problems: currentResult.problems.filter(
+                problem => problem.ruleId === `perfectionist/${rule}`,
+              ),
+              config: currentResult.config,
+              output: currentResult.output,
+              jsx: currentResult.jsx,
+              rule,
+              code,
+            })
+          : null
+    }
+  }
+
+  /**
+   * Collects the state the exported texts describe.
+   *
+   * @returns Code, output, config, versions and link.
+   */
+  function getExportInput(): ExportInput {
+    let perfectionistVersion =
+      !buildInfo.release && buildInfo.commit ?
+        `${buildInfo.perfectionist} + main@${buildInfo.commit}`
+      : buildInfo.perfectionist
+    return {
+      versions: [
+        `ESLint ${lint.eslintVersion ?? 'unknown'}`,
+        `Perfectionist ${perfectionistVersion}`,
+        `TypeScript ${buildInfo.typescript}`,
+      ].join(', '),
+      error:
+        lint.result?.kind === 'crash' || lint.result?.kind === 'internal' ?
+          lint.result.message
+        : null,
+      link: shareLink.length <= LONG_LINK_LENGTH ? shareLink : null,
+      output: currentResult?.output ?? null,
+      config: configFile,
+      code,
+    }
   }
 
   async function sort(): Promise<void> {
@@ -748,25 +841,27 @@
   }
 
   /**
-   * Collects the state the exported texts describe.
+   * Tells which sorting controls the options override: a rule's own `type` or
+   * `order`, or shared settings from the Options field.
    *
-   * @returns Code, output, config, versions and link.
+   * @returns Overridden controls.
    */
-  function getExportInput(): ExportInput {
-    let perfectionistVersion =
-      !buildInfo.release && buildInfo.commit ?
-        `${buildInfo.perfectionist} + main@${buildInfo.commit}`
-      : buildInfo.perfectionist
+  function getOverrides(): { order: boolean; type: boolean } {
+    let config = appliedConfig
+    if (!config || rule === null) {
+      return { order: false, type: false }
+    }
+    let objects = (config.options ?? []).filter(
+      (option): option is Record<string, unknown> =>
+        typeof option === 'object' && option !== null,
+    )
     return {
-      versions: [
-        `ESLint ${lint.eslintVersion ?? 'unknown'}`,
-        `Perfectionist ${perfectionistVersion}`,
-        `TypeScript ${buildInfo.typescript}`,
-      ].join(', '),
-      link: shareLink.length <= LONG_LINK_LENGTH ? shareLink : null,
-      output: currentResult?.output ?? null,
-      config: configFile,
-      code,
+      order:
+        objects.some(option => 'order' in option) ||
+        config.settings['order'] !== order,
+      type:
+        objects.some(option => 'type' in option) ||
+        config.settings['type'] !== type,
     }
   }
 
@@ -784,6 +879,25 @@
     announceForce = false
   }
 
+  /**
+   * Explains why the options can't be used, from the last result.
+   *
+   * @returns Problem to show under the Options field, or `null`.
+   */
+  function getOptionsProblem(): OptionsProblem | null {
+    let result = lastResult
+    if (rule === null || !result) {
+      return null
+    }
+    if (result.kind === 'options-error') {
+      return { position: result.position, lines: [result.message] }
+    }
+    if (result.kind === 'config-error' && result.source === 'options') {
+      return { lines: toOptionsErrors(result.message), position: null }
+    }
+    return null
+  }
+
   function act(): void {
     let blocked = document.querySelector('dialog[open]') !== null
     if (blocked || !actionEnabled || performance.now() - settledAt < 400) {
@@ -797,6 +911,24 @@
         mode === 'sort-again' ? 'playground: sort again' : 'playground: sort',
       )
       void sort()
+    }
+  }
+
+  function changeRule(value: string | null): void {
+    if (rule !== null) {
+      optionsByRule[rule] = optionsText
+    }
+    rule = value
+    optionsText =
+      value === null ? '' : (
+        (optionsByRule[value] ?? getDefaultOptionsText(value))
+      )
+    track('playground: rule changed')
+    if (pristine) {
+      notice = null
+      loadExample()
+    } else {
+      applySettings()
     }
   }
 
@@ -819,6 +951,38 @@
       }
       // No default
     }
+  }
+
+  function applyState(decoded: DecodedState): void {
+    ;({ options: optionsText, order, rule, type } = decoded)
+    if (rule !== null && optionsText === '') {
+      optionsText = getDefaultOptionsText(rule)
+    }
+    optionsByRule = {}
+    notice = null
+    if (decoded.broken) {
+      notice = BROKEN_LINK
+    } else if (decoded.invalid) {
+      notice = UNKNOWN_SETTINGS
+    }
+  }
+
+  /**
+   * Returns the blocks the inspector shows: every block of the selected rule,
+   * or the block under the caret for all rules.
+   *
+   * @returns Blocks with offsets into the current code.
+   */
+  function getInspectedBlocks(): InspectedBlock[] {
+    if (!inspecting || !inspected || tooLarge) {
+      return []
+    }
+    let blocks = shiftBlocks(inspected.blocks, inspected.code, code)
+    if (rule) {
+      return blocks.filter(block => block.rule === rule)
+    }
+    let block = findBlockAt(blocks, caret)
+    return block ? [block] : []
   }
 
   /**
@@ -849,6 +1013,29 @@
     idleTimer = setTimeout(() => queueAnnouncement(), IDLE_ANNOUNCE_DELAY)
   }
 
+  function requestLint(immediate = false): void {
+    sortRequested = false
+    if (code.length > CODE_SIZE_LIMIT) {
+      client.clear()
+      problems = []
+    } else {
+      client.update(
+        { options: optionsText, order, code, rule, type },
+        { immediate },
+      )
+    }
+  }
+
+  function changeOptions(value: string): void {
+    optionsText = value
+    notice = null
+    trackOnce('playground: options edited')
+    requestLint()
+    scheduleHashWrite()
+    clearTimeout(idleTimer)
+    idleTimer = setTimeout(() => queueAnnouncement(), IDLE_ANNOUNCE_DELAY)
+  }
+
   async function undo(): Promise<void> {
     if (!sorted || sorting) {
       return
@@ -864,26 +1051,6 @@
     queueAnnouncement(true)
   }
 
-  function requestLint(immediate = false): void {
-    sortRequested = false
-    if (code.length > CODE_SIZE_LIMIT) {
-      client.clear()
-      problems = []
-    } else {
-      client.update({ order, code, rule, type }, { immediate })
-    }
-  }
-
-  function applyState(decoded: DecodedState): void {
-    ;({ order, rule, type } = decoded)
-    notice = null
-    if (decoded.broken) {
-      notice = BROKEN_LINK
-    } else if (decoded.invalid) {
-      notice = UNKNOWN_SETTINGS
-    }
-  }
-
   function getActionLabel(): string {
     if (busy) {
       return undoing ? 'Undoing…' : 'Sorting…'
@@ -894,22 +1061,36 @@
     return mode === 'undo' ? 'Undo' : 'Sort'
   }
 
-  function changeRule(value: string | null): void {
-    rule = value
-    track('playground: rule changed')
-    if (pristine) {
-      notice = null
-      loadExample()
-    } else {
-      applySettings()
-    }
-  }
-
   function getProblems(result: LintState['result']): LintProblem[] {
     if (result?.kind === 'result') {
       return result.problems
     }
     return result?.kind === 'parse-error' ? [result.problem] : []
+  }
+
+  /**
+   * Returns the rule setup of the last result when it belongs to the current
+   * rule settings.
+   *
+   * @returns Setup, or `null` while none matches.
+   */
+  function getAppliedConfig(): AppliedConfig | null {
+    if (!lastResult || lastResult.kind === 'timeout') {
+      return null
+    }
+    return lastResultSettings === settings ? lastResult.config : null
+  }
+
+  /**
+   * Returns what the problem list says when the code has no problems.
+   *
+   * @returns Text, or `null` when the code is empty or was not linted.
+   */
+  function getEmptyText(): string | null {
+    if (tooLarge || lastResult?.kind !== 'result' || code.trim() === '') {
+      return null
+    }
+    return canUndo ? 'No problems left.' : 'No problems.'
   }
 
   function scheduleHashWrite(): void {
@@ -1095,13 +1276,17 @@
   </div>
 {:else}
   {#snippet controls()}
-    <div inert={sorting}>
+    <div
+      class="controls"
+      inert={sorting}
+    >
       <PlaygroundToolbar
         shared={isShareKind(copied) ? copied : null}
+        inline={inlineRules}
         onShare={copy}
+        configReady={lastResult?.kind !== 'options-error'}
+        {overrides}
         {testReady}
-        {inline}
-        onAnnounce={announce}
         onOrderChange={changeOrder}
         onRuleChange={changeRule}
         onTypeChange={changeType}
@@ -1109,7 +1294,19 @@
         {rules}
         {rule}
         {type}
-      />
+      >
+        {#snippet options()}
+          {#if rule}
+            <PlaygroundOptions
+              overridden={inlineRules.includes(rule)}
+              onChange={changeOptions}
+              problem={optionsProblem}
+              value={optionsText}
+              {rule}
+            />
+          {/if}
+        {/snippet}
+      </PlaygroundToolbar>
     </div>
 
     {#if notice}
@@ -1118,59 +1315,15 @@
   {/snippet}
 
   {#snippet diagnostics()}
-    {#if showSetup}
-      <section
-        aria-labelledby="{id}-setup"
-        class="setup"
-      >
-        <h2
-          id="{id}-setup"
-          class="setup-title"
-        >
-          Get this result in your project
-        </h2>
-        <p class="setup-step">Install the plugin:</p>
-        <div class="setup-code">
-          <code class="setup-command">{installCommand}</code>
-          <button
-            aria-label={copied === 'install' ?
-              'Install command copied'
-            : 'Copy install command'}
-            onclick={() => copy('install')}
-            class="setup-copy"
-            type="button"
-          >
-            {#if copied === 'install'}
-              <CopyCopiedIcon class="tool-icon" />
-            {:else}
-              <CopyDefaultIcon class="tool-icon" />
-            {/if}
-          </button>
-        </div>
-        <p class="setup-step">Add it to your ESLint config:</p>
-        <div class="setup-code">
-          <pre class="setup-config">{configFile}</pre>
-          <button
-            aria-label={copied === 'config' ? 'Config copied' : 'Copy config'}
-            onclick={() => copy('config')}
-            class="setup-copy"
-            type="button"
-          >
-            {#if copied === 'config'}
-              <CopyCopiedIcon class="tool-icon" />
-            {:else}
-              <CopyDefaultIcon class="tool-icon" />
-            {/if}
-          </button>
-        </div>
-        <a
-          href="/guide/getting-started"
-          class="setup-link"
-        >
-          Getting Started
-          <ArrowRightIcon class="inline-icon" />
-        </a>
-      </section>
+    {#if inspecting}
+      <PlaygroundLegend
+        onHighlight={(slot: number | null) => (highlightedSlot = slot)}
+        stale={lastResult !== null && lastResult.kind !== 'result'}
+        ready={inspected !== null}
+        blocks={inspectedBlocks}
+        active={activeBlock}
+        {rule}
+      />
     {/if}
 
     {#if status.details.length > 0}
@@ -1186,6 +1339,7 @@
 
     <PlaygroundProblems
       onselect={(line: number, column: number) => editor?.select(line, column)}
+      empty={getEmptyText()}
       loading={!lastResult && lint.status !== 'failed' && !tooLarge}
       showRules={rule === null}
       {problems}
@@ -1213,6 +1367,23 @@
             inert={sorting}
           >
             <button
+              onclick={() => {
+                inspecting = !inspecting
+                highlightedSlot = null
+                track(
+                  inspecting ?
+                    'playground: groups shown'
+                  : 'playground: groups hidden',
+                )
+              }}
+              aria-pressed={inspecting}
+              class="tool"
+              type="button"
+            >
+              <ColorPaletteIcon class="tool-icon" />
+              Groups
+            </button>
+            <button
               onclick={clearCode}
               class="tool"
               type="button"
@@ -1232,6 +1403,9 @@
         </div>
 
         <PlaygroundEditor
+          onCaretMove={(offset: number) => (caret = offset)}
+          {highlightedSlot}
+          inspector={inspectorView}
           placeholder="Paste some code to sort…"
           describedby="{statusId} {detailsId}"
           showRules={rule === null}
@@ -1493,6 +1667,13 @@
    * The column stays in view while the page scrolls along the code. Only the
    * problem list scrolls inside it, so the controls are always visible.
    */
+
+  /*
+   * The problems take the space left under the controls and scroll inside it,
+   * but keep enough height for a few rows. When even that does not fit, the
+   * whole column scrolls instead of running over the footer. The padding
+   * keeps focus rings inside the scrolling box.
+   */
   .side {
     position: sticky;
     inset-block-start: calc(var(--header-block-size) + var(--space-m));
@@ -1501,13 +1682,40 @@
     max-block-size: calc(
       100dvb - var(--header-block-size) - var(--space-m) * 2
     );
+    padding: var(--space-4xs);
+    margin: calc(var(--space-4xs) * -1);
     container-type: inline-size;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+
+    /*
+     * The parts of the controls and of the Options field take part in the
+     * column layout, so a long Options field shrinks and scrolls before the
+     * problems get too short.
+     */
+    & .controls {
+      display: contents;
+    }
+
+    & :global(.options) {
+      display: contents;
+    }
+
+    & :global(.options .header) {
+      margin-block: var(--space-s) var(--space-2xs);
+    }
+
+    & :global(.options .field) {
+      min-block-size: calc(3lh + var(--space-2xs) * 2 + 2px);
+      margin-block-end: var(--space-2xs);
+    }
 
     & :global(.problems) {
       flex: 1 1 auto;
-      min-block-size: 0;
+      min-block-size: min(14rem, 40dvb);
       padding-inline: var(--space-4xs);
-      margin-block-start: 0;
+      margin-block: 0;
       margin-inline: calc(var(--space-4xs) * -1);
       overflow: auto;
     }
@@ -1601,6 +1809,11 @@
 
     @media (pointer: coarse) {
       min-block-size: 44px;
+    }
+
+    &[aria-pressed='true'] {
+      color: var(--color-content-brand);
+      background: var(--color-overlay-brand);
     }
 
     &:focus-visible {
@@ -1829,95 +2042,6 @@
     @media (hover: hover) {
       display: inline;
     }
-  }
-
-  .setup {
-    padding: var(--space-s);
-    margin-block: var(--space-m);
-    font: var(--font-xs);
-    background: var(--color-background-secondary);
-    border: 1px solid var(--color-border-primary);
-    border-radius: var(--border-radius);
-  }
-
-  .setup-title {
-    margin-block: 0 var(--space-xs);
-    font: var(--font-m);
-    font-family: var(--font-family-title);
-    font-weight: 600;
-    color: var(--color-content-secondary);
-  }
-
-  .setup-step {
-    margin-block: var(--space-xs) var(--space-2xs);
-  }
-
-  .setup-code {
-    position: relative;
-  }
-
-  .setup-command,
-  .setup-config {
-    display: block;
-    padding: var(--space-2xs) calc(var(--space-s) + var(--size-icon-xs))
-      var(--space-2xs) var(--space-xs);
-    margin: 0;
-    font-size: 0.85em;
-  }
-
-  .setup-command {
-    overflow-wrap: anywhere;
-  }
-
-  .setup-config {
-    overflow: auto;
-    white-space: pre;
-    scrollbar-width: thin;
-  }
-
-  .setup-copy {
-    position: absolute;
-    inset-block-start: var(--space-4xs);
-    inset-inline-end: var(--space-4xs);
-    display: inline-flex;
-    flex-wrap: nowrap;
-    padding: var(--space-4xs);
-    color: var(--color-content-secondary);
-    outline: none;
-    background: var(--color-code-background);
-    border: none;
-    border-radius: var(--border-radius);
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 200ms,
-        box-shadow 200ms;
-    }
-
-    &:focus-visible {
-      outline: 2px solid transparent;
-      outline-offset: 2px;
-      box-shadow: 0 0 0 3px var(--color-border-brand);
-    }
-  }
-
-  .setup-link {
-    display: inline-flex;
-    flex-wrap: nowrap;
-    gap: var(--space-4xs);
-    align-items: center;
-    margin-block-start: var(--space-xs);
-  }
-
-  .setup :global(.inline-icon) {
-    inline-size: 1.1em;
-    block-size: 1.1em;
-  }
-
-  .setup :global(.tool-icon) {
-    flex-shrink: 0;
-    inline-size: var(--size-icon-xs);
-    block-size: var(--size-icon-xs);
   }
 
   .versions {

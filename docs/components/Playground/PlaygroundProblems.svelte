@@ -1,9 +1,11 @@
 <script lang="ts">
   import { untrack, tick } from 'svelte'
+  import { on } from 'svelte/events'
 
   import type { LintProblem } from './lint-config'
 
   import { hasGroupHint, getRuleName, toSegments } from './problem-text'
+  import SparkleIcon from '../../icons/sparkle.svg?component'
   import PlaygroundGroups from './PlaygroundGroups.svelte'
 
   interface Props {
@@ -16,6 +18,12 @@
      * Problems to list, in order of position.
      */
     problems: LintProblem[]
+
+    /**
+     * Text to show when the code was linted and has no problems, or `null` when
+     * there is nothing to say, for example after a parse error.
+     */
+    empty: string | null
 
     /**
      * Show which rule reported each problem.
@@ -39,10 +47,17 @@
    */
   const VISIBLE_LIMIT = 50
 
-  let { showRules, problems, settling, onselect, loading }: Props = $props()
+  let { showRules, problems, settling, onselect, loading, empty }: Props =
+    $props()
 
   let expanded = $state(false)
   let section = $state<HTMLElement>()
+
+  /**
+   * The list scrolls in the column next to the editor and has more rows above
+   * or below the visible ones. Lines on those edges tell so.
+   */
+  let hidden = $state({ above: false, below: false })
 
   let shown = $derived(expanded ? problems : problems.slice(0, VISIBLE_LIMIT))
 
@@ -53,10 +68,44 @@
   let heldSize = $derived(
     settling ? untrack(() => section?.offsetHeight ?? 0) : 0,
   )
+
+  function measureScroll(): void {
+    if (!section) {
+      return
+    }
+    let { scrollHeight, clientHeight, scrollTop } = section
+    let above = scrollTop > 1
+    let below = scrollTop + clientHeight < scrollHeight - 1
+    if (above !== hidden.above || below !== hidden.below) {
+      hidden = { above, below }
+    }
+  }
+
+  $effect(() => {
+    let element = section
+    if (!element) {
+      return
+    }
+    /*
+     * New rows change the scroll height without resizing the list itself.
+     */
+    let resizes = new ResizeObserver(measureScroll)
+    let mutations = new MutationObserver(measureScroll)
+    resizes.observe(element)
+    mutations.observe(element, { childList: true, subtree: true })
+    let stop = on(element, 'scroll', measureScroll, { passive: true })
+    return () => {
+      resizes.disconnect()
+      mutations.disconnect()
+      stop()
+    }
+  })
 </script>
 
 <section
-  style:min-block-size="{heldSize}px"
+  style:min-block-size={heldSize ? `${heldSize}px` : undefined}
+  class:edge-below={hidden.below}
+  class:edge-above={hidden.above}
   aria-label="Problems"
   class:fading={settling}
   bind:this={section}
@@ -119,6 +168,14 @@
         Show {problems.length - shown.length} more
       </button>
     {/if}
+  {:else if empty}
+    <div class="empty">
+      <SparkleIcon class="empty-icon" />
+      <div>
+        <p class="empty-title">{empty}</p>
+        <p class="empty-hint">Copy config to sort your project the same way.</p>
+      </div>
+    </div>
   {/if}
 </section>
 
@@ -136,6 +193,67 @@
 
   .fading {
     opacity: 40%;
+  }
+
+  /*
+   * Lines stick to the edges of the scrolling list and show only while rows
+   * are hidden behind that edge.
+   */
+  .problems::before,
+  .problems::after {
+    position: sticky;
+    z-index: 1;
+    display: block;
+    block-size: 1px;
+    pointer-events: none;
+    content: '';
+    background: var(--color-border-primary);
+    opacity: 0%;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: opacity 200ms;
+    }
+  }
+
+  .problems::before {
+    inset-block-start: 0;
+    margin-block-end: -1px;
+  }
+
+  .problems::after {
+    inset-block-end: 0;
+    margin-block-start: -1px;
+  }
+
+  .edge-above::before,
+  .edge-below::after {
+    opacity: 100%;
+  }
+
+  .empty {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--space-xs);
+    align-items: start;
+    padding-block: var(--space-xs);
+    font: var(--font-xs);
+
+    & :global(.empty-icon) {
+      flex-shrink: 0;
+      inline-size: var(--size-icon-xs);
+      block-size: 1lh;
+      color: var(--color-status-success);
+    }
+  }
+
+  .empty-title {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .empty-hint {
+    margin: 0;
+    color: var(--color-content-secondary);
   }
 
   .list {

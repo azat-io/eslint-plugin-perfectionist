@@ -1,18 +1,21 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte'
+
   import type { SortingOrder, SortingType } from './lint-config'
 
-  import {
-    getSettingsSnippet,
-    getRuleSnippet,
-    getConfigFile,
-    getPreset,
-  } from './config-snippet'
   import CopyDefaultIcon from '../../icons/copy-default.svg?component'
   import ChevronDownIcon from '../../icons/chevron-down.svg?component'
   import CopyCopiedIcon from '../../icons/copy-copied.svg?component'
+  import { getSettingsSnippet, getPreset } from './config-snippet'
   import LinkChainIcon from '../../icons/link-chain.svg?component'
 
   interface Props {
+    /**
+     * Sorting keys the Options field sets. ESLint uses those instead of the
+     * controls.
+     */
+    overrides: { order: boolean; type: boolean }
+
     /**
      * Called when the user picks another order.
      */
@@ -29,24 +32,19 @@
     onTypeChange(type: SortingType): void
 
     /**
-     * Reads the result of copying the config aloud.
-     */
-    onAnnounce(message: string): void
-
-    /**
      * Copies the link, a Markdown summary or a rule test.
      */
     onShare(kind: ShareKind): void
 
     /**
-     * Options from `eslint` comments in the code, by rule name.
-     */
-    inline: Map<string, string>
-
-    /**
      * Which share text was copied a moment ago, to confirm it on its button.
      */
     shared: ShareKind | null
+
+    /**
+     * The config can be copied: the options could be read.
+     */
+    configReady: boolean
 
     /**
      * Selected rule, or `null` for all rules of the recommended configs.
@@ -64,9 +62,19 @@
     testReady: boolean
 
     /**
+     * The Options field of a single rule.
+     */
+    options?: Snippet
+
+    /**
      * Selected sorting type.
      */
     type: SortingType
+
+    /**
+     * Rules whose options an `eslint` comment in the code changed.
+     */
+    inline: string[]
 
     /**
      * Rules to choose from.
@@ -77,7 +85,7 @@
   /**
    * Texts the toolbar can copy through the Playground.
    */
-  type ShareKind = 'markdown' | 'link' | 'test'
+  type ShareKind = 'markdown' | 'config' | 'link' | 'test'
 
   const TYPES: { value: SortingType; label: string }[] = [
     { value: 'alphabetical', label: 'Alphabetical' },
@@ -94,8 +102,10 @@
     onOrderChange,
     onRuleChange,
     onTypeChange,
-    onAnnounce,
+    configReady,
+    overrides,
     testReady,
+    options,
     onShare,
     shared,
     inline,
@@ -106,42 +116,8 @@
   }: Props = $props()
 
   let id = $props.id()
-  let snippetCopied = $state(false)
-  let snippetTimer: ReturnType<typeof setTimeout> | undefined
-
-  /**
-   * Rules whose options come from a comment in the code. The controls do not
-   * describe them fully, so the hint says so instead of showing a snippet.
-   */
-  let inlineRules = $derived(
-    inline
-      .keys()
-      .filter(name => rule === null || name === rule)
-      .toArray(),
-  )
-  let preset = $derived(rule ? undefined : getPreset(type, order))
-  let snippet = $derived(
-    rule ? getRuleSnippet(rule, type, order) : getSettingsSnippet(type, order),
-  )
-
-  async function copySnippet(): Promise<void> {
-    let text =
-      inlineRules.length > 0 ?
-        getConfigFile({ inline, order, rule, type })
-      : snippet
-    try {
-      await navigator.clipboard.writeText(text)
-    } catch {
-      onAnnounce("Couldn't copy the config.")
-      return
-    }
-    onAnnounce('Config copied.')
-    snippetCopied = true
-    clearTimeout(snippetTimer)
-    snippetTimer = setTimeout(() => {
-      snippetCopied = false
-    }, 2000)
-  }
+  let preset = $derived(getPreset(type, order))
+  let snippet = $derived(getSettingsSnippet(type, order))
 </script>
 
 <div class="toolbar">
@@ -161,7 +137,11 @@
       <ChevronDownIcon class="select-icon" />
     </span>
   </label>
-  <fieldset class="segments">
+  <fieldset
+    aria-describedby={overrides.type ? `${id}-overrides` : undefined}
+    disabled={overrides.type}
+    class="segments"
+  >
     <legend class="visually-hidden">Sorting type</legend>
     {#each TYPES as option (option.value)}
       <label class="segment">
@@ -177,7 +157,11 @@
       </label>
     {/each}
   </fieldset>
-  <fieldset class="segments">
+  <fieldset
+    aria-describedby={overrides.order ? `${id}-overrides` : undefined}
+    disabled={overrides.order}
+    class="segments"
+  >
     <legend class="visually-hidden">Order</legend>
     {#each ORDERS as option (option.value)}
       <label class="segment">
@@ -193,45 +177,54 @@
       </label>
     {/each}
   </fieldset>
+  {#if overrides.type || overrides.order}
+    <p
+      id="{id}-overrides"
+      class="overrides"
+    >
+      {#if overrides.type && overrides.order}
+        Type and order are
+      {:else if overrides.type}
+        Type is
+      {:else}
+        Order is
+      {/if}
+      set in Options.
+    </p>
+  {/if}
 </div>
 
+{@render options?.()}
+
 <div class="details">
-  <p class="hint">
-    {#if inlineRules.length > 0}
-      Options for {inlineRules.join(', ')} come from the
-      <code>/* eslint */</code>
-      comment in your code.
-      <button
-        aria-label={snippetCopied ? 'Config copied' : 'Copy config'}
-        onclick={copySnippet}
-        class="copy-snippet"
-        type="button"
-      >
-        {#if snippetCopied}
-          <CopyCopiedIcon class="copy-icon" />
-        {:else}
-          <CopyDefaultIcon class="copy-icon" />
-        {/if}
-      </button>
-    {:else if preset}
-      Same as <a href="/configs/{preset}">{preset}</a>
-    {:else}
-      <code class="snippet">{snippet}</code>
-      <button
-        aria-label={snippetCopied ? 'Config copied' : 'Copy config'}
-        onclick={copySnippet}
-        class="copy-snippet"
-        type="button"
-      >
-        {#if snippetCopied}
-          <CopyCopiedIcon class="copy-icon" />
-        {:else}
-          <CopyDefaultIcon class="copy-icon" />
-        {/if}
-      </button>
-    {/if}
-  </p>
+  {#if rule === null}
+    <p class="hint">
+      {#if inline.length > 0}
+        Options for {inline.join(', ')} come from the
+        <code class="nowrap">/* eslint */</code>
+        comment in your code.
+      {:else if preset}
+        Same as <a href="/configs/{preset}">{preset}</a>
+      {:else}
+        <code class="snippet">{snippet}</code>
+      {/if}
+    </p>
+  {/if}
   <div class="share">
+    <button
+      onclick={() => onShare('config')}
+      disabled={!configReady}
+      class="share-button"
+      type="button"
+    >
+      {#if shared === 'config'}
+        <CopyCopiedIcon class="copy-icon" />
+        Config copied
+      {:else}
+        <CopyDefaultIcon class="copy-icon" />
+        Copy config
+      {/if}
+    </button>
     <button
       onclick={() => onShare('link')}
       class="share-button copy-link"
@@ -374,6 +367,14 @@
     padding: 0;
     margin: 0;
     border: none;
+
+    &:disabled {
+      opacity: 50%;
+    }
+
+    &:disabled :is(.segment, .segment-input) {
+      cursor: not-allowed;
+    }
   }
 
   .segment {
@@ -486,7 +487,7 @@
     }
 
     @media (hover: hover) {
-      &:hover {
+      &:hover:enabled {
         background: var(--color-background-secondary-hover);
       }
     }
@@ -499,6 +500,11 @@
       outline: 2px solid transparent;
       outline-offset: 2px;
       box-shadow: 0 0 0 3px var(--color-border-brand);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 50%;
     }
   }
 
@@ -527,37 +533,15 @@
     white-space: normal;
   }
 
-  .copy-snippet {
-    display: inline-flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-4xs);
-    margin-inline-start: var(--space-2xs);
-    vertical-align: middle;
-    color: var(--color-content-tertiary);
-    outline: none;
-    background: none;
-    border: none;
-    border-radius: var(--border-radius);
+  .nowrap {
+    white-space: nowrap;
+  }
 
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        color 200ms,
-        box-shadow 200ms;
-    }
-
-    @media (hover: hover) {
-      &:hover {
-        color: var(--color-content-secondary);
-      }
-    }
-
-    &:focus-visible {
-      outline: 2px solid transparent;
-      outline-offset: 2px;
-      box-shadow: 0 0 0 3px var(--color-border-brand);
-    }
+  .overrides {
+    flex-basis: 100%;
+    margin: calc(var(--space-2xs) - var(--space-s)) 0 0;
+    font: var(--font-xs);
+    color: var(--color-content-secondary);
   }
 
   .details :global(.copy-icon) {

@@ -27,6 +27,7 @@ export default defineConfig({
     'playform',
     'poppanator',
     'prerenderingchange',
+    'quasis',
     'rehype',
     'renminbi',
     'shiki',
