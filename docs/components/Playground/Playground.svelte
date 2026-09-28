@@ -409,7 +409,14 @@
     pristine = decoded.code === null
     requestLint(true)
     queueAnnouncement(true)
-    if (!decoded.broken) {
+    if (decoded.broken) {
+      /*
+       * Keep the broken link in the address bar, as on the first load. The
+       * example put into the editor above scheduled a write of its own.
+       */
+      clearTimeout(hashTimer)
+      hashDirty = false
+    } else {
       void writeHash()
     }
   }
