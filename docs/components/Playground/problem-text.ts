@@ -1,6 +1,8 @@
 /**
  * Part of a problem message. Names in double quotes become code.
  */
+import type { LintProblem } from './lint-config'
+
 export interface MessageSegment {
   code: boolean
   text: string
@@ -19,6 +21,20 @@ export function toSegments(message: string): MessageSegment[] {
     .split(/"(?<name>[^\n"]*)"/u)
     .map((text, index) => ({ code: index % 2 === 1, text }))
     .filter(segment => segment.text !== '')
+}
+
+/**
+ * Tells whether to show the groups of a problem's elements. Messages about the
+ * order of groups already name them.
+ *
+ * @param problem - Lint problem.
+ * @returns Whether the groups add information.
+ */
+export function hasGroupHint(problem: LintProblem): boolean {
+  return (
+    problem.groups !== undefined &&
+    !problem.message.includes(`(${problem.groups.right})`)
+  )
 }
 
 /**

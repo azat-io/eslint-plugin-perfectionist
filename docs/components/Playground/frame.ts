@@ -142,8 +142,9 @@ export function toFrame(
   code: string,
   { words = false, highlighter, marks = [], theme }: FrameOptions,
 ): KeyedTokensInfo {
+  let lineMarks = marks.flatMap(mark => toLineMarks(code, mark))
   let breakpoints = new Set<number>()
-  for (let mark of marks) {
+  for (let mark of lineMarks) {
     breakpoints.add(mark.start)
     breakpoints.add(mark.end)
   }
@@ -160,7 +161,7 @@ export function toFrame(
     splitTokens(lines, breakpoints),
     String(frameCount),
   )
-  setMarkClasses(info.tokens, marks)
+  setMarkClasses(info.tokens, lineMarks)
   return info
 }
 
@@ -284,6 +285,30 @@ function setMarkClasses(
     active = active.filter(mark => mark.end > start)
     token.htmlClass = getMarkClass(active)
   }
+}
+
+/**
+ * Splits a mark into its parts on each line without the indentation and the
+ * spaces at the line end, so a problem on a large node does not paint its whole
+ * block. Spaces between words stay underlined.
+ *
+ * @param code - Code the mark belongs to.
+ * @param mark - Mark to split.
+ * @returns Marks of the visible parts, or the mark itself when it covers only
+ *   spaces.
+ */
+function toLineMarks(code: string, mark: Mark): Mark[] {
+  let text = code.slice(mark.start, mark.end)
+  let parts: Mark[] = []
+  for (let match of text.matchAll(/[^\n\r\u{2028}\u{2029}]+/gu)) {
+    let [line] = match
+    let start = mark.start + match.index + line.length - line.trimStart().length
+    let end = mark.start + match.index + line.trimEnd().length
+    if (end > start) {
+      parts.push({ ...mark, start, end })
+    }
+  }
+  return parts.length > 0 ? parts : [mark]
 }
 
 function addWordBreakpoints(code: string, breakpoints: Set<number>): void {

@@ -1,7 +1,83 @@
-import type { Linter } from 'eslint'
+import type { ESLint, Linter, Rule } from 'eslint'
 
 import { REQUIRED_OPTIONS } from './rule-options'
 import perfectionist from '../../../index'
+
+export interface LintProblem {
+  /**
+   * Values the message text is built from, keyed as in the message template.
+   * Rule tests list them in `errors`.
+   */
+  data?: Record<string, string>
+
+  /**
+   * Groups of the two elements a sorting problem is about. Left out when the
+   * rule has no groups for them.
+   */
+  groups?: ProblemGroups
+
+  /**
+   * Rule that reported the problem, such as `perfectionist/sort-imports`, or
+   * `null` for a parse error.
+   */
+  ruleId: string | null
+
+  /**
+   * Id of the message in the rule's `meta.messages`. Left out for parse errors.
+   */
+  messageId?: string
+
+  /**
+   * 1-based column where the problem ends, exclusive.
+   */
+  endColumn: number
+
+  /**
+   * Text ESLint shows for the problem.
+   */
+  message: string
+
+  /**
+   * 1-based line where the problem ends.
+   */
+  endLine: number
+
+  /**
+   * 1-based column where the problem starts.
+   */
+  column: number
+
+  /**
+   * 1-based line where the problem starts.
+   */
+  line: number
+}
+
+/**
+ * Names of the two elements a problem is about and the groups they belong to.
+ * `right` should come before `left`.
+ */
+export interface ProblemGroups {
+  /**
+   * Name of the element that should come first, as in the message.
+   */
+  rightName: string
+
+  /**
+   * Name of the element that should come after it.
+   */
+  leftName: string
+
+  /**
+   * Group of the element that should come first.
+   */
+  right: string
+
+  /**
+   * Group of the element that should come after it.
+   */
+  left: string
+}
 
 /**
  * Outcome of one lint request.
@@ -51,15 +127,6 @@ export type WorkerMessage =
       eslint: string
       kind: 'ready'
     }
-
-export interface LintProblem {
-  ruleId: string | null
-  endColumn: number
-  message: string
-  endLine: number
-  column: number
-  line: number
-}
 
 export type LintRequest = Omit<LintConfigOptions, 'parser'> & {
   code: string
@@ -112,6 +179,56 @@ let inlineConfigPrefix = 'Inline configuration for rule'
 let unknownRulePrefix = 'Definition for rule'
 
 /**
+ * A report a rule made during the last `verify`, with the data ESLint does not
+ * pass on to lint messages.
+ */
+interface CapturedReport {
+  /**
+   * Message data the rule passed, with every value as a string.
+   */
+  data: Record<string, string>
+
+  /**
+   * Id of the reported message.
+   */
+  messageId: string
+
+  /**
+   * Full id of the rule, such as `perfectionist/sort-imports`.
+   */
+  ruleId: string
+
+  /**
+   * 1-based column of the reported node, as in the lint message.
+   */
+  column: number
+
+  /**
+   * 1-based line of the reported node.
+   */
+  line: number
+}
+
+/**
+ * Reports collected while `verify` runs, or `null` outside of it.
+ */
+let capturedReports: CapturedReport[] | null = null
+
+/**
+ * The plugin with every rule wrapped so its reports are also collected. The
+ * plugin itself stays untouched; only the playground sees the wrapper.
+ */
+let playgroundPlugin: ESLint.Plugin = {
+  ...perfectionist,
+  rules: Object.fromEntries(
+    Object.entries(perfectionist.rules ?? {}).map(([name, rule]) => [
+      name,
+      captureReports(`${pluginPrefix}${name}`, rule),
+    ]),
+  ),
+}
+
+/**
  * Lints code and sorts ESLint's reports into what the playground shows.
  *
  * @param linter - ESLint `Linter` instance.
@@ -126,7 +243,10 @@ export function lintCode(
 ): LintResult {
   let config = createLintConfig({ ...options, parser })
   try {
+    capturedReports = []
     let messages = linter.verify(code, config, PLAYGROUND_FILENAME)
+    let reports = capturedReports
+    capturedReports = null
     let parseError = messages.find(isParseError)
     if (parseError) {
       /*
@@ -148,7 +268,9 @@ export function lintCode(
       return { message: setupError.message, kind: 'internal' }
     }
 
-    let problems = messages.filter(isPluginProblem).map(toProblem)
+    let problems = messages
+      .filter(isPluginProblem)
+      .map(message => withReportData(toProblem(message), message, reports))
     let notices: LintNotices = {
       foreignRules: messages.filter(
         message =>
@@ -195,11 +317,114 @@ export function lintCode(
       notices,
     }
   } catch (error) {
+    capturedReports = null
     return classifyError(toErrorMessage(error), () =>
       linter.verify(code, config, {
         filename: PLAYGROUND_FILENAME,
         allowInlineConfig: false,
       }),
+    )
+  }
+}
+
+/**
+ * Adds the groups and the message data of the matching report to a problem.
+ *
+ * @param problem - Problem built from a lint message.
+ * @param message - The lint message.
+ * @param reports - Reports collected during `verify`.
+ * @returns The problem with groups and data when a report matches.
+ */
+function withReportData(
+  problem: LintProblem,
+  message: Linter.LintMessage,
+  reports: CapturedReport[],
+): LintProblem {
+  let index = reports.findIndex(
+    report =>
+      report.ruleId === message.ruleId &&
+      report.messageId === message.messageId &&
+      report.line === message.line &&
+      report.column === message.column,
+  )
+  if (index === -1) {
+    return problem
+  }
+  let [report] = reports.splice(index, 1)
+  let { rightGroup, leftGroup, right, left } = report!.data
+  let template = getMessageTemplate(report!.ruleId, report!.messageId)
+  let used = new Set(
+    template
+      .matchAll(/\{\{\s*(?<key>\w+)\s*\}\}/gu)
+      .map(match => match.groups!['key']!),
+  )
+  let data = Object.fromEntries(
+    Object.entries(report!.data).filter(([key]) => used.has(key)),
+  )
+  let groups: ProblemGroups | null =
+    (
+      leftGroup !== undefined &&
+      rightGroup !== undefined &&
+      (leftGroup !== 'unknown' || rightGroup !== 'unknown')
+    ) ?
+      {
+        rightName: right ?? '',
+        leftName: left ?? '',
+        right: rightGroup,
+        left: leftGroup,
+      }
+    : null
+  return {
+    ...problem,
+    ...(groups && { groups }),
+    messageId: report!.messageId,
+    data,
+  }
+}
+
+/**
+ * Wraps a rule so that its reports are collected while `verify` runs. Rules
+ * pass the groups of both elements and the message data to `context.report`,
+ * but ESLint keeps only the final text in lint messages.
+ *
+ * @param ruleId - Full rule id, such as `perfectionist/sort-imports`.
+ * @param rule - Rule to wrap.
+ * @returns A rule that reports the same problems.
+ */
+function captureReports(
+  ruleId: string,
+  rule: Rule.RuleModule,
+): Rule.RuleModule {
+  return {
+    ...rule,
+    create(context) {
+      function report(descriptor: Rule.ReportDescriptor): void {
+        let start = 'node' in descriptor ? descriptor.node.loc?.start : null
+        let messageId =
+          'messageId' in descriptor ? descriptor.messageId : undefined
+        if (capturedReports && start && messageId && descriptor.data) {
+          capturedReports.push({
+            data: toStrings(descriptor.data),
+            column: start.column + 1,
+            line: start.line,
+            messageId,
+            ruleId,
+          })
+        }
+        context.report(descriptor)
+      }
+      let wrapped: unknown = Object.create(context, {
+        report: { value: report },
+      })
+      return rule.create(wrapped as Rule.RuleContext)
+    },
+  }
+
+  function toStrings(data: Record<string, unknown>): Record<string, string> {
+    return Object.fromEntries(
+      Object.entries(data)
+        .filter(([, value]) => value !== undefined && value !== null)
+        .map(([key, value]) => [key, String(value)]),
     )
   }
 }
@@ -243,7 +468,7 @@ function createLintConfig({
       },
       rules: rule === null ? getRecommendedRules() : getRuleEntry(rule),
       plugins: {
-        perfectionist,
+        perfectionist: playgroundPlugin,
       },
       files: ['**/*.tsx'],
     },
@@ -305,6 +530,12 @@ function toParseProblem(message: Linter.LintMessage): LintProblem {
     endColumn: (message.endColumn ?? message.column) + 1,
     column: message.column + 1,
   }
+}
+
+function getMessageTemplate(ruleId: string, messageId: string): string {
+  let rule = perfectionist.rules?.[ruleId.slice(pluginPrefix.length)]
+  let template = rule?.meta?.messages?.[messageId]
+  return typeof template === 'string' ? template : ''
 }
 
 function getRecommendedRules(): Linter.RulesRecord {
