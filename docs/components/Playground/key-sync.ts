@@ -1,7 +1,17 @@
 import type { KeyedTokensInfo, KeyedToken } from '@shikijs/magic-move/types'
 
+/**
+ * Place of a token in its frame.
+ */
 interface Position {
+  /**
+   * 0-based column of the token.
+   */
   column: number
+
+  /**
+   * 0-based line of the token.
+   */
   line: number
 }
 

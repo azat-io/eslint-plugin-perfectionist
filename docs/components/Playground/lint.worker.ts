@@ -8,15 +8,31 @@ import type { WorkerMessage, LintRequest } from './lint-config'
 
 import { lintCode } from './lint-config'
 
+/**
+ * The parts of the worker global scope the linter uses.
+ */
 interface WorkerScope {
+  /**
+   * Listens for lint requests.
+   */
   addEventListener(
     type: 'message',
     listener: (event: MessageEvent<LintRequest>) => void,
   ): void
+
+  /**
+   * Sends a result or a status to the page.
+   */
   postMessage(message: WorkerMessage): void
 }
 
+/**
+ * Position of a TypeScript parse error.
+ */
 interface ParseErrorLocation {
+  /**
+   * 1-based line and 0-based column where the error starts.
+   */
   start?: { column?: unknown; line?: unknown }
 }
 

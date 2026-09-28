@@ -1,14 +1,58 @@
+import type { LintProblem } from './lint-config'
+
+/**
+ * Why the options can't be used, to show under the Options field.
+ */
+export interface OptionsProblem {
+  /**
+   * Position of a syntax error in the field, or `null` when the error is about
+   * the values.
+   */
+  position: { column: number; line: number } | null
+
+  /**
+   * Lines of the error.
+   */
+  lines: string[]
+}
+
 /**
  * Part of a problem message. Names in double quotes become code.
  */
-import type { LintProblem } from './lint-config'
-
 export interface MessageSegment {
+  /**
+   * The part is a name from the message and is shown as code.
+   */
   code: boolean
+
+  /**
+   * Text of the part.
+   */
   text: string
 }
 
 let pluginPrefix = 'perfectionist/'
+
+/**
+ * Turns an error ESLint threw for rule options into lines to show under the
+ * Options field. The config path prefix is dropped, and the schema's generic
+ * `oneOf` line goes when a more specific line is there.
+ *
+ * @param message - Error message without ESLint's location note.
+ * @returns Lines of the error.
+ */
+export function toOptionsErrors(message: string): string[] {
+  let lines = message
+    .replace(/^Key "rules": Key "[^"]+":\s*/u, '')
+    .replace(/^Error while loading rule '[^']+': /u, '')
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+  let specific = lines.filter(
+    line => !line.endsWith('should match exactly one schema in oneOf.'),
+  )
+  return specific.length > 0 ? specific : lines
+}
 
 /**
  * Splits a message so names in double quotes can be shown as code.

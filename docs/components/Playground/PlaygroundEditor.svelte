@@ -5,6 +5,7 @@
   import { flushSync, onMount, untrack } from 'svelte'
   import { on } from 'svelte/events'
 
+  import type { InspectorView } from './inspector-view'
   import type { LintProblem } from './lint-config'
   import type { Animator } from './motion'
   import type { Mark } from './frame'
@@ -19,11 +20,29 @@
     toMarks,
   } from './frame'
   import PlaygroundTooltip from './PlaygroundTooltip.svelte'
+  import { getSlotHue } from './group-colors'
   import { shiki } from '../../stores/shiki'
   import { createAnimator } from './motion'
   import { syncKeys } from './key-sync'
 
   interface Props {
+    /**
+     * Called with the caret offset when it moves in the editor.
+     */
+    onCaretMove(offset: number): void
+
+    /**
+     * Group labels, bars and partition breaks to draw over the code, or `null`
+     * when the inspector is off.
+     */
+    inspector: InspectorView | null
+
+    /**
+     * Group entry whose elements stand out, while the pointer is on it in the
+     * legend.
+     */
+    highlightedSlot: number | null
+
     /**
      * Called with the new code after every change.
      */
@@ -82,8 +101,16 @@
    */
   const NATIVE_WRITE_LINE_LIMIT = 400
 
-  let { placeholder, describedby, showRules, initial, oninput }: Props =
-    $props()
+  let {
+    highlightedSlot,
+    describedby,
+    placeholder,
+    onCaretMove,
+    showRules,
+    inspector,
+    initial,
+    oninput,
+  }: Props = $props()
 
   let code = untrack(() => initial)
   let marks: Mark[] = []
@@ -98,6 +125,7 @@
   let stale = $state(false)
   let textarea = $state<HTMLTextAreaElement>()
   let layer = $state<HTMLPreElement>()
+  let scrollLeft = $state(0)
 
   let animator: Animator | null = null
   let highlighter: HighlighterCore | null = null
@@ -439,16 +467,17 @@
     return count
   }
 
+  function syncScroll(): void {
+    if (layer && textarea) {
+      layer.scrollLeft = textarea.scrollLeft
+      ;({ scrollLeft } = textarea)
+    }
+  }
+
   function cancelPendingHighlight(): void {
     cancelAnimationFrame(highlightFrame)
     clearTimeout(highlightTimer)
     highlightFrame = 0
-  }
-
-  function syncScroll(): void {
-    if (layer && textarea) {
-      layer.scrollLeft = textarea.scrollLeft
-    }
   }
 
   /**
@@ -466,6 +495,11 @@
       on(globalThis, 'scroll', hideHover, { passive: true }),
       on(globalThis, 'resize', hideHover),
       on(globalThis, 'keydown', endHover),
+      on(document, 'selectionchange', () => {
+        if (textarea && document.activeElement === textarea) {
+          onCaretMove(textarea.selectionStart)
+        }
+      }),
     ]
     return () => {
       destroyed = true
@@ -496,6 +530,63 @@
     class="layer shiki-magic-move-container"
     aria-hidden="true"
     bind:this={layer}></pre>
+  {#if inspector && !animating}
+    <div
+      class="inspector"
+      aria-hidden="true"
+    >
+      {#each inspector.breaks as line, index (index)}
+        <span
+          style:--line={line}
+          class="break"
+        ></span>
+      {/each}
+      <div
+        style:translate="{-scrollLeft}px 0"
+        class="inspector-scroll"
+      >
+        {#each inspector.bars as bar, index (index)}
+          <span
+            class={[
+              'bar',
+              bar.slot === null && 'bar-other',
+              highlightedSlot !== null && bar.slot !== highlightedSlot && 'dim',
+            ]}
+            style:--hue={getSlotHue(bar.slot)}
+            style:--column={bar.column}
+            style:--start={bar.start}
+            style:--end={bar.end}
+          ></span>
+        {/each}
+        {#each inspector.pills as pill (pill.line)}
+          <span
+            style:--column={pill.column}
+            style:--line={pill.line}
+            class="anchor"
+          >
+            {#each pill.items as item, index (index)}
+              <span
+                class={[
+                  'pill',
+                  item.kept && 'pill-kept',
+                  !item.kept && item.slot === null && 'pill-other',
+                  highlightedSlot !== null &&
+                    item.slot !== highlightedSlot &&
+                    'dim',
+                ]}
+                style:--hue={getSlotHue(item.slot)}
+              >
+                {#if item.name}
+                  <span class="pill-name">{item.name}</span>
+                {/if}
+                {item.label}
+              </span>
+            {/each}
+          </span>
+        {/each}
+      </div>
+    </div>
+  {/if}
   <textarea
     {...{ autocorrect: 'off' }}
     aria-describedby={describedby}
@@ -569,6 +660,107 @@
 
   .stale .layer {
     visibility: hidden;
+  }
+
+  /*
+   * Positions use the units of the code font: `lh` is one line and `ch` one
+   * column, as the text is monospaced.
+   */
+  .inspector {
+    position: absolute;
+    inset: 0;
+    font: var(--font-code);
+    pointer-events: none;
+  }
+
+  .inspector-scroll {
+    position: absolute;
+    inset: 0;
+  }
+
+  .anchor {
+    position: absolute;
+    inset-block-start: calc(var(--space-m) + var(--line) * 1lh);
+    inset-inline-start: calc(var(--space-m) + (var(--column) + 2) * 1ch);
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--space-4xs);
+    align-items: center;
+    block-size: 1lh;
+    white-space: nowrap;
+  }
+
+  .pill {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 0.4em;
+    align-items: baseline;
+    padding: 0.1em 0.55em;
+    font-size: 0.78em;
+    line-height: 1.4;
+    color: oklch(44% 0.14 var(--hue));
+    background: oklch(94% 0.045 var(--hue));
+    border-radius: var(--border-radius);
+
+    :global(:root[data-theme='dark']) & {
+      color: oklch(84% 0.1 var(--hue));
+      background: oklch(33% 0.06 var(--hue));
+    }
+  }
+
+  .pill-name {
+    color: var(--color-content-secondary);
+  }
+
+  .pill-other {
+    color: var(--color-content-secondary);
+    background: var(--color-background-tertiary);
+
+    :global(:root[data-theme='dark']) & {
+      color: var(--color-content-secondary);
+      background: var(--color-background-tertiary);
+    }
+  }
+
+  .pill-kept {
+    font-style: italic;
+    color: var(--color-content-tertiary);
+    outline: 1px dashed var(--color-border-primary);
+    outline-offset: -1px;
+    background: none;
+
+    :global(:root[data-theme='dark']) & {
+      color: var(--color-content-tertiary);
+      background: none;
+    }
+  }
+
+  .bar {
+    position: absolute;
+    inset-block-start: calc(var(--space-m) + var(--start) * 1lh + 0.15lh);
+    inset-inline-start: calc(
+      var(--space-m) + (var(--column) - 0.75) * 1ch - 1.5px
+    );
+    inline-size: 3px;
+    block-size: calc((var(--end) - var(--start) + 1) * 1lh - 0.3lh);
+    background: oklch(65% 0.15 var(--hue));
+    border-radius: 2px;
+  }
+
+  .bar-other {
+    background: var(--color-border-primary);
+  }
+
+  .break {
+    position: absolute;
+    inset-block-start: calc(var(--space-m) + var(--line) * 1lh);
+    inset-inline: var(--space-m) 0;
+    border-block-start: 1px dashed var(--color-content-tertiary);
+    opacity: 50%;
+  }
+
+  .dim {
+    opacity: 25%;
   }
 
   .input {

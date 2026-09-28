@@ -7,6 +7,9 @@ import { splitTokens } from 'shiki/core'
 import type { LintProblem } from './lint-config'
 
 export interface FrameOptions {
+  /**
+   * Shiki highlighter, or `null` to show plain text.
+   */
   highlighter: HighlighterCore | null
 
   /**
@@ -15,7 +18,15 @@ export interface FrameOptions {
    * elements without it.
    */
   words?: boolean
+
+  /**
+   * Ranges to underline.
+   */
   marks?: Mark[]
+
+  /**
+   * Shiki theme name.
+   */
   theme: string
 }
 
@@ -25,9 +36,24 @@ export interface FrameOptions {
  * from.
  */
 export interface Mark {
+  /**
+   * Index of the problem in the list the marks were made from.
+   */
   problem: number
+
+  /**
+   * The mark is a parse error.
+   */
   fatal: boolean
+
+  /**
+   * Offset of the first character.
+   */
   start: number
+
+  /**
+   * Offset after the last character.
+   */
   end: number
 }
 
@@ -43,9 +69,23 @@ export const CODE_SIZE_LIMIT = 100_000
  */
 let frameCount = 0
 
+/**
+ * Token of one line, as Shiki returns it or as plain text makes it.
+ */
 interface Token {
+  /**
+   * Text of the token.
+   */
   content: string
+
+  /**
+   * Offset of the token in the code.
+   */
   offset: number
+
+  /**
+   * Text color, when the code is highlighted.
+   */
   color?: string
 }
 

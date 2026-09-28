@@ -11,7 +11,11 @@ export interface LintClient {
    */
   update(input: LintInput, options?: { immediate?: boolean }): number
 
+  /**
+   * Stops the worker and all timers.
+   */
   destroy(): void
+
   /**
    * Drops the current result without linting, for example for code over the
    * size limit. Starts a new revision like `update`.
@@ -22,6 +26,11 @@ export interface LintClient {
    * Lints the latest input again, for example after it timed out.
    */
   retry(): void
+
+  /**
+   * Starts the worker. Called once the page is shown, not while the browser
+   * only prepares it in the background.
+   */
   start(): void
 }
 
@@ -32,9 +41,24 @@ export interface LintState {
    */
   result: { kind: 'timeout' } | LintResult | null
 
+  /**
+   * ESLint version the worker runs, once it is ready.
+   */
   eslintVersion: string | null
+
+  /**
+   * Why the worker could not load, when it failed.
+   */
   failure: string | null
+
+  /**
+   * Whether the worker is loading, ready or failed to load.
+   */
   status: LintStatus
+
+  /**
+   * Number of the latest input. Results for older numbers are dropped.
+   */
   revision: number
 
   /**
@@ -44,23 +68,53 @@ export interface LintState {
 }
 
 export interface LintClientOptions {
+  /**
+   * Called with the new state after every change.
+   */
   onChange(state: LintState): void
+
   /**
    * Creates the lint worker. Vite only bundles a worker created with a literal
    * `new Worker(new URL(...), { type: 'module' })`, so the caller owns it.
    */
   createWorker(): LintWorker
+
+  /**
+   * Milliseconds of loading after which the state reports `slow`.
+   */
   slowAfter?: number
+
+  /**
+   * Milliseconds a lint may run before the worker is stopped.
+   */
   timeout?: number
+
+  /**
+   * Milliseconds to wait after typing before the latest input is sent.
+   */
   delay?: number
 }
 
+/**
+ * The parts of `Worker` the client uses.
+ */
 interface LintWorker {
+  /**
+   * Listens for results and for load errors.
+   */
   addEventListener(
     type: 'message' | 'error',
     listener: (event: Event) => void,
   ): void
+
+  /**
+   * Sends a lint request.
+   */
   postMessage(message: LintRequest): void
+
+  /**
+   * Stops the worker at once.
+   */
   terminate(): void
 }
 

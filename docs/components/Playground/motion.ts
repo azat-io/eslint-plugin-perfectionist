@@ -18,10 +18,17 @@ export interface Animator {
     to: KeyedTokensInfo,
     signal: AbortSignal,
   ): Promise<void>
+
+  /**
+   * Shows a frame at once, without animation.
+   */
   replace(frame: KeyedTokensInfo): void
 }
 
 interface SettlingPromise extends Promise<void> {
+  /**
+   * Settles the promise from outside.
+   */
   resolve(): void
 }
 
