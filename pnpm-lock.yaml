@@ -95,6 +95,9 @@ importers:
       '@shikijs/langs':
         specifier: ^4.5.0
         version: 4.5.0
+      '@shikijs/magic-move':
+        specifier: 4.5.0
+        version: 4.5.0(shiki@4.5.0)(svelte@5.57.2(@typescript-eslint/types@8.71.2))
       '@shikijs/transformers':
         specifier: ^4.5.0
         version: 4.5.0
@@ -215,9 +218,6 @@ importers:
       shiki:
         specifier: ^4.5.0
         version: 4.5.0
-      shiki-magic-move:
-        specifier: ^1.4.0
-        version: 1.4.0(shiki@4.5.0)(svelte@5.57.2(@typescript-eslint/types@8.71.2))
       simple-git-hooks:
         specifier: ^2.14.0
         version: 2.14.0
@@ -2901,8 +2901,8 @@ packages:
     resolution: {integrity: sha512-wwBTqwduXSz0X4v9Qa2EWeFaYJEw1clCncWjoRNQRbVDu3SPRTRWucnouYapKj3b8Q+sk/41Vbc4B5c8nuYzLA==}
     engines: {node: '>=20'}
 
-  '@shikijs/magic-move@4.4.3':
-    resolution: {integrity: sha512-VTrZHsGLvi9HzpgV93plXY1JGAJJaQdxIfPAbWpYDRV/6pqndV4yuLfj6CasnHVxd80VSUb2CnKFidbjEa8H6A==}
+  '@shikijs/magic-move@4.5.0':
+    resolution: {integrity: sha512-5odJkSvOtEXb/BXg7YH0e5Cneao2iefa3Kdjg2zamAbuj63d5cdD4uqxqAKnu3it1dCEKadk8KDHGsNALjT6fA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: ^18.2.0 || ^19.0.0
@@ -7669,28 +7669,6 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shiki-magic-move@1.4.0:
-    resolution: {integrity: sha512-DDEv7khyBMAQghQEfQ6Ab3KZxT5ub6tVNe8+NcvglWauKVV9jxiRYC055DoiFLgvs6Hd9+LuBndeaSPNOSxgSg==}
-    engines: {node: '>=20'}
-    deprecated: shiki-magic-move is now @shikijs/magic-move, please migrate by renaming the package
-    peerDependencies:
-      react: ^18.2.0 || ^19.0.0
-      shiki: ^4.0.0
-      solid-js: ^1.9.1
-      svelte: ^5.0.0-0
-      vue: ^3.4.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      shiki:
-        optional: true
-      solid-js:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
-
   shiki@4.5.0:
     resolution: {integrity: sha512-OcRW72ngQvc+MSVWBRIovC/BTW589iUE/Vxav7VeM4RcY9MUjqB+IR6ILG1k9nuW6LiG/nct9uma4/MBtnZbmQ==}
     engines: {node: '>=20'}
@@ -11654,7 +11632,7 @@ snapshots:
     dependencies:
       '@shikijs/types': 4.5.0
 
-  '@shikijs/magic-move@4.4.3(shiki@4.5.0)(svelte@5.57.2(@typescript-eslint/types@8.71.2))':
+  '@shikijs/magic-move@4.5.0(shiki@4.5.0)(svelte@5.57.2(@typescript-eslint/types@8.71.2))':
     dependencies:
       diff-match-patch-es: 2.0.1
       ohash: 2.0.12
@@ -17572,13 +17550,6 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
-
-  shiki-magic-move@1.4.0(shiki@4.5.0)(svelte@5.57.2(@typescript-eslint/types@8.71.2)):
-    dependencies:
-      '@shikijs/magic-move': 4.4.3(shiki@4.5.0)(svelte@5.57.2(@typescript-eslint/types@8.71.2))
-    optionalDependencies:
-      shiki: 4.5.0
-      svelte: 5.57.2(@typescript-eslint/types@8.71.2)
 
   shiki@4.5.0:
     dependencies:

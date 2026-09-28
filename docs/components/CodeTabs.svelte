@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ShikiMagicMove } from 'shiki-magic-move/svelte'
+  import { ShikiMagicMove } from '@shikijs/magic-move/svelte'
   import { focusGroupKeyUX, startKeyUX } from 'keyux'
   import { onMount } from 'svelte'
 

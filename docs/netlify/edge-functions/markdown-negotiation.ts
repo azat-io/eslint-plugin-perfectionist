@@ -92,26 +92,6 @@ export const config: Config = {
   path: '/*',
 }
 
-function createMarkdownResponse(
-  markdownResponse: Response,
-  status = markdownResponse.status,
-  statusText = markdownResponse.statusText,
-): Response {
-  let headers = new Headers(markdownResponse.headers)
-  /* Fetch decodes the body, so the original framing headers no longer
-  describe it; the platform recomputes them. */
-  headers.delete('content-encoding')
-  headers.delete('content-length')
-  headers.set('content-type', MARKDOWN_CONTENT_TYPE)
-  headers.set('vary', appendHeaderValue(headers.get('vary'), 'Accept'))
-
-  return new Response(markdownResponse.body, {
-    statusText,
-    headers,
-    status,
-  })
-}
-
 function getMarkdownPath(pathname: string): string | null {
   if (pathname !== '/' && hasFileExtension(pathname)) {
     return null
@@ -133,6 +113,10 @@ function getMarkdownPath(pathname: string): string | null {
     return '/guide.md'
   }
 
+  if (pathname === '/playground') {
+    return '/playground.md'
+  }
+
   if (pathname === '/rules') {
     return '/rules.md'
   }
@@ -144,6 +128,26 @@ function getMarkdownPath(pathname: string): string | null {
   }
 
   return null
+}
+
+function createMarkdownResponse(
+  markdownResponse: Response,
+  status = markdownResponse.status,
+  statusText = markdownResponse.statusText,
+): Response {
+  let headers = new Headers(markdownResponse.headers)
+  /* Fetch decodes the body, so the original framing headers no longer
+  describe it; the platform recomputes them. */
+  headers.delete('content-encoding')
+  headers.delete('content-length')
+  headers.set('content-type', MARKDOWN_CONTENT_TYPE)
+  headers.set('vary', appendHeaderValue(headers.get('vary'), 'Accept'))
+
+  return new Response(markdownResponse.body, {
+    statusText,
+    headers,
+    status,
+  })
 }
 
 function mediaTypeQuality(acceptHeader: string, mediaType: string): number {

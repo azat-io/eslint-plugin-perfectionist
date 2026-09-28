@@ -36,6 +36,7 @@ If you use the [`sort-type-constituents`](https://typescript-eslint.io/rules/sor
 ## Try it out
 
 <CodeExample
+  rule="sort-union-types"
   alphabetical={dedent`
     type UserRole = 'admin' | 'editor' | 'guest' | 'user'
 
@@ -53,12 +54,12 @@ If you use the [`sort-type-constituents`](https://typescript-eslint.io/rules/sor
       | 'text'
   `}
   lineLength={dedent`
-    type UserRole = 'editor' | 'admin' | 'guest' | 'user'
+    type UserRole = 'editor' | 'guest' | 'admin' | 'user'
 
     type ResponseStatus =
+      | 'timeout'
       | 'success'
       | 'pending'
-      | 'timeout'
       | 'error'
 
     type InputType =

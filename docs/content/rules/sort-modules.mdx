@@ -29,6 +29,7 @@ By sorting module members systematically, confusion is minimized, and the code b
 ## Try it out
 
 <CodeExample
+  rule="sort-modules"
   alphabetical={dedent`
     enum CacheType {
       ALWAYS = 'ALWAYS',
@@ -77,11 +78,10 @@ By sorting module members systematically, confusion is minimized, and the code b
       NEVER = 'NEVER',
     }
 
-    export type FindAllUsersOutput = FindUserOutput[]
-
-    export interface FindUserInput {
+    export type FindUserOutput = {
       id: string
-      cache: CacheType
+      name: string
+      age: number
     }
 
     export type FindAllUsersInput = {
@@ -89,24 +89,25 @@ By sorting module members systematically, confusion is minimized, and the code b
       cache: CacheType
     }
 
-    export type FindUserOutput = {
+    export interface FindUserInput {
       id: string
-      name: string
-      age: number
+      cache: CacheType
     }
+
+    export type FindAllUsersOutput = FindUserOutput[]
 
     class Cache {
       // Some logic
     }
 
-    export function findUser(input: FindUserInput): FindUserOutput {
-      assertInputIsCorrect(input)
-      return _findUserByIds([input.id])[0]
-    }
-
     export function findAllUsers(input: FindAllUsersInput): FindAllUsersOutput {
       assertInputIsCorrect(input)
       return _findUserByIds(input.ids)
+    }
+
+    export function findUser(input: FindUserInput): FindUserOutput {
+      assertInputIsCorrect(input)
+      return _findUserByIds([input.id])[0]
     }
 
     function assertInputIsCorrect(input: FindUserInput | FindAllUsersInput): void {

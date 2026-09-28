@@ -46,6 +46,9 @@ Sorting imports and properties in software development offers numerous benefits:
 
 See [docs](https://perfectionist.dev).
 
+Try it on your own code in the
+[Playground](https://perfectionist.dev/playground).
+
 ### Alphabetical Sorting
 
 <picture>

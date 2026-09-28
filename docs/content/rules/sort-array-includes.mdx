@@ -23,6 +23,7 @@ By keeping arrays sorted, developers can quickly scan and verify the values, mak
 ## Try it out
 
 <CodeExample
+  rule="sort-array-includes"
   alphabetical={dedent`
     const getProductCategories = (product) => {
       if ([
@@ -40,12 +41,12 @@ By keeping arrays sorted, developers can quickly scan and verify the values, mak
         return 'Electronics'
       } else if ([
         'Adapter',
+        'Battery',
+        'Cable',
         'Case',
         'Charger',
-        'Screen Protector',
-        'Cable',
-        'Battery',
         'Memory Card',
+        'Screen Protector',
       ].includes(product.name)) {
         return 'Accessories'
       }
@@ -60,19 +61,19 @@ By keeping arrays sorted, developers can quickly scan and verify the values, mak
         'Headphones',
         'Keyboard',
         'Monitor',
+        'Tablet',
         'Laptop',
         'Router',
-        'Tablet',
-        'Drone',
         'Mouse',
+        'Drone',
       ].includes(product.name)) {
         return 'Electronics'
       } else if ([
         'Screen Protector',
         'Memory Card',
-        'Adapter',
         'Charger',
         'Battery',
+        'Adapter',
         'Cable',
         'Case',
       ].includes(product.name)) {
