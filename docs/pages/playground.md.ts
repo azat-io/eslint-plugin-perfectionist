@@ -21,7 +21,6 @@ export const GET: APIRoute = async () => {
     '- Perfectionist built from the `main` branch. It can be ahead of the latest release; the page shows the exact versions.',
     '- Either one rule or all rules of the recommended configs. Rules run with their default options and `settings.perfectionist` set to the chosen `type` and `order`.',
     "- With one rule, the Options field sets its options. It takes an options object, a rule entry such as `'perfectionist/sort-imports': ['error', { ... }]` or a whole `eslint.config.js`, and reads only plain values from it. `settings.perfectionist` from a pasted config is used too.",
-    '- Groups shows the group of each element next to the code, the order of the groups and the partitions. With all rules, it shows the block under the caret.',
     '',
     '## Link format',
     '',

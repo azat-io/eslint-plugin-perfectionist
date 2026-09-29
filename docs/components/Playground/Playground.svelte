@@ -11,7 +11,6 @@
     LintResult,
   } from './lint-config'
   import type { OptionsProblem } from './problem-text'
-  import type { InspectedBlock } from './inspection'
   import type { ExportInput } from './export-text'
   import type { DecodedState } from './url-state'
   import type { LintState } from './lint-client'
@@ -23,10 +22,8 @@
     decodeState,
     isSupported,
   } from './url-state'
-  import { toInspectorView, findBlockAt, shiftBlocks } from './inspector-view'
   import { getDefaultOptionsText, getConfigFile } from './config-snippet'
   import ExternalLinkIcon from '../../icons/external-link.svg?component'
-  import ColorPaletteIcon from '../../icons/color-palette.svg?component'
   import CopyDefaultIcon from '../../icons/copy-default.svg?component'
   import { INITIAL_LINT_STATE, createLintClient } from './lint-client'
   import RotateRightIcon from '../../icons/rotate-right.svg?component'
@@ -41,7 +38,6 @@
   import PlaygroundToolbar from './PlaygroundToolbar.svelte'
   import DeleteIcon from '../../icons/delete.svg?component'
   import PencilIcon from '../../icons/pencil.svg?component'
-  import PlaygroundLegend from './PlaygroundLegend.svelte'
   import PlaygroundEditor from './PlaygroundEditor.svelte'
   import AlertIcon from '../../icons/alert.svg?component'
   import { toOptionsErrors } from './problem-text'
@@ -241,29 +237,6 @@
   let sortRequested = $state(false)
   let undoing = $state(false)
   let copied = $state<CopyKind | null>(null)
-
-  /**
-   * The groups inspector is on.
-   */
-  let inspecting = $state(false)
-
-  /**
-   * Blocks of the last parsed code and that code. Edits move them until the
-   * next result.
-   */
-  let inspected = $state<{ blocks: InspectedBlock[]; code: string } | null>(
-    null,
-  )
-
-  /**
-   * Caret offset in the editor, or `null` before it was placed.
-   */
-  let caret = $state<number | null>(null)
-
-  /**
-   * Group entry under the pointer in the legend.
-   */
-  let highlightedSlot = $state<number | null>(null)
   let notice = $state<string | null>(null)
   let shareLink = $state('')
   let appleKeys = $state(false)
@@ -332,9 +305,6 @@
         lastResult = state.result
         lastResultCode = code
         lastResultSettings = settings
-        if (state.result.kind === 'result') {
-          inspected = { blocks: state.result.blocks, code }
-        }
         problems = getProblems(state.result)
         editor?.setProblems(problems)
         if (!sorting) {
@@ -397,11 +367,6 @@
   )
   let overrides = $derived(getOverrides())
   let optionsProblem = $derived(getOptionsProblem())
-  let inspectedBlocks = $derived(getInspectedBlocks())
-  let activeBlock = $derived(findBlockAt(inspectedBlocks, caret))
-  let inspectorView = $derived(
-    inspecting ? toInspectorView(code, inspectedBlocks) : null,
-  )
   let currentResult = $derived(
     lint.result?.kind === 'result' ? lint.result : null,
   )
@@ -1003,24 +968,6 @@
   }
 
   /**
-   * Returns the blocks the inspector shows: every block of the selected rule,
-   * or the block under the caret for all rules.
-   *
-   * @returns Blocks with offsets into the current code.
-   */
-  function getInspectedBlocks(): InspectedBlock[] {
-    if (!inspecting || !inspected || tooLarge) {
-      return []
-    }
-    let blocks = shiftBlocks(inspected.blocks, inspected.code, code)
-    if (rule) {
-      return blocks.filter(block => block.rule === rule)
-    }
-    let block = findBlockAt(blocks, caret)
-    return block ? [block] : []
-  }
-
-  /**
    * Tracks a click on a report link and copies the report text when it did not
    * fit into the link.
    */
@@ -1364,17 +1311,6 @@
   {/snippet}
 
   {#snippet diagnostics()}
-    {#if inspecting}
-      <PlaygroundLegend
-        onHighlight={(slot: number | null) => (highlightedSlot = slot)}
-        stale={lastResult !== null && lastResult.kind !== 'result'}
-        ready={inspected !== null}
-        blocks={inspectedBlocks}
-        active={activeBlock}
-        {rule}
-      />
-    {/if}
-
     {#if status.details.length > 0}
       <ul
         id={detailsId}
@@ -1416,23 +1352,6 @@
             inert={sorting}
           >
             <button
-              onclick={() => {
-                inspecting = !inspecting
-                highlightedSlot = null
-                track(
-                  inspecting ?
-                    'playground: groups shown'
-                  : 'playground: groups hidden',
-                )
-              }}
-              aria-pressed={inspecting}
-              class="tool"
-              type="button"
-            >
-              <ColorPaletteIcon class="tool-icon" />
-              Groups
-            </button>
-            <button
               onclick={clearCode}
               class="tool"
               type="button"
@@ -1452,9 +1371,6 @@
         </div>
 
         <PlaygroundEditor
-          onCaretMove={(offset: number) => (caret = offset)}
-          {highlightedSlot}
-          inspector={inspectorView}
           placeholder="Paste some code to sort…"
           describedby="{statusId} {detailsId}"
           showRules={rule === null}
@@ -1858,11 +1774,6 @@
 
     @media (pointer: coarse) {
       min-block-size: 44px;
-    }
-
-    &[aria-pressed='true'] {
-      color: var(--color-content-brand);
-      background: var(--color-overlay-brand);
     }
 
     &:focus-visible {
