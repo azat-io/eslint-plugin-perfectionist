@@ -619,6 +619,7 @@
     } catch {
       notice = `Couldn't copy the ${COPY_NAMES[kind]}.`
       announce(notice)
+      trackOnce('playground: copy failed')
       return
     }
     copied = kind
@@ -634,6 +635,45 @@
       message += ` ${LONG_LINK}`
     }
     announce(message)
+  }
+
+  /**
+   * Restores the state from the hash, or from the session copy when the hash is
+   * empty. Clicking Playground in the header reloads this page without the
+   * hash, and the session copy keeps the code.
+   */
+  async function restore(): Promise<void> {
+    let { hash } = location
+    let saved: string | null = null
+    try {
+      saved = sessionStorage.getItem(STORAGE_KEY)
+    } catch {
+      // Storage may be off. Without a hash, start from the example.
+    }
+    let source = hash.slice(1) || (saved ?? '')
+    let decoded = await decodeState(source, rules)
+    if (destroyed) {
+      return
+    }
+    /*
+     * This tab did not write the link, so it was shared. Links from the docs
+     * carry only the rule and the type.
+     */
+    if (source !== saved && (decoded.code !== null || decoded.options !== '')) {
+      trackOnce('playground: link opened')
+    }
+    applyState(decoded)
+    code = decoded.code ?? example
+    pristine = decoded.code === null
+    editorInitial = code
+    lastHash = hash
+    shareLink = location.href
+    phase = 'ready'
+    requestLint(true)
+    queueAnnouncement(true)
+    if (!decoded.broken) {
+      void writeHash()
+    }
   }
 
   /**
@@ -773,36 +813,36 @@
     queueAnnouncement(true)
   }
 
-  /**
-   * Restores the state from the hash, or from the session copy when the hash is
-   * empty. Clicking Playground in the header reloads this page without the
-   * hash, and the session copy keeps the code.
-   */
-  async function restore(): Promise<void> {
-    let { hash } = location
-    let source = hash.slice(1)
-    if (!source) {
-      try {
-        source = sessionStorage.getItem(STORAGE_KEY) ?? ''
-      } catch {
-        // Storage may be off. Start from the example.
+  function trackResult(result: NonNullable<LintState['result']>): void {
+    switch (result.kind) {
+      case 'config-error': {
+        if (result.source === 'playground') {
+          trackOnce('playground: internal error')
+        }
+
+        break
       }
-    }
-    let decoded = await decodeState(source, rules)
-    if (destroyed) {
-      return
-    }
-    applyState(decoded)
-    code = decoded.code ?? example
-    pristine = decoded.code === null
-    editorInitial = code
-    lastHash = hash
-    shareLink = location.href
-    phase = 'ready'
-    requestLint(true)
-    queueAnnouncement(true)
-    if (!decoded.broken) {
-      void writeHash()
+      case 'parse-error': {
+        trackOnce('playground: parse error')
+
+        break
+      }
+      case 'internal': {
+        trackOnce('playground: internal error')
+
+        break
+      }
+      case 'timeout': {
+        trackOnce('playground: timeout')
+
+        break
+      }
+      case 'crash': {
+        trackOnce('playground: crash')
+
+        break
+      }
+      // No default
     }
   }
 
@@ -901,6 +941,21 @@
     return null
   }
 
+  function applyState(decoded: DecodedState): void {
+    ;({ options: optionsText, order, rule, type } = decoded)
+    if (rule !== null && optionsText === '') {
+      optionsText = getDefaultOptionsText(rule)
+    }
+    optionsByRule = {}
+    notice = null
+    if (decoded.broken) {
+      notice = BROKEN_LINK
+      trackOnce('playground: broken link')
+    } else if (decoded.invalid) {
+      notice = UNKNOWN_SETTINGS
+    }
+  }
+
   function act(): void {
     let blocked = document.querySelector('dialog[open]') !== null
     if (blocked || !actionEnabled || performance.now() - settledAt < 400) {
@@ -935,41 +990,6 @@
     }
   }
 
-  function trackResult(result: NonNullable<LintState['result']>): void {
-    switch (result.kind) {
-      case 'parse-error': {
-        trackOnce('playground: parse error')
-
-        break
-      }
-      case 'timeout': {
-        trackOnce('playground: timeout')
-
-        break
-      }
-      case 'crash': {
-        trackOnce('playground: crash')
-
-        break
-      }
-      // No default
-    }
-  }
-
-  function applyState(decoded: DecodedState): void {
-    ;({ options: optionsText, order, rule, type } = decoded)
-    if (rule !== null && optionsText === '') {
-      optionsText = getDefaultOptionsText(rule)
-    }
-    optionsByRule = {}
-    notice = null
-    if (decoded.broken) {
-      notice = BROKEN_LINK
-    } else if (decoded.invalid) {
-      notice = UNKNOWN_SETTINGS
-    }
-  }
-
   /**
    * Tracks a click on a report link and copies the report text when it did not
    * fit into the link.
@@ -985,6 +1005,7 @@
       notice = CLIPBOARD_REPORT
     } catch {
       notice = CLIPBOARD_REPORT_FAILED
+      trackOnce('playground: copy failed')
     }
     announce(notice)
   }
@@ -1010,6 +1031,22 @@
     scheduleHashWrite()
     clearTimeout(idleTimer)
     idleTimer = setTimeout(() => queueAnnouncement(), IDLE_ANNOUNCE_DELAY)
+  }
+
+  /**
+   * Sends an event to Fathom. Its script loads with `defer`, so an event from
+   * before the page has loaded waits for the script.
+   *
+   * @param event - Event name.
+   */
+  function track(event: string): void {
+    if (globalThis.fathom || document.readyState === 'complete') {
+      globalThis.fathom?.trackEvent(event)
+    } else {
+      on(globalThis, 'load', () => globalThis.fathom?.trackEvent(event), {
+        once: true,
+      })
+    }
   }
 
   /**
@@ -1155,6 +1192,12 @@
     flushAnnouncement()
   }
 
+  function changeOrder(value: SortingOrder): void {
+    order = value
+    track('playground: order changed')
+    applySettings()
+  }
+
   function applySettings(): void {
     notice = null
     requestLint(true)
@@ -1195,23 +1238,15 @@
     announcement = { id: announcement.id + 1, text }
   }
 
-  function changeOrder(value: SortingOrder): void {
-    order = value
-    applySettings()
-  }
-
   function clearCode(): void {
     editor?.replaceAll('')
     queueAnnouncement(true)
   }
 
-  function track(event: string): void {
-    globalThis.fathom?.trackEvent(event)
-  }
-
   onMount(() => {
     if (!isSupported()) {
       phase = 'unsupported'
+      track('playground: unsupported browser')
       return
     }
     appleKeys = /Mac|iPad|iPhone|iPod/u.test(navigator.userAgent)
@@ -1375,6 +1410,7 @@
         </div>
 
         <PlaygroundEditor
+          onEdit={() => trackOnce('playground: code edited')}
           placeholder="Paste some code to sort…"
           describedby="{statusId} {detailsId}"
           showRules={rule === null}

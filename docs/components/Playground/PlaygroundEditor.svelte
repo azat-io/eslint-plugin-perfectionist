@@ -48,6 +48,12 @@
      * Code the editor starts with.
      */
     initial: string
+
+    /**
+     * Called when the user changes the code. Changes made through the editor
+     * API, such as Sort or Clear, do not count.
+     */
+    onEdit(): void
   }
 
   /**
@@ -82,7 +88,7 @@
    */
   const NATIVE_WRITE_LINE_LIMIT = 400
 
-  let { placeholder, describedby, showRules, initial, oninput }: Props =
+  let { placeholder, describedby, showRules, initial, oninput, onEdit }: Props =
     $props()
 
   let code = untrack(() => initial)
@@ -407,6 +413,7 @@
     marks = shiftMarks(marks, previous, code)
     scheduleHighlight(true)
     oninput(code)
+    onEdit()
   }
 
   function highlight(): void {
