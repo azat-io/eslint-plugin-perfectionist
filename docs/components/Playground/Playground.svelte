@@ -144,6 +144,9 @@
   const CLIPBOARD_REPORT =
     'The code, config and output are in your clipboard. Paste them into Code example.'
 
+  const CLIPBOARD_REPORT_FAILED =
+    "Couldn't copy the code, config and output. Use Copy as Markdown and paste it into Code example."
+
   /**
    * Copy actions the toolbar shows.
    */
@@ -971,18 +974,19 @@
    * Tracks a click on a report link and copies the report text when it did not
    * fit into the link.
    */
-  function openReport(): void {
+  async function openReport(): Promise<void> {
     track('playground: report clicked')
     let { body } = report
-    if (body) {
-      void navigator.clipboard
-        .writeText(body)
-        .catch(() => {})
-        .then(() => {
-          notice = CLIPBOARD_REPORT
-          announce(CLIPBOARD_REPORT)
-        })
+    if (!body) {
+      return
     }
+    try {
+      await navigator.clipboard.writeText(body)
+      notice = CLIPBOARD_REPORT
+    } catch {
+      notice = CLIPBOARD_REPORT_FAILED
+    }
+    announce(notice)
   }
 
   function requestLint(immediate = false): void {
