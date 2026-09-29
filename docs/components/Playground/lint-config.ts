@@ -2,9 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { ESLint, Linter, Rule } from 'eslint'
 
 import type { OptionsError } from './options-parser'
-import type { InspectedBlock } from './inspection'
 
-import { startInspection, stopInspection } from './inspection'
 import { getDefaultOptions } from './rule-options'
 import { readOptions } from './options-parser'
 import perfectionist from '../../../index'
@@ -99,7 +97,6 @@ export interface AppliedConfig {
  */
 export type LintResult = (
   | {
-      blocks: InspectedBlock[]
       problems: LintProblem[]
       notices: LintNotices
       remaining: number
@@ -394,9 +391,7 @@ function lintWithSetup(
   let config = createLintConfig(setup)
   try {
     capturedReports = []
-    startInspection()
     let messages = linter.verify(code, config, PLAYGROUND_FILENAME)
-    let blocks = stopInspection()
     let reports = capturedReports
     capturedReports = null
     let parseError = messages.find(isParseError)
@@ -445,7 +440,6 @@ function lintWithSetup(
         output: code,
         problems,
         notices,
-        blocks,
         jsx,
       }
     }
@@ -478,11 +472,9 @@ function lintWithSetup(
       kind: 'result',
       problems,
       notices,
-      blocks,
       jsx,
     }
   } catch (error) {
-    stopInspection()
     capturedReports = null
     capturedOptions = null
     return classifyError(toErrorMessage(error), setup.custom, () =>
