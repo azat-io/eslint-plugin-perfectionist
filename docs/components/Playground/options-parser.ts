@@ -185,10 +185,7 @@ function readProgram(
   if (entry) {
     return { options: readEntry(entry.value), settings: settingsValue }
   }
-  let others = entries
-    .keys()
-    .map(key => key.slice(pluginPrefix.length))
-    .toArray()
+  let others = Array.from(entries.keys(), key => key.slice(pluginPrefix.length))
   if (!settingsValue && others.length > 0) {
     return {
       message: `These are options for ${others.join(', ')}, not ${rule}. Pick that rule, or paste the options of ${rule}.`,

@@ -513,9 +513,10 @@ function withReportData(
   let { rightGroup, leftGroup, right, left } = report!.data
   let template = getMessageTemplate(report!.ruleId, report!.messageId)
   let used = new Set(
-    template
-      .matchAll(/\{\{\s*(?<key>\w+)\s*\}\}/gu)
-      .map(match => match.groups!['key']!),
+    Array.from(
+      template.matchAll(/\{\{\s*(?<key>\w+)\s*\}\}/gu),
+      match => match.groups!['key']!,
+    ),
   )
   let data = Object.fromEntries(
     Object.entries(report!.data).filter(([key]) => used.has(key)),
