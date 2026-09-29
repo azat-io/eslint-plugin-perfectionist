@@ -6,7 +6,7 @@
   --color-background-primary-hover: oklch(95% 0.008 280deg);
   --color-background-secondary: oklch(98% 0.008 280deg);
   --color-background-secondary-hover: oklch(96% 0.008 280deg);
-  --color-background-tertiary: oklch(94% 0.008 280deg);
+  --color-background-tertiary: oklch(96% 0.008 280deg);
   --color-background-inverse: oklch(92% 0.008 280deg);
   --color-background-inverse-hover: oklch(87% 0 0deg);
   --color-background-selection: oklch(44.8% 0.211 281deg / 99%);
@@ -45,7 +45,7 @@
     --color-background-primary-hover: oklch(28% 0.008 275deg);
     --color-background-secondary: oklch(25.25% 0.008 280deg);
     --color-background-secondary-hover: oklch(27.25% 0.008 275deg);
-    --color-background-tertiary: oklch(30% 0.008 280deg);
+    --color-background-tertiary: oklch(28% 0.008 280deg);
     --color-background-inverse: oklch(93% 0.008 280deg);
     --color-background-inverse-hover: oklch(89% 0.008 275deg);
     --color-background-selection: oklch(44.8% 0.211 281deg / 99%);
