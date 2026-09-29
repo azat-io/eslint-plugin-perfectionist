@@ -6,6 +6,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import type { SortingNode } from '../types/sorting-node'
 import type { Options } from './sort-switch-case/types'
 
+import { buildCaseBlockComparatorByOptionsComputer } from './sort-switch-case/build-case-block-comparator-by-options-computer'
 import { defaultComparatorByOptionsComputer } from '../utils/compare/default-comparator-by-options-computer'
 import { makeSingleNodeCommentAfterFixes } from '../utils/make-single-node-comment-after-fixes'
 import { buildCommonJsonSchemas } from '../utils/json-schemas/common-json-schemas'
@@ -24,6 +25,10 @@ import { complete } from '../utils/complete'
 
 interface SortSwitchCaseSortingNode extends SortingNode<TSESTree.SwitchCase> {
   isDefaultClause: boolean
+}
+
+interface SortSwitchCaseBlock extends SortSwitchCaseSortingNode {
+  cases: SortSwitchCaseSortingNode[]
 }
 
 const ORDER_ERROR_ID = 'unexpectedSwitchCaseOrder'
@@ -50,7 +55,6 @@ export default createEslintRule<Options, MessageId>({
       let settings = getSettings(context.settings)
 
       let options = complete(context.options.at(0), settings, defaultOptions)
-      let defaultComparator = defaultComparatorByOptionsComputer(options)
 
       validateCustomSortConfig(options)
 
@@ -208,59 +212,47 @@ export default createEslintRule<Options, MessageId>({
       }
 
       /* Ensure case blocks are in the correct order. */
-      let sortingNodeGroupsForBlockSort = reduceCaseSortingNodes(
+      let caseBlocks: SortSwitchCaseBlock[] = reduceCaseSortingNodes(
         sortingNodes,
         caseNode => caseHasBreakOrReturn(caseNode.node),
-      )
+      ).map(cases => ({
+        ...cases[0]!,
+        isDefaultClause: cases.some(caseNode => caseNode.isDefaultClause),
+        cases,
+      }))
       /**
        * If the last case does not have a return/break, leave its group at its
        * place.
        */
-      let lastNodeGroup = sortingNodeGroupsForBlockSort.at(-1)
-      let lastBlockCaseShouldStayInPlace = !caseHasBreakOrReturn(
-        lastNodeGroup!.at(-1)!.node,
-      )
-      let sortedSortingNodeGroupsForBlockSort = [
-        ...sortingNodeGroupsForBlockSort,
-      ]
-        .toSorted((a, b) => {
-          if (lastBlockCaseShouldStayInPlace) {
-            if (a === lastNodeGroup) {
-              return 1
-            }
-            /* v8 ignore if -- @preserve last element might never be b. */
-            if (b === lastNodeGroup) {
-              return -1
-            }
-          }
-
-          if (a.some(node => node.isDefaultClause)) {
-            return 1
-          }
-          if (b.some(node => node.isDefaultClause)) {
-            return -1
-          }
-
-          return defaultComparator(a.at(0)!, b.at(0)!)
-        })
-        .flat()
-      let sortingNodeGroupsForBlockSortFlat =
-        sortingNodeGroupsForBlockSort.flat()
+      let lastBlock = caseBlocks.at(-1)!
+      let lastBlockToKeepInPlace =
+        caseHasBreakOrReturn(lastBlock.cases.at(-1)!.node) ? null : lastBlock
+      let sortedBlocks = sortNodes({
+        comparatorByOptionsComputer: buildCaseBlockComparatorByOptionsComputer({
+          lastBlockToKeepInPlace,
+          options,
+        }),
+        ignoreEslintDisabledNodes: false,
+        nodes: caseBlocks,
+        options,
+      })
+      let blockIndexMap = createNodeIndexMap(sortedBlocks)
       let getBlockFix = createFixProvider({
-        sortedNodes: sortedSortingNodeGroupsForBlockSort,
-        nodes: sortingNodeGroupsForBlockSortFlat,
+        sortedNodes: sortedBlocks.flatMap(block => block.cases),
+        nodes: sortingNodes,
         sourceCode,
       })
-      pairwise(sortingNodeGroupsForBlockSortFlat, (left, right) => {
-        if (!left) {
+      pairwise(caseBlocks, (leftBlock, rightBlock) => {
+        if (!leftBlock) {
           return
         }
 
-        let indexOfLeft = sortedSortingNodeGroupsForBlockSort.indexOf(left)
-        let indexOfRight = sortedSortingNodeGroupsForBlockSort.indexOf(right)
-        if (indexOfLeft < indexOfRight) {
+        if (blockIndexMap.get(leftBlock)! < blockIndexMap.get(rightBlock)!) {
           return
         }
+
+        let left = leftBlock.cases.at(-1)!
+        let right = rightBlock.cases[0]!
         context.report({
           fix: fixer =>
             hasUnsortedNodes ?

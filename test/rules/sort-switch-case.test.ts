@@ -3127,6 +3127,26 @@ describe('sort-switch-case', () => {
       })
     })
 
+    it('preserves block order when only the fallback sort differs', async () => {
+      await valid({
+        options: [
+          {
+            fallbackSort: { type: 'alphabetical' },
+            type: 'line-length',
+            order: 'asc',
+          },
+        ],
+        code: dedent`
+          switch (value) {
+            case 'b':
+              break
+            case 'a':
+              break
+          }
+        `,
+      })
+    })
+
     it('sorts even when literals share the same runtime value', async () => {
       await invalid({
         output: dedent`
