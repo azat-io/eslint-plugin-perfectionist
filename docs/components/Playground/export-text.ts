@@ -251,7 +251,7 @@ function toTestCode(text: string): string {
 function fence(text: string, lang: string): string {
   let longest = Math.max(
     0,
-    ...text.matchAll(/`+/gu).map(match => match[0].length),
+    ...Array.from(text.matchAll(/`+/gu), match => match[0].length),
   )
   let marks = '`'.repeat(Math.max(3, longest + 1))
   return [`${marks}${lang}`, text.replace(/\n$/u, ''), marks].join('\n')
