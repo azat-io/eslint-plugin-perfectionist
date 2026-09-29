@@ -124,10 +124,6 @@
 </div>
 
 <style>
-  /*
-   * Hidden unless open. Browsers without popovers drop the second rule, so the
-   * tooltip never shows there.
-   */
   .tooltip {
     position: fixed;
     inset: auto;
@@ -143,9 +139,7 @@
     background: var(--color-background-tertiary);
     border: 1px solid var(--color-border-primary);
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 16px var(--color-overlay-primary);
-
-    /* Group chips have the tooltip's background by default. */
+    box-shadow: 0 3px 8px var(--color-overlay-primary);
     --group-background: var(--color-background-primary);
 
     @media (prefers-reduced-motion: no-preference) {
