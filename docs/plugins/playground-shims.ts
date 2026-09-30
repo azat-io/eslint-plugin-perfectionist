@@ -9,7 +9,6 @@ interface BuildInfo {
   commit: string | null
   typescript: string
   release: boolean
-  parser: string
 }
 
 let builtinModulesId = 'virtual:playground-builtin-modules'
@@ -127,7 +126,6 @@ function readBuildInfo(): BuildInfo {
   return {
     release:
       runGit(['describe', '--tags', '--exact-match']) === `v${perfectionist}`,
-    parser: readVersion('@typescript-eslint/parser/package.json'),
     typescript: readVersion('typescript/package.json'),
     perfectionist,
     commit,

@@ -213,7 +213,7 @@ export function getSettingsSnippet(
   type: SortingType,
   order: SortingOrder,
 ): string {
-  return `settings: { perfectionist: ${formatFlat({ order, type })} }`
+  return `settings: { perfectionist: ${formatFlat(pickSorting({ order, type }))} }`
 }
 
 /**

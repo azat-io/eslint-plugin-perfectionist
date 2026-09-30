@@ -168,10 +168,10 @@ export type WorkerMessage =
       kind: 'ready'
     }
 
-export type LintRequest = Omit<LintConfigOptions, 'parser'> & {
+export type LintRequest = {
   code: string
   id: number
-}
+} & LintConfigOptions
 
 export type SortingType = 'alphabetical' | 'line-length' | 'natural'
 
@@ -195,35 +195,6 @@ interface LintNotices {
    * example from an `eslint-disable` comment copied from another project.
    */
   foreignRules: number
-}
-
-interface LintConfigOptions {
-  /**
-   * TypeScript parser.
-   */
-  parser: Linter.Parser
-
-  /**
-   * Rule name without the plugin prefix, or `null` for every rule of the
-   * recommended configs.
-   */
-  rule: string | null
-
-  /**
-   * Sorting order from the controls.
-   */
-  order: SortingOrder
-
-  /**
-   * Sorting type from the controls.
-   */
-  type: SortingType
-
-  /**
-   * Text of the Options field. It sets the options of a single rule and may add
-   * shared settings.
-   */
-  options: string
 }
 
 /**
@@ -254,6 +225,30 @@ interface RuleSetup {
    * The Options field set options or settings.
    */
   custom: boolean
+}
+
+interface LintConfigOptions {
+  /**
+   * Rule name without the plugin prefix, or `null` for every rule of the
+   * recommended configs.
+   */
+  rule: string | null
+
+  /**
+   * Sorting order from the controls.
+   */
+  order: SortingOrder
+
+  /**
+   * Sorting type from the controls.
+   */
+  type: SortingType
+
+  /**
+   * Text of the Options field. It sets the options of a single rule and may add
+   * shared settings.
+   */
+  options: string
 }
 
 type LintOutcome =

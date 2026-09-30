@@ -141,7 +141,7 @@ export function readOptions(
       return readProgram(program, rule, reading)
     } catch (error) {
       if (error instanceof UnsupportedValueError) {
-        return toNodeError(error.message, error.node, reading)
+        return toFieldError(error.message, error.node.loc.start, reading)
       }
       throw error
     }
@@ -389,21 +389,26 @@ function* walk(node: TSESTree.Node): Generator<TSESTree.Node> {
 }
 
 /**
- * Moves a position in the wrapped text to the Options field.
+ * Builds an error at a position in the wrapped text, moved to the Options
+ * field.
  *
- * @param error - Error with a position in the parsed text.
+ * @param message - What is wrong.
+ * @param start - 1-based line and 0-based column in the parsed text.
  * @param reading - How the text was wrapped.
- * @returns Error with a position in the field.
+ * @returns Error with a 1-based position in the field.
  */
-function toFieldPosition(error: OptionsError, reading: Reading): OptionsError {
-  let { position } = error
-  if (!position) {
-    return error
-  }
+function toFieldError(
+  message: string,
+  start: { column: number; line: number },
+  reading: Reading,
+): OptionsError {
   let shift = reading.prefix.split('\n').length - 1
   return {
-    ...error,
-    position: { ...position, line: Math.max(1, position.line - shift) },
+    position: {
+      line: Math.max(1, start.line - shift),
+      column: start.column + 1,
+    },
+    message,
   }
 }
 
@@ -421,15 +426,6 @@ function findProperty(
   )
 }
 
-function toSyntaxError(error: unknown, reading: Reading): OptionsError {
-  let message = error instanceof Error ? error.message : String(error)
-  let start = getErrorStart(error)
-  return toFieldPosition(
-    { position: { column: start.column + 1, line: start.line }, message },
-    reading,
-  )
-}
-
 function readSettings(property: TSESTree.Property): Record<string, unknown> {
   let value = evaluate(property.value)
   if (!isObject(value)) {
@@ -441,28 +437,16 @@ function readSettings(property: TSESTree.Property): Record<string, unknown> {
   return value
 }
 
-function toNodeError(
-  message: string,
-  node: TSESTree.Node,
-  reading: Reading,
-): OptionsError {
-  return toFieldPosition(
-    {
-      position: {
-        column: node.loc.start.column + 1,
-        line: node.loc.start.line,
-      },
-      message,
-    },
-    reading,
-  )
-}
-
 function getExpression(program: TSESTree.Program): TSESTree.Node | null {
   let [statement] = program.body
   return statement?.type === AST_NODE_TYPES.ExpressionStatement ?
       unwrap(statement.expression)
     : null
+}
+
+function toSyntaxError(error: unknown, reading: Reading): OptionsError {
+  let message = error instanceof Error ? error.message : String(error)
+  return toFieldError(message, getErrorStart(error), reading)
 }
 
 function isTypeAssertion(
