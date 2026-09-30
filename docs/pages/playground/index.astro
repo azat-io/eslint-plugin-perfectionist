@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content'
 import { Code } from 'astro:components'
 
+import PlaygroundSkeleton from '../../components/Playground/PlaygroundSkeleton.svelte'
 import Playground from '../../components/Playground/Playground.svelte'
 import { extractExampleCode } from '../../utils/mdx-to-markdown'
 import Sidebar from '../../components/Sidebar/Sidebar.astro'
@@ -15,7 +16,6 @@ import Html from '../../components/Html.astro'
 import Body from '../../components/Body.astro'
 import { DEMO_EXAMPLE } from '../../data/demo'
 
-let initialLines = DEMO_EXAMPLE.initial.split('\n').length
 let rules = (await getCollection('rules')).toSorted((first, second) =>
   first.id.localeCompare(second.id),
 )
@@ -63,13 +63,10 @@ for (let rule of rules) {
           client:only="svelte"
           {examples}
         >
-          <div
-            style={`--lines: ${initialLines}`}
-            class="skeleton"
+          <PlaygroundSkeleton
+            code={DEMO_EXAMPLE.initial}
             slot="fallback"
           >
-            <div class="skeleton-toolbar"></div>
-            <div class="skeleton-card"></div>
             <noscript>
               <p>The Playground needs JavaScript.</p>
               <Code
@@ -78,7 +75,7 @@ for (let rule of rules) {
                 lang="tsx"
               />
             </noscript>
-          </div>
+          </PlaygroundSkeleton>
         </Playground>
       </Container>
     </main>
@@ -101,63 +98,5 @@ for (let rule of rules) {
    */
   :global(html) {
     scroll-padding-block-end: 6rem;
-  }
-
-  /*
-   * Sizes match the mounted Playground: toolbar rows above the card, and the
-   * card header and action strip around the code.
-   */
-  .skeleton {
-    @media (width >= 1200px) {
-      display: grid;
-      grid-template-columns: [editor] minmax(0, 1fr) [side] clamp(
-          22rem,
-          34%,
-          26rem
-        );
-      gap: var(--space-l);
-      align-items: start;
-    }
-  }
-
-  .skeleton-toolbar {
-    block-size: 6.25rem;
-
-    @media (width < 900px) {
-      block-size: 8.75rem;
-    }
-
-    @media (width < 800px) {
-      block-size: 13rem;
-    }
-
-    @media (width >= 1200px) {
-      grid-row: 1;
-      grid-column: side;
-    }
-  }
-
-  .skeleton-card {
-    block-size: calc(var(--lines) * 1lh + var(--space-m) * 2 + 7.25rem);
-    font: var(--font-code);
-    background: var(--color-code-background);
-    border: 1px solid var(--color-border-primary);
-    border-radius: var(--border-radius);
-
-    @media (width < 800px), (pointer: coarse) {
-      font: normal 1rem / 1.7 var(--font-family-code);
-    }
-
-    @media (width >= 1200px) {
-      grid-row: 1;
-      grid-column: editor;
-    }
-  }
-
-  .skeleton-toolbar,
-  .skeleton-card {
-    @media (scripting: none) {
-      display: none;
-    }
   }
 </style>

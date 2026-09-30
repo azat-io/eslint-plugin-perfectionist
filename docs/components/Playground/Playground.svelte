@@ -30,6 +30,7 @@
   import { toIssueBody, toMarkdown, toRuleTest } from './export-text'
   import CopyCopiedIcon from '../../icons/copy-copied.svg?component'
   import RotateLeftIcon from '../../icons/rotate-left.svg?component'
+  import PlaygroundSkeleton from './PlaygroundSkeleton.svelte'
   import PlaygroundProblems from './PlaygroundProblems.svelte'
   import SparkleIcon from '../../icons/sparkle.svg?component'
   import SpinnerIcon from '../../icons/spinner.svg?component'
@@ -119,11 +120,6 @@
   }
 
   /**
-   * Copy actions the toolbar shows.
-   */
-  type ShareKind = 'markdown' | 'config' | 'link' | 'test'
-
-  /**
    * Texts the Playground can copy.
    */
   type CopyKind = keyof typeof COPY_NAMES
@@ -146,16 +142,6 @@
 
   const CLIPBOARD_REPORT_FAILED =
     "Couldn't copy the code, config and output. Use Copy as Markdown and paste it into Code example."
-
-  /**
-   * Copy actions the toolbar shows.
-   */
-  const SHARE_KINDS = new Set<CopyKind | null>([
-    'markdown',
-    'config',
-    'link',
-    'test',
-  ])
 
   /**
    * What each copy action copies, as named in its messages.
@@ -199,7 +185,7 @@
 
   /**
    * From this width the controls and the problems move to a column next to the
-   * editor. Keep it in sync with the skeleton styles.
+   * editor. Keep it in sync with PlaygroundSkeleton.
    */
   const WIDE_QUERY = '(width >= 1200px)'
 
@@ -390,7 +376,7 @@
   function describe(): Status {
     if (tooLarge) {
       return {
-        text: 'This code is too large for the Playground (100 KB max).',
+        text: `This code is too large for the Playground (${CODE_SIZE_LIMIT / 1000} KB max).`,
         details: ['Highlighting, linting and the link are off.'],
         tone: 'error',
       }
@@ -731,10 +717,7 @@
   function getCopyText(kind: CopyKind, linked: boolean): string | null {
     switch (kind) {
       case 'markdown':
-        return toMarkdown({
-          ...getExportInput(),
-          link: linked ? location.href : null,
-        })
+        return toMarkdown(getExportInput(), linked ? location.href : null)
       case 'config':
         return configFile
       case 'link':
@@ -754,33 +737,6 @@
               code,
             })
           : null
-    }
-  }
-
-  /**
-   * Collects the state the exported texts describe.
-   *
-   * @returns Code, output, config, versions and link.
-   */
-  function getExportInput(): ExportInput {
-    let perfectionistVersion =
-      !buildInfo.release && buildInfo.commit ?
-        `${buildInfo.perfectionist} + main@${buildInfo.commit}`
-      : buildInfo.perfectionist
-    return {
-      versions: [
-        `ESLint ${lint.eslintVersion ?? 'unknown'}`,
-        `Perfectionist ${perfectionistVersion}`,
-        `TypeScript ${buildInfo.typescript}`,
-      ].join(', '),
-      error:
-        lint.result?.kind === 'crash' || lint.result?.kind === 'internal' ?
-          lint.result.message
-        : null,
-      link: shareLink.length <= LONG_LINK_LENGTH ? shareLink : null,
-      output: currentResult?.output ?? null,
-      config: configFile,
-      code,
     }
   }
 
@@ -843,6 +799,32 @@
         break
       }
       // No default
+    }
+  }
+
+  /**
+   * Collects the state the exported texts describe.
+   *
+   * @returns Code, output, config and versions.
+   */
+  function getExportInput(): ExportInput {
+    let perfectionistVersion =
+      !buildInfo.release && buildInfo.commit ?
+        `${buildInfo.perfectionist} + main@${buildInfo.commit}`
+      : buildInfo.perfectionist
+    return {
+      versions: [
+        `ESLint ${lint.eslintVersion ?? 'unknown'}`,
+        `Perfectionist ${perfectionistVersion}`,
+        `TypeScript ${buildInfo.typescript}`,
+      ].join(', '),
+      error:
+        lint.result?.kind === 'crash' || lint.result?.kind === 'internal' ?
+          lint.result.message
+        : null,
+      output: currentResult?.output ?? null,
+      config: configFile,
+      code,
     }
   }
 
@@ -1210,16 +1192,6 @@
   }
 
   /**
-   * Tells whether a copy action is one the toolbar shows.
-   *
-   * @param kind - Copy action, if any.
-   * @returns Whether the toolbar shows it.
-   */
-  function isShareKind(kind: CopyKind | null): kind is ShareKind {
-    return SHARE_KINDS.has(kind)
-  }
-
-  /**
    * Joins the lines of an ESLint message, which may hold line breaks and tabs.
    *
    * @param message - Message text.
@@ -1302,13 +1274,7 @@
 {#if phase === 'unsupported'}
   <p class="unsupported">The Playground needs a newer browser.</p>
 {:else if phase === 'loading'}
-  <div
-    style:--lines={initial.split('\n').length}
-    class="skeleton"
-  >
-    <div class="skeleton-toolbar"></div>
-    <div class="skeleton-card"></div>
-  </div>
+  <PlaygroundSkeleton code={initial} />
 {:else}
   {#snippet controls()}
     <div
@@ -1316,7 +1282,7 @@
       inert={sorting}
     >
       <PlaygroundToolbar
-        shared={isShareKind(copied) ? copied : null}
+        shared={copied === 'code' ? null : copied}
         inline={inlineRules}
         onShare={copy}
         configReady={lastResult?.kind !== 'options-error'}
@@ -1460,7 +1426,7 @@
                 Report the bug
                 <ExternalLinkIcon class="inline-icon" />
               </a>
-            {:else if !settling && code.trim() === ''}
+            {:else if !settling && (code.trim() === '' || showLoadExample)}
               <button
                 onclick={() => {
                   actionButton?.focus({ preventScroll: true })
@@ -1470,17 +1436,6 @@
                 type="button"
               >
                 {rule ? `Load the ${rule} example` : 'Load an example'}
-              </button>
-            {:else if !settling && showLoadExample}
-              <button
-                onclick={() => {
-                  actionButton?.focus({ preventScroll: true })
-                  loadExample()
-                }}
-                class="inline-action"
-                type="button"
-              >
-                Load the {rule} example
               </button>
             {/if}
           </p>
@@ -1596,53 +1551,6 @@
 {/if}
 
 <style>
-  .skeleton {
-    @media (width >= 1200px) {
-      display: grid;
-      grid-template-columns: [editor] minmax(0, 1fr) [side] clamp(
-          22rem,
-          34%,
-          26rem
-        );
-      gap: var(--space-l);
-      align-items: start;
-    }
-  }
-
-  .skeleton-toolbar {
-    block-size: 6.25rem;
-
-    @media (width >= 1200px) {
-      grid-row: 1;
-      grid-column: side;
-    }
-
-    @media (width < 900px) {
-      block-size: 8.75rem;
-    }
-
-    @media (width < 800px) {
-      block-size: 13rem;
-    }
-  }
-
-  .skeleton-card {
-    block-size: calc(var(--lines) * 1lh + var(--space-m) * 2 + 7.25rem);
-    font: var(--font-code);
-    background: var(--color-code-background);
-    border: 1px solid var(--color-border-primary);
-    border-radius: var(--border-radius);
-
-    @media (width < 800px), (pointer: coarse) {
-      font: normal 1rem / 1.7 var(--font-family-code);
-    }
-
-    @media (width >= 1200px) {
-      grid-row: 1;
-      grid-column: editor;
-    }
-  }
-
   .unsupported,
   .notice {
     padding: var(--space-xs) var(--space-s);

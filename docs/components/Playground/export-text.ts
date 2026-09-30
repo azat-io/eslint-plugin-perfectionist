@@ -18,11 +18,6 @@ export interface ExportInput {
   error: string | null
 
   /**
-   * Link to this state, or `null` when the code does not fit into a link.
-   */
-  link: string | null
-
-  /**
    * Versions the Playground runs, such as `ESLint 10.11.0, ...`.
    */
   versions: string
@@ -154,16 +149,14 @@ export function toRuleTest({
  * Builds a Markdown summary to paste into a chat or an issue comment.
  *
  * @param input - Playground state.
+ * @param link - Link to this state, or `null` when the code does not fit into a
+ *   link.
  * @returns Markdown text.
  */
-export function toMarkdown({
-  versions,
-  output,
-  config,
-  error,
-  link,
-  code,
-}: ExportInput): string {
+export function toMarkdown(
+  { versions, output, config, error, code }: ExportInput,
+  link: string | null,
+): string {
   return [
     `**ESLint Plugin Perfectionist Playground** (${versions})`,
     '',

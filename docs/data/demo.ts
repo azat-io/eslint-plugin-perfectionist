@@ -7,8 +7,7 @@ export interface DemoExample {
 }
 
 /**
- * Homepage demo shared by the demo block, the playground default example and
- * the documentation drift test.
+ * Homepage demo shared by the demo block and the playground default example.
  */
 export const DEMO_EXAMPLE: DemoExample = {
   alphabetical: dedent`

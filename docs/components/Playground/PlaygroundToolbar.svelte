@@ -32,7 +32,7 @@
     onTypeChange(type: SortingType): void
 
     /**
-     * Copies the link, a Markdown summary or a rule test.
+     * Copies the config, the link, a Markdown summary or a rule test.
      */
     onShare(kind: ShareKind): void
 
@@ -210,61 +210,34 @@
       {/if}
     </p>
   {/if}
+  {#snippet shareButton(
+    kind: ShareKind,
+    label: string,
+    copiedLabel: string,
+    Icon = CopyDefaultIcon,
+  )}
+    <button
+      disabled={kind === 'config' && !configReady}
+      onclick={() => onShare(kind)}
+      class="share-button"
+      type="button"
+    >
+      {#if shared === kind}
+        <CopyCopiedIcon class="copy-icon" />
+        {copiedLabel}
+      {:else}
+        <Icon class="copy-icon" />
+        {label}
+      {/if}
+    </button>
+  {/snippet}
+
   <div class="share">
-    <button
-      onclick={() => onShare('config')}
-      disabled={!configReady}
-      class="share-button"
-      type="button"
-    >
-      {#if shared === 'config'}
-        <CopyCopiedIcon class="copy-icon" />
-        Config copied
-      {:else}
-        <CopyDefaultIcon class="copy-icon" />
-        Copy config
-      {/if}
-    </button>
-    <button
-      onclick={() => onShare('link')}
-      class="share-button copy-link"
-      type="button"
-    >
-      {#if shared === 'link'}
-        <CopyCopiedIcon class="copy-icon" />
-        Link copied
-      {:else}
-        <LinkChainIcon class="copy-icon" />
-        Copy link
-      {/if}
-    </button>
-    <button
-      onclick={() => onShare('markdown')}
-      class="share-button"
-      type="button"
-    >
-      {#if shared === 'markdown'}
-        <CopyCopiedIcon class="copy-icon" />
-        Markdown copied
-      {:else}
-        <CopyDefaultIcon class="copy-icon" />
-        Copy as Markdown
-      {/if}
-    </button>
+    {@render shareButton('config', 'Copy config', 'Config copied')}
+    {@render shareButton('link', 'Copy link', 'Link copied', LinkChainIcon)}
+    {@render shareButton('markdown', 'Copy as Markdown', 'Markdown copied')}
     {#if testReady}
-      <button
-        onclick={() => onShare('test')}
-        class="share-button"
-        type="button"
-      >
-        {#if shared === 'test'}
-          <CopyCopiedIcon class="copy-icon" />
-          Test copied
-        {:else}
-          <CopyDefaultIcon class="copy-icon" />
-          Copy as test
-        {/if}
-      </button>
+      {@render shareButton('test', 'Copy as test', 'Test copied')}
     {/if}
   </div>
 </div>

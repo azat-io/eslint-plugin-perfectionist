@@ -155,7 +155,7 @@ export function createLintClient({
   let worker: LintWorker | null = null
   let input: LintInput | null = null
   let inFlight: number | null = null
-  let delayTimer: Timer | null = null
+  let delayTimer: undefined | Timer
   let watchdog: undefined | Timer
   let slowTimer: undefined | Timer
 
@@ -244,16 +244,14 @@ export function createLintClient({
   return {
     update(nextInput, { immediate = false } = {}) {
       input = nextInput
-      if (delayTimer) {
-        clearTimeout(delayTimer)
-      }
-      delayTimer = null
+      clearTimeout(delayTimer)
+      delayTimer = undefined
       setState({ revision: state.revision + 1, result: null })
       if (immediate) {
         send()
       } else {
         delayTimer = setTimeout(() => {
-          delayTimer = null
+          delayTimer = undefined
           send()
         }, delay)
       }
@@ -261,17 +259,13 @@ export function createLintClient({
     },
     clear() {
       input = null
-      if (delayTimer) {
-        clearTimeout(delayTimer)
-      }
-      delayTimer = null
+      clearTimeout(delayTimer)
+      delayTimer = undefined
       setState({ revision: state.revision + 1, result: null })
     },
     destroy() {
-      if (delayTimer) {
-        clearTimeout(delayTimer)
-      }
-      delayTimer = null
+      clearTimeout(delayTimer)
+      delayTimer = undefined
       stop()
     },
     retry() {

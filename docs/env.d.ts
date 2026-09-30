@@ -19,7 +19,6 @@ declare module 'virtual:playground-build-info' {
     commit: string | null
     typescript: string
     release: boolean
-    parser: string
   }
   export default buildInfo
 }
