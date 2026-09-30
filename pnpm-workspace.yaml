@@ -1,3 +1,11 @@
+configDependencies:
+  '@pnpm/plugin-trusted-deps': 0.2.1+sha512-eexZgdsCkalvvWOdtlhlLoMg5Kylqj7CjeAzhSshEi3Io3TJawdKNwRg10ObK0V4DSWNF0lP2ilobwUKUdoCyw==
+
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@azat-io/*'
+
+onlyBuiltDependenciesFile: node_modules/.pnpm-config/@pnpm/plugin-trusted-deps/allow.json
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
@@ -5,10 +13,5 @@ allowBuilds:
   sharp: true
   simple-git-hooks: true
   unix-dgram: true
-
-configDependencies:
-  '@pnpm/plugin-trusted-deps': 0.2.1+sha512-eexZgdsCkalvvWOdtlhlLoMg5Kylqj7CjeAzhSshEi3Io3TJawdKNwRg10ObK0V4DSWNF0lP2ilobwUKUdoCyw==
-
-onlyBuiltDependenciesFile: node_modules/.pnpm-config/@pnpm/plugin-trusted-deps/allow.json
 
 sideEffectsCache: false
