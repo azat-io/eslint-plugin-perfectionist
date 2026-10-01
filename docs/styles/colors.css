@@ -6,6 +6,7 @@
   --color-background-primary-hover: oklch(95% 0.008 280deg);
   --color-background-secondary: oklch(98% 0.008 280deg);
   --color-background-secondary-hover: oklch(96% 0.008 280deg);
+  --color-background-tertiary: oklch(96% 0.008 280deg);
   --color-background-inverse: oklch(92% 0.008 280deg);
   --color-background-inverse-hover: oklch(87% 0 0deg);
   --color-background-selection: oklch(44.8% 0.211 281deg / 99%);
@@ -21,8 +22,11 @@
   --color-border-brand: oklch(44.7% 0.211 281deg);
   --color-overlay-brand: oklch(90% 0.211 281deg / 30%);
   --color-overlay-primary: oklch(20% 0.008 280deg / 30%);
+  --color-status-danger: oklch(55% 0.2 27deg);
+  --color-status-success: oklch(50% 0.12 155deg);
   --color-code-foreground: oklch(38% 0.02 281deg);
   --color-code-background: oklch(97% 0.008 281deg);
+  --color-code-selection: oklch(44.7% 0.211 281deg / 20%);
   --color-code-token-constant: oklch(35% 0.118 209deg);
   --color-code-token-string: oklch(35% 0.14 172deg);
   --color-code-token-comment: oklch(35% 0 0deg);
@@ -41,6 +45,7 @@
     --color-background-primary-hover: oklch(28% 0.008 275deg);
     --color-background-secondary: oklch(25.25% 0.008 280deg);
     --color-background-secondary-hover: oklch(27.25% 0.008 275deg);
+    --color-background-tertiary: oklch(28% 0.008 280deg);
     --color-background-inverse: oklch(93% 0.008 280deg);
     --color-background-inverse-hover: oklch(89% 0.008 275deg);
     --color-background-selection: oklch(44.8% 0.211 281deg / 99%);
@@ -56,8 +61,11 @@
     --color-border-brand: oklch(44.7% 0.211 281deg);
     --color-overlay-brand: oklch(45% 0.211 281deg / 30%);
     --color-overlay-primary: oklch(20% 0.008 280deg / 30%);
+    --color-status-danger: oklch(70% 0.19 25deg);
+    --color-status-success: oklch(75% 0.15 155deg);
     --color-code-foreground: oklch(95% 0.02 281deg);
     --color-code-background: oklch(24% 0.008 281deg);
+    --color-code-selection: oklch(74.7% 0.211 281deg / 30%);
     --color-code-token-constant: oklch(75% 0.118 209deg);
     --color-code-token-string: oklch(75% 0.14 172deg);
     --color-code-token-comment: oklch(65% 0 0deg);

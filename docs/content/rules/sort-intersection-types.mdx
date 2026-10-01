@@ -40,16 +40,17 @@ Use an [ESLint disable comment](https://eslint.org/docs/latest/use/configure/rul
 ## Try it out
 
 <CodeExample
+  rule="sort-intersection-types"
   alphabetical={dedent`
-    type Employee = Address & ContactInfo & PersonalInfo & {
+    type Employee = {
       employeeId: string
       isActive: boolean
-    }
+    } & Address & ContactInfo & PersonalInfo
 
-    type TeamMember = Employee & {
+    type TeamMember = {
       teamId: string
       name: string
-    }
+    } & Employee
   `}
   lineLength={dedent`
     type Employee = {
@@ -68,10 +69,10 @@ Use an [ESLint disable comment](https://eslint.org/docs/latest/use/configure/rul
       isActive: boolean
     } & PersonalInfo & ContactInfo
 
-    type TeamMember = {
+    type TeamMember = Employee & {
       teamId: string
       name: string
-    } & Employee
+    }
   `}
   client:load
   lang="tsx"

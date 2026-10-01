@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { ShikiMagicMove } from 'shiki-magic-move/svelte'
+  import { ShikiMagicMove } from '@shikijs/magic-move/svelte'
   import { onMount } from 'svelte'
 
+  import ArrowRightIcon from '../icons/arrow-right.svg?component'
   import { shiki } from '../stores/shiki'
   import Button from './Button.svelte'
 
@@ -9,6 +10,12 @@
   export let alphabetical: string
   export let lineLength: string
   export let lang: string
+
+  /**
+   * Rule the example belongs to, for the Playground link. Pages without a rule,
+   * such as the homepage, leave it out.
+   */
+  export let rule: string | null = null
 
   type Type = 'alphabetical' | 'lineLength' | 'initial'
 
@@ -22,6 +29,31 @@
 
   let selected = 'initial' as Type
   $: ({ highlighter, theme } = $shiki)
+  $: playgroundHref = getPlaygroundHref(rule, selected)
+
+  /**
+   * Links to the same example in the Playground. The Playground knows the
+   * example of every rule, so the link carries only the rule and the sorting
+   * type.
+   *
+   * @param ruleId - Rule of the example, if any.
+   * @param type - Selected variant.
+   * @returns Playground URL.
+   */
+  function getPlaygroundHref(ruleId: string | null, type: Type): string {
+    let parameters = []
+    if (ruleId) {
+      parameters.push(`rule=${ruleId}`)
+    }
+    if (type === 'lineLength') {
+      parameters.push('type=line-length')
+    }
+    /*
+     * The hash is never empty: without it the Playground restores the last
+     * state of the tab instead of this example.
+     */
+    return `/playground#${parameters.length > 0 ? parameters.join('&') : 'v=1'}`
+  }
 
   onMount(() => {
     mounted = true
@@ -82,6 +114,20 @@
     class="code-loader"
   ></div>
 {/if}
+<p class="playground">
+  <a
+    on:click={() => {
+      if (globalThis.fathom) {
+        globalThis.fathom.trackEvent('demo: open playground')
+      }
+    }}
+    href={playgroundHref}
+    class="playground-link"
+  >
+    Open in Playground
+    <ArrowRightIcon class="playground-icon" />
+  </a>
+</p>
 
 <style>
   .buttons-wrapper {
@@ -108,6 +154,25 @@
   @container (inline-size >= 400px) {
     .buttons {
       flex-direction: row;
+    }
+  }
+
+  .playground {
+    margin-block: var(--space-s) 0;
+    font: var(--font-xs);
+    text-align: end;
+  }
+
+  .playground-link {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: var(--space-4xs);
+    align-items: center;
+
+    & :global(.playground-icon) {
+      flex-shrink: 0;
+      inline-size: 1.1em;
+      block-size: 1.1em;
     }
   }
 

@@ -28,6 +28,7 @@ and reducing the likelihood of errors.
 ## Try it out
 
 <CodeExample
+  rule="sort-arrays"
   alphabetical={dedent`
     const ELECTRONICS = [
       'Drone',
@@ -59,19 +60,19 @@ and reducing the likelihood of errors.
       'Headphones',
       'Keyboard',
       'Monitor',
+      'Tablet',
       'Laptop',
       'Router',
-      'Tablet',
-      'Drone',
       'Mouse',
+      'Drone',
     ] as const
 
     const ACCESSORIES = [
       'Screen Protector',
       'Memory Card',
-      'Adapter',
       'Charger',
       'Battery',
+      'Adapter',
       'Cable',
       'Case',
     ] as const
