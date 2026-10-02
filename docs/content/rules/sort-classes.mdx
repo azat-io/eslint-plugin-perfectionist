@@ -509,11 +509,13 @@ All members of the groups in the array will be sorted together as if they were p
 Predefined groups are characterized by a single selector and potentially multiple modifiers. You may enter modifiers in any order, but the selector must always come at the end.
 
 #### Constructors
+
 - Selector: `constructor`.
 - Modifiers: `protected`, `private`, `public`.
 - Example: `protected-constructor`, `private-constructor`, `public-constructor` or `constructor`.
 
 #### Methods
+
 - Selectors: `get-method`, `set-method`, `method`.
 - Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`, `optional`, `async`.
 - Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
@@ -525,6 +527,7 @@ The `abstract` modifier is incompatible with the `static`, `private` and `decora
 `constructor`, `get-method` and `set-method` elements will also be matched as `method`.
 
 #### Accessors
+
 - Selector: `accessor-property`.
 - Modifiers: `static`, `abstract`, `decorated`, `override`, `protected`, `private`, `public`.
 - Example: `private-static-accessor-property`, `protected-abstract-override-method` or `static-get-method`.
@@ -532,6 +535,7 @@ The `abstract` modifier is incompatible with the `static`, `private` and `decora
 The `abstract` modifier is incompatible with the `static`, `private` and `decorated` modifiers.
 
 #### Properties
+
 - Selectors: `function-property`, `property`.
 - Modifiers: `static`, `declare`, `abstract`, `decorated`, `override`, `readonly`, `protected`, `private`, `public`, `optional`, `async`.
 - Example: `readonly-decorated-property`.
@@ -546,11 +550,13 @@ As such, the `declare` and `abstract` modifiers are incompatible with this selec
 The `async` modifier is reserved for the `function-property` selector.
 
 #### Index-signatures
+
 - Selector: `index-signature`.
 - Modifiers: `static`, `readonly`.
 - Example: `static-readonly-index-signature`.
 
 #### Static-blocks
+
 - Selector: `static-block`.
 - Modifiers: No modifier available.
 - Example: `static-block`.
@@ -558,14 +564,17 @@ The `async` modifier is reserved for the `function-property` selector.
 #### Important notes
 
 ##### Scope of the `private` modifier
+
 The `private` modifier will currently match any of the following:
 - Elements with the `private` keyword.
 - Elements with their name starting with `#`.
 
 ##### Scope of the `public` modifier
+
 Elements that are not `protected` nor `private` will be matched with the `public` modifier, even if the keyword is not present.
 
 ##### The `unknown` group
+
 Members that don't fit into any group specified in the `groups` option will be placed in the `unknown` group. If the `unknown` group is not specified in the `groups` option,
 the members will remain in their original order.
 
