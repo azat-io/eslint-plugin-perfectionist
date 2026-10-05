@@ -6,17 +6,17 @@ importers:
   .:
     configDependencies:
       '@pnpm/plugin-trusted-deps':
-        specifier: 0.2.1
-        version: 0.2.1
+        specifier: latest
+        version: 0.2.2
 
 packages:
 
-  '@pnpm/plugin-trusted-deps@0.2.1':
-    resolution: {integrity: sha512-eexZgdsCkalvvWOdtlhlLoMg5Kylqj7CjeAzhSshEi3Io3TJawdKNwRg10ObK0V4DSWNF0lP2ilobwUKUdoCyw==}
+  '@pnpm/plugin-trusted-deps@0.2.2':
+    resolution: {integrity: sha512-+ZupiXKJhW2fbSilfyRp+wrAY54MKg+c0JWSFGdeb/y9bUoYN5u4XLOZ0Txk7O2bBa6NMhWrX5mwmsHP3/nm9Q==}
 
 snapshots:
 
-  '@pnpm/plugin-trusted-deps@0.2.1': {}
+  '@pnpm/plugin-trusted-deps@0.2.2': {}
 
 ---
 lockfileVersion: '9.0'
