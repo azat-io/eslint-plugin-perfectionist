@@ -427,6 +427,23 @@ export class Alphabet {
     return this.characters.map(({ value }) => value).join('')
   }
 
+  /**
+   * Reverses the alphabet.
+   *
+   * @example
+   *
+   * ```ts
+   * Alphabet.generateFrom('ab').reverse()
+   * // Returns 'ba'
+   * ```
+   *
+   * @returns - The same alphabet instance reversed.
+   */
+  public reverse(): this {
+    this.characters.reverse()
+    return this
+  }
+
   private placeCharacterBeforeOrAfter({
     characterBefore,
     characterAfter,
