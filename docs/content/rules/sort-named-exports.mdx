@@ -26,6 +26,7 @@ This rule ensures that named exports are organized in a predictable manner, maki
 ## Try it out
 
 <CodeExample
+  rule="sort-named-exports"
   alphabetical={dedent`
     export {
       calculateAge,
@@ -53,8 +54,8 @@ This rule ensures that named exports are organized in a predictable manner, maki
       calculateAge,
       generateUUID,
       formatDate,
-      debounce,
       throttle,
+      debounce,
     } from './utils'
 
     export {

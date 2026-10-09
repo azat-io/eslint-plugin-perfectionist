@@ -61,4 +61,10 @@ export let pages: ({ links: Page[] } & Page)[] = [
     title: 'Rules',
     url: '/rules',
   },
+  {
+    title: 'Playground',
+    url: '/playground',
+    redirect: true,
+    links: [],
+  },
 ]

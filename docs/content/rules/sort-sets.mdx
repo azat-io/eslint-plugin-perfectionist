@@ -23,6 +23,7 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
 ## Try it out
 
 <CodeExample
+  rule="sort-sets"
   alphabetical={dedent`
     const getProductCategories = (product) => {
       let electronics = new Set([
@@ -39,12 +40,12 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
       ])
       let accessories = new Set([
         'Adapter',
+        'Battery',
+        'Cable',
         'Case',
         'Charger',
-        'Screen Protector',
-        'Cable',
-        'Battery',
         'Memory Card',
+        'Screen Protector',
       ])
       if (electronics.has(product.name)) {
         return 'Electronics'
@@ -62,18 +63,18 @@ By keeping sets sorted, developers can quickly scan and verify the values, makin
         'Headphones',
         'Keyboard',
         'Monitor',
+        'Tablet',
         'Laptop',
         'Router',
-        'Tablet',
-        'Drone',
         'Mouse',
+        'Drone',
       ])
       let accessories = new Set([
         'Screen Protector',
         'Memory Card',
-        'Adapter',
         'Charger',
         'Battery',
+        'Adapter',
         'Cable',
         'Case',
       ])
