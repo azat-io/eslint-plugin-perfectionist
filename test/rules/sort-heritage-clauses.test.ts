@@ -3291,6 +3291,92 @@ describe('sort-heritage-clauses', () => {
           options: [{}],
         })
       })
+
+      it('honors a disable directive that carries a description', async () => {
+        await invalid({
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              // eslint-disable-next-line rule-to-test/sort-heritage-clauses -- Pinned.
+              A
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              // eslint-disable-next-line rule-to-test/sort-heritage-clauses -- Pinned.
+              A
+            {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
+          options: [{}],
+        })
+
+        await invalid({
+          output: dedent`
+            interface Interface extends
+              B,
+              C,
+              A // eslint-disable-line -- Pinned.
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              C,
+              B,
+              A // eslint-disable-line -- Pinned.
+            {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: { right: 'B', left: 'C' },
+            },
+          ],
+          options: [{}],
+        })
+
+        await invalid({
+          output: dedent`
+            interface Interface extends
+              A,
+              D,
+              /* eslint-disable rule-to-test/sort-heritage-clauses -- Pinned. */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-heritage-clauses -- Done. */
+              E
+            {}
+          `,
+          code: dedent`
+            interface Interface extends
+              D,
+              E,
+              /* eslint-disable rule-to-test/sort-heritage-clauses -- Pinned. */
+              C,
+              B,
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-heritage-clauses -- Done. */
+              A
+            {}
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedHeritageClausesOrder',
+              data: { right: 'A', left: 'B' },
+            },
+          ],
+          options: [{}],
+        })
+      })
     })
 
     describe('oxlint', () => {

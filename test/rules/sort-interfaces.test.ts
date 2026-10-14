@@ -8649,6 +8649,92 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          interface Interface {
+            b: string
+            c: string
+            // eslint-disable-next-line rule-to-test/sort-interfaces -- Pinned.
+            a: string
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            c: string
+            b: string
+            // eslint-disable-next-line rule-to-test/sort-interfaces -- Pinned.
+            a: string
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          interface Interface {
+            b: string
+            c: string
+            a: string // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            c: string
+            b: string
+            a: string // eslint-disable-line -- Pinned.
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          interface Interface {
+            a: string
+            d: string
+            /* eslint-disable rule-to-test/sort-interfaces -- Pinned. */
+            c: string
+            b: string
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-interfaces -- Done. */
+            e: string
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            d: string
+            e: string
+            /* eslint-disable rule-to-test/sort-interfaces -- Pinned. */
+            c: string
+            b: string
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-interfaces -- Done. */
+            a: string
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

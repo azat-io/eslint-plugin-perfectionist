@@ -9584,6 +9584,92 @@ describe('sort-object-types', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          type Type = {
+            b: string
+            c: string
+            // eslint-disable-next-line rule-to-test/sort-object-types -- Pinned.
+            a: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            c: string
+            b: string
+            // eslint-disable-next-line rule-to-test/sort-object-types -- Pinned.
+            a: string
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          type Type = {
+            b: string
+            c: string
+            a: string // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          type Type = {
+            c: string
+            b: string
+            a: string // eslint-disable-line -- Pinned.
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          type Type = {
+            a: string
+            d: string
+            /* eslint-disable rule-to-test/sort-object-types -- Pinned. */
+            c: string
+            b: string
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-object-types -- Done. */
+            e: string
+          }
+        `,
+        code: dedent`
+          type Type = {
+            d: string
+            e: string
+            /* eslint-disable rule-to-test/sort-object-types -- Pinned. */
+            c: string
+            b: string
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-object-types -- Done. */
+            a: string
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectTypesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

@@ -369,7 +369,7 @@ Specifies how to handle newlines between overload signatures and the implementat
 ### tsconfig
 
 <Important>
-  This option only has an impact with [`useExperimentalDependencyDetection: false`](#useexperimentaldependencydetection).
+  This option only has an impact with [`useExperimentalDependencyDetection: true`](#useexperimentaldependencydetection) (the default).
 </Important>
 
 <sub>
@@ -382,7 +382,10 @@ Specifies the TypeScript configuration used to read compiler options.
 - `rootDir` — Specifies the directory of the root `tsconfig.json` file (ex: `.`).
 - `filename` — Specifies the `tsconfig` filename to search for (by default: `tsconfig.json`).
 
-When set, the rule reads `emitDecoratorMetadata` from your tsconfig and treats decorator-metadata type references as dependencies.
+The rule treats decorator-metadata type references as dependencies only when
+`emitDecoratorMetadata` is enabled, since those are the only type references
+that survive compilation. When this option is set, the value is read from your
+tsconfig; otherwise it is assumed to be `true`.
 
 ### additionalModuleBlockTypes
 

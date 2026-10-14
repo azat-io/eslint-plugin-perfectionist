@@ -389,7 +389,9 @@ function analyzeModule({
       : null
     let dependenciesBySortingNode = computeDependenciesBySortingNode({
       emitDecoratorMetadata:
-        tsConfigOutput?.compilerOptions.emitDecoratorMetadata ?? false,
+        tsConfigOutput ?
+          (tsConfigOutput.compilerOptions.emitDecoratorMetadata ?? false)
+        : true,
       sortingNodes: sortingNodeGroups.flat(),
       dependencyDetection: 'hard',
       sourceCode,

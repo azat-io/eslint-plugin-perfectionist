@@ -1807,6 +1807,92 @@ describe('sort-import-attributes', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            b: 'b',
+            c: 'c',
+            // eslint-disable-next-line rule-to-test/sort-import-attributes -- Pinned.
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            c: 'c',
+            b: 'b',
+            // eslint-disable-next-line rule-to-test/sort-import-attributes -- Pinned.
+            a: 'a',
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            b: 'b',
+            c: 'c',
+            a: 'a', // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            c: 'c',
+            b: 'b',
+            a: 'a', // eslint-disable-line -- Pinned.
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import data from 'module' with {
+            a: 'a',
+            d: 'd',
+            /* eslint-disable rule-to-test/sort-import-attributes -- Pinned. */
+            c: 'c',
+            b: 'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-import-attributes -- Done. */
+            e: 'e',
+          }
+        `,
+        code: dedent`
+          import data from 'module' with {
+            d: 'd',
+            e: 'e',
+            /* eslint-disable rule-to-test/sort-import-attributes -- Pinned. */
+            c: 'c',
+            b: 'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-import-attributes -- Done. */
+            a: 'a',
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedImportAttributesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

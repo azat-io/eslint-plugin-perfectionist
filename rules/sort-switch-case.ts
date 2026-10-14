@@ -13,11 +13,11 @@ import { isConditionExpression } from './sort-switch-case/is-condition-expressio
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { reportErrors, ORDER_ERROR, RIGHT, LEFT } from '../utils/report-errors'
 import { createNodeIndexMap } from '../utils/create-node-index-map'
+import { createFixProvider } from '../utils/create-fix-provider'
 import { createEslintRule } from '../utils/create-eslint-rule'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { isSortable } from '../utils/is-sortable'
-import { makeFixes } from '../utils/make-fixes'
 import { sortNodes } from '../utils/sort-nodes'
 import { pairwise } from '../utils/pairwise'
 import { complete } from '../utils/complete'
@@ -106,6 +106,11 @@ export default createEslintRule<Options, MessageId>({
         )
 
         let nodeIndexMap = createNodeIndexMap(sortedCaseNameSortingNodes)
+        let getCaseNameFix = createFixProvider({
+          sortedNodes: sortedCaseNameSortingNodes,
+          nodes: caseNodesSortingNodeGroup,
+          sourceCode,
+        })
 
         pairwise(caseNodesSortingNodeGroup, (left, right) => {
           if (!left) {
@@ -120,10 +125,8 @@ export default createEslintRule<Options, MessageId>({
           }
 
           reportErrors({
-            sortedNodes: sortedCaseNameSortingNodes,
-            nodes: caseNodesSortingNodeGroup,
             messageIds: [ORDER_ERROR_ID],
-            sourceCode,
+            getFix: getCaseNameFix,
             context,
             right,
             left,
@@ -243,6 +246,11 @@ export default createEslintRule<Options, MessageId>({
         .flat()
       let sortingNodeGroupsForBlockSortFlat =
         sortingNodeGroupsForBlockSort.flat()
+      let getBlockFix = createFixProvider({
+        sortedNodes: sortedSortingNodeGroupsForBlockSort,
+        nodes: sortingNodeGroupsForBlockSortFlat,
+        sourceCode,
+      })
       pairwise(sortingNodeGroupsForBlockSortFlat, (left, right) => {
         if (!left) {
           return
@@ -257,13 +265,7 @@ export default createEslintRule<Options, MessageId>({
           fix: fixer =>
             hasUnsortedNodes ?
               [] /* Raise errors but only sort on second iteration. */
-            : makeFixes({
-                sortedNodes: sortedSortingNodeGroupsForBlockSort,
-                nodes: sortingNodeGroupsForBlockSortFlat,
-                hasCommentAboveMissing: false,
-                sourceCode,
-                fixer,
-              }),
+            : getBlockFix({ hasCommentAboveMissing: false, fixer }),
           data: {
             [RIGHT]: right.name,
             [LEFT]: left.name,

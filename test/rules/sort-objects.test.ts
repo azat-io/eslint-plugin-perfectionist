@@ -12217,6 +12217,92 @@ describe('sort-objects', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          let obj = {
+            b = 'b',
+            c = 'c',
+            // eslint-disable-next-line rule-to-test/sort-objects -- Pinned.
+            a = 'a'
+          }
+        `,
+        code: dedent`
+          let obj = {
+            c = 'c',
+            b = 'b',
+            // eslint-disable-next-line rule-to-test/sort-objects -- Pinned.
+            a = 'a'
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          let obj = {
+            b = 'b',
+            c = 'c',
+            a = 'a' // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          let obj = {
+            c = 'c',
+            b = 'b',
+            a = 'a' // eslint-disable-line -- Pinned.
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          let obj = {
+            a = 'a',
+            d = 'd',
+            /* eslint-disable rule-to-test/sort-objects -- Pinned. */
+            c = 'c',
+            b = 'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-objects -- Done. */
+            e = 'e'
+          }
+        `,
+        code: dedent`
+          let obj = {
+            d = 'd',
+            e = 'e',
+            /* eslint-disable rule-to-test/sort-objects -- Pinned. */
+            c = 'c',
+            b = 'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-objects -- Done. */
+            a = 'a'
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [
@@ -12237,6 +12323,45 @@ describe('sort-objects', () => {
               let obj = {
                 b: 2,
                 a: 1
+              }
+            `,
+            options: [{ type: 'alphabetical', order: 'asc' }],
+          },
+          {
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'd', left: 'e' },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'c', left: 'd' },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'b', left: 'c' },
+              },
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            output: dedent`
+              let obj = {
+                a: 5,
+                b: 4, // trailing b
+                c: 3,
+                d: 2,
+                e: 1 // trailing e
+              }
+            `,
+            code: dedent`
+              let obj = {
+                e: 1, // trailing e
+                d: 2,
+                c: 3,
+                b: 4, // trailing b
+                a: 5
               }
             `,
             options: [{ type: 'alphabetical', order: 'asc' }],

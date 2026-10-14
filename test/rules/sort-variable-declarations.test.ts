@@ -6590,6 +6590,86 @@ describe('sort-variable-declarations', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          let
+            b,
+            c,
+            // eslint-disable-next-line rule-to-test/sort-variable-declarations -- Pinned.
+            a
+        `,
+        code: dedent`
+          let
+            c,
+            b,
+            // eslint-disable-next-line rule-to-test/sort-variable-declarations -- Pinned.
+            a
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          let
+            b,
+            c,
+            a // eslint-disable-line -- Pinned.
+        `,
+        code: dedent`
+          let
+            c,
+            b,
+            a // eslint-disable-line -- Pinned.
+        `,
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          let
+            a,
+            d,
+            /* eslint-disable rule-to-test/sort-variable-declarations -- Pinned. */
+            c,
+            b,
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-variable-declarations -- Done. */
+            e
+        `,
+        code: dedent`
+          let
+            d,
+            e,
+            /* eslint-disable rule-to-test/sort-variable-declarations -- Pinned. */
+            c,
+            b,
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-variable-declarations -- Done. */
+            a
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedVariableDeclarationsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

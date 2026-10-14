@@ -4952,6 +4952,80 @@ describe('sort-exports', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          export { b } from './b'
+          export { c } from './c'
+          // eslint-disable-next-line rule-to-test/sort-exports -- Pinned.
+          export { a } from './a'
+        `,
+        code: dedent`
+          export { c } from './c'
+          export { b } from './b'
+          // eslint-disable-next-line rule-to-test/sort-exports -- Pinned.
+          export { a } from './a'
+        `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedExportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          export { b } from './b'
+          export { c } from './c'
+          export { a } from './a' // eslint-disable-line -- Pinned.
+        `,
+        code: dedent`
+          export { c } from './c'
+          export { b } from './b'
+          export { a } from './a' // eslint-disable-line -- Pinned.
+        `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedExportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          export { a } from './a'
+          export { d } from './d'
+          /* eslint-disable rule-to-test/sort-exports -- Pinned. */
+          export { c } from './c'
+          export { b } from './b'
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-exports -- Done. */
+          export { e } from './e'
+        `,
+        code: dedent`
+          export { d } from './d'
+          export { e } from './e'
+          /* eslint-disable rule-to-test/sort-exports -- Pinned. */
+          export { c } from './c'
+          export { b } from './b'
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-exports -- Done. */
+          export { a } from './a'
+        `,
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedExportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     it('defaults missing exportKind to value', async () => {
       let { valid: validEspree } = createRuleTester({
         parserOptions: {

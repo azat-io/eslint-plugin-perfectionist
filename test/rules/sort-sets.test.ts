@@ -5664,6 +5664,92 @@ describe('sort-sets', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          new Set([
+            'b',
+            'c',
+            // eslint-disable-next-line rule-to-test/sort-sets -- Pinned.
+            'a',
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'c',
+            'b',
+            // eslint-disable-next-line rule-to-test/sort-sets -- Pinned.
+            'a',
+          ])
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          new Set([
+            'b',
+            'c',
+            'a', // eslint-disable-line -- Pinned.
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'c',
+            'b',
+            'a', // eslint-disable-line -- Pinned.
+          ])
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          new Set([
+            'a',
+            'd',
+            /* eslint-disable rule-to-test/sort-sets -- Pinned. */
+            'c',
+            'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-sets -- Done. */
+            'e',
+          ])
+        `,
+        code: dedent`
+          new Set([
+            'd',
+            'e',
+            /* eslint-disable rule-to-test/sort-sets -- Pinned. */
+            'c',
+            'b',
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-sets -- Done. */
+            'a',
+          ])
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedSetsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

@@ -34,8 +34,6 @@
     slug: string
   }
 
-  type MiniSearchResult = SearchDocument & SearchResult
-
   interface ParsedResult {
     highlightTerms: string[]
     data: MiniSearchResult
@@ -43,6 +41,8 @@
     snippet: string
     id: string
   }
+
+  type MiniSearchResult = SearchDocument & SearchResult
 
   const MIN_QUERY_LENGTH = 2
   const MAX_RESULTS = 12
@@ -167,6 +167,84 @@
     }
   })
 
+  function createSnippet(value: string, highlightTermsLower: string[]): string {
+    if (!value) {
+      return ''
+    }
+
+    if (highlightTermsLower.length === 0) {
+      return value.length > SNIPPET_RADIUS * 2 ?
+          `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
+        : value
+    }
+
+    let lowerValue = value.toLowerCase()
+    let matchIndex = -1
+    let matchLength = 0
+
+    for (let term of highlightTermsLower) {
+      let position = lowerValue.indexOf(term)
+      if (position >= 0 && (matchIndex === -1 || position < matchIndex)) {
+        matchIndex = position
+        matchLength = term.length
+      }
+    }
+
+    if (matchIndex === -1) {
+      return value.length > SNIPPET_RADIUS * 2 ?
+          `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
+        : value
+    }
+
+    let start = Math.max(matchIndex - SNIPPET_RADIUS, 0)
+    let end = Math.min(matchIndex + matchLength + SNIPPET_RADIUS, value.length)
+    let snippet = value.slice(start, end).trim()
+
+    if (start > 0) {
+      snippet = `…${snippet}`
+    }
+
+    if (end < value.length) {
+      snippet = `${snippet}…`
+    }
+
+    return snippet
+  }
+
+  function handleKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      dialog.close()
+      return
+    }
+
+    if (parsedResults.length === 0) {
+      return
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      activeIndex =
+        activeIndex < parsedResults.length - 1 ?
+          activeIndex + 1
+        : parsedResults.length - 1
+      return
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      activeIndex = activeIndex <= 0 ? 0 : activeIndex - 1
+      return
+    }
+
+    if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault()
+      let selected = parsedResults[activeIndex]
+      if (selected) {
+        openResult(selected)
+      }
+    }
+  }
+
   function toParsedResults(
     results: MiniSearchResult[],
     searchQuery: string,
@@ -242,98 +320,6 @@
     return headings[0] ?? null
   }
 
-  function createSnippet(value: string, highlightTermsLower: string[]): string {
-    if (!value) {
-      return ''
-    }
-
-    if (highlightTermsLower.length === 0) {
-      return value.length > SNIPPET_RADIUS * 2 ?
-          `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
-        : value
-    }
-
-    let lowerValue = value.toLowerCase()
-    let matchIndex = -1
-    let matchLength = 0
-
-    for (let term of highlightTermsLower) {
-      let position = lowerValue.indexOf(term)
-      if (position >= 0 && (matchIndex === -1 || position < matchIndex)) {
-        matchIndex = position
-        matchLength = term.length
-      }
-    }
-
-    if (matchIndex === -1) {
-      return value.length > SNIPPET_RADIUS * 2 ?
-          `${value.slice(0, SNIPPET_RADIUS * 2).trim()}…`
-        : value
-    }
-
-    let start = Math.max(matchIndex - SNIPPET_RADIUS, 0)
-    let end = Math.min(matchIndex + matchLength + SNIPPET_RADIUS, value.length)
-    let snippet = value.slice(start, end).trim()
-
-    if (start > 0) {
-      snippet = `…${snippet}`
-    }
-
-    if (end < value.length) {
-      snippet = `${snippet}…`
-    }
-
-    return snippet
-  }
-
-  function handleBackdropClick(event: MouseEvent): void {
-    if (event.target === dialog) {
-      dialog.close()
-    }
-  }
-
-  function handleKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      dialog.close()
-      return
-    }
-
-    if (parsedResults.length === 0) {
-      return
-    }
-
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      activeIndex =
-        activeIndex < parsedResults.length - 1 ?
-          activeIndex + 1
-        : parsedResults.length - 1
-      return
-    }
-
-    if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      activeIndex = activeIndex <= 0 ? 0 : activeIndex - 1
-      return
-    }
-
-    if (event.key === 'Enter' && activeIndex >= 0) {
-      event.preventDefault()
-      let selected = parsedResults[activeIndex]
-      if (selected) {
-        openResult(selected)
-      }
-    }
-  }
-
-  function openResult(result: ParsedResult): void {
-    dialog.close()
-
-    setTimeout(() => {
-      location.assign(result.data.slug)
-    }, 0)
-  }
-
   function handleResultClick(event: MouseEvent, result: ParsedResult): void {
     if (
       event.metaKey ||
@@ -346,6 +332,20 @@
 
     event.preventDefault()
     openResult(result)
+  }
+
+  function openResult(result: ParsedResult): void {
+    dialog.close()
+
+    setTimeout(() => {
+      location.assign(result.data.slug)
+    }, 0)
+  }
+
+  function handleBackdropClick(event: MouseEvent): void {
+    if (event.target === dialog) {
+      dialog.close()
+    }
   }
 </script>
 

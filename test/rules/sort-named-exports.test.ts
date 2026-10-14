@@ -5002,6 +5002,92 @@ describe('sort-named-exports', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          export {
+            b,
+            c,
+            // eslint-disable-next-line rule-to-test/sort-named-exports -- Pinned.
+            a
+          }
+        `,
+        code: dedent`
+          export {
+            c,
+            b,
+            // eslint-disable-next-line rule-to-test/sort-named-exports -- Pinned.
+            a
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          export {
+            b,
+            c,
+            a // eslint-disable-line -- Pinned.
+          }
+        `,
+        code: dedent`
+          export {
+            c,
+            b,
+            a // eslint-disable-line -- Pinned.
+          }
+        `,
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          export {
+            a,
+            d,
+            /* eslint-disable rule-to-test/sort-named-exports -- Pinned. */
+            c,
+            b,
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-named-exports -- Done. */
+            e,
+          }
+        `,
+        code: dedent`
+          export {
+            d,
+            e,
+            /* eslint-disable rule-to-test/sort-named-exports -- Pinned. */
+            c,
+            b,
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-named-exports -- Done. */
+            a,
+          }
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedNamedExportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
     it('defaults missing exportKind to value', async () => {
       let { valid: validEspree } = createRuleTester({
         parserOptions: {

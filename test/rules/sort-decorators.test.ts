@@ -6549,6 +6549,254 @@ describe('sort-decorators', () => {
       })
     })
 
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          @B
+          @C
+          // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+          @A
+          class Class {
+
+            @B
+            @C
+            // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+            @A
+            property
+
+            @B
+            @C
+            // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+            @A
+            accessor field
+
+            @B
+            @C
+            // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+            @A
+            method(
+              @B
+              @C
+              // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+              @A
+              parameter) {}
+          }
+        `,
+        code: dedent`
+          @C
+          @B
+          // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+          @A
+          class Class {
+
+            @C
+            @B
+            // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+            @A
+            property
+
+            @C
+            @B
+            // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+            @A
+            accessor field
+
+            @C
+            @B
+            // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+            @A
+            method(
+              @C
+              @B
+              // eslint-disable-next-line rule-to-test/sort-decorators -- Pinned.
+              @A
+              parameter) {}
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ]),
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          @B
+          @C
+          @A // eslint-disable-line -- Pinned.
+          class Class {
+
+            @B
+            @C
+            @A // eslint-disable-line -- Pinned.
+            property
+
+            @B
+            @C
+            @A // eslint-disable-line -- Pinned.
+            accessor field
+
+            @B
+            @C
+            @A // eslint-disable-line -- Pinned.
+            method(
+              @B
+              @C
+              @A // eslint-disable-line -- Pinned.
+              parameter) {}
+          }
+        `,
+        code: dedent`
+          @C
+          @B
+          @A // eslint-disable-line -- Pinned.
+          class Class {
+
+            @C
+            @B
+            @A // eslint-disable-line -- Pinned.
+            property
+
+            @C
+            @B
+            @A // eslint-disable-line -- Pinned.
+            accessor field
+
+            @C
+            @B
+            @A // eslint-disable-line -- Pinned.
+            method(
+              @C
+              @B
+              @A // eslint-disable-line -- Pinned.
+              parameter) {}
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'B', left: 'C' },
+          },
+        ]),
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          @A
+          @D
+          /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+          @C
+          @B
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-decorators -- Done. */
+          @E
+          class Class {
+
+            @A
+            @D
+            /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-decorators -- Done. */
+            @E
+            property
+
+            @A
+            @D
+            /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-decorators -- Done. */
+            @E
+            accessor field
+
+            @A
+            @D
+            /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-decorators -- Done. */
+            @E
+            method(
+              @A
+              @D
+              /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-decorators -- Done. */
+              @E
+              parameter) {}
+          }
+        `,
+        code: dedent`
+          @D
+          @E
+          /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+          @C
+          @B
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-decorators -- Done. */
+          @A
+          class Class {
+
+            @D
+            @E
+            /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-decorators -- Done. */
+            @A
+            property
+
+            @D
+            @E
+            /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-decorators -- Done. */
+            @A
+            accessor field
+
+            @D
+            @E
+            /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+            @C
+            @B
+            // Shouldn't move
+            /* eslint-enable rule-to-test/sort-decorators -- Done. */
+            @A
+            method(
+              @D
+              @E
+              /* eslint-disable rule-to-test/sort-decorators -- Pinned. */
+              @C
+              @B
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-decorators -- Done. */
+              @A
+              parameter) {}
+          }
+        `,
+        errors: duplicate5Times([
+          {
+            messageId: 'unexpectedDecoratorsOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ]),
+        options: [{}],
+      })
+    })
+
     describe('oxlint', () => {
       oxlintRuleTester.run('supports oxlint', {
         invalid: [

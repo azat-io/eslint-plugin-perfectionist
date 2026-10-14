@@ -495,6 +495,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          ;
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           ;
@@ -512,6 +517,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          debugger
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           debugger
@@ -529,6 +539,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          import 'x'
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           import 'x'
@@ -546,6 +561,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          export * from 'x'
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           export * from 'x'
@@ -563,6 +583,11 @@ describe('sort-modules', () => {
             data: { right: 'A', left: 'B' },
           },
         ],
+        output: dedent`
+          enum A { a = 'a' }
+          export as namespace Foo
+          enum B { b = 'b' }
+        `,
         code: dedent`
           enum B { b = 'b' }
           export as namespace Foo
@@ -3616,6 +3641,71 @@ describe('sort-modules', () => {
               { ...metadataOptions, useExperimentalDependencyDetection: false },
             ],
           })
+        })
+      })
+    })
+
+    describe('decorator metadata dependency detection without tsconfig', () => {
+      let noTsconfigOptions = {
+        ...options,
+        useExperimentalDependencyDetection: true,
+        groups: ['unknown'],
+      } as const
+
+      it('assumes emitDecoratorMetadata when no tsconfig option is given', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @Decorator()
+              b: B
+            }
+          `,
+          code: dedent`
+            class A {
+              @Decorator()
+              b: B
+            }
+
+            class B {}
+          `,
+          options: [noTsconfigOptions],
+        })
+      })
+
+      it('ignores an undecorated type reference when no tsconfig option is given', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              b: B
+            }
+
+            class B {}
+          `,
+          options: [noTsconfigOptions],
+        })
+      })
+
+      it('ignores metadata references when emitDecoratorMetadata is disabled', async () => {
+        mockReadClosestTsConfigByPathWith({})
+
+        await valid({
+          code: dedent`
+            class A {
+              @Decorator()
+              b: B
+            }
+
+            class B {}
+          `,
+          options: [{ ...noTsconfigOptions, tsconfig: { rootDir: '.' } }],
         })
       })
     })
@@ -11884,6 +11974,80 @@ describe('sort-modules', () => {
           function b() {}
           // Shouldn't move
           /* eslint-enable */
+          function a() {}
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          function b() {}
+          function c() {}
+          // eslint-disable-next-line rule-to-test/sort-modules -- Pinned.
+          function a() {}
+        `,
+        code: dedent`
+          function c() {}
+          function b() {}
+          // eslint-disable-next-line rule-to-test/sort-modules -- Pinned.
+          function a() {}
+        `,
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'b', left: 'c' },
+          },
+        ],
+        output: dedent`
+          function b() {}
+          function c() {}
+          function a() {} // eslint-disable-line -- Pinned.
+        `,
+        code: dedent`
+          function c() {}
+          function b() {}
+          function a() {} // eslint-disable-line -- Pinned.
+        `,
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          function a() {}
+          function d() {}
+          /* eslint-disable rule-to-test/sort-modules -- Pinned. */
+          function c() {}
+          function b() {}
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-modules -- Done. */
+          function e() {}
+        `,
+        code: dedent`
+          function d() {}
+          function e() {}
+          /* eslint-disable rule-to-test/sort-modules -- Pinned. */
+          function c() {}
+          function b() {}
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-modules -- Done. */
           function a() {}
         `,
         errors: [

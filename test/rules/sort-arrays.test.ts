@@ -6211,6 +6211,92 @@ describe('sort-arrays', () => {
           options: [options],
         })
       })
+
+      it('honors a disable directive that carries a description', async () => {
+        await invalid({
+          output: dedent`
+            [
+              'b',
+              'c',
+              // eslint-disable-next-line rule-to-test/sort-arrays -- Pinned.
+              'a',
+            ]
+          `,
+          code: dedent`
+            [
+              'c',
+              'b',
+              // eslint-disable-next-line rule-to-test/sort-arrays -- Pinned.
+              'a',
+            ]
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedArraysOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
+          options: [options],
+        })
+
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedArraysOrder',
+              data: { right: 'b', left: 'c' },
+            },
+          ],
+          output: dedent`
+            [
+              'b',
+              'c',
+              'a', // eslint-disable-line -- Pinned.
+            ]
+          `,
+          code: dedent`
+            [
+              'c',
+              'b',
+              'a', // eslint-disable-line -- Pinned.
+            ]
+          `,
+          options: [options],
+        })
+
+        await invalid({
+          output: dedent`
+            [
+              'a',
+              'd',
+              /* eslint-disable rule-to-test/sort-arrays -- Pinned. */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-arrays -- Done. */
+              'e',
+            ]
+          `,
+          code: dedent`
+            [
+              'd',
+              'e',
+              /* eslint-disable rule-to-test/sort-arrays -- Pinned. */
+              'c',
+              'b',
+              // Shouldn't move
+              /* eslint-enable rule-to-test/sort-arrays -- Done. */
+              'a',
+            ]
+          `,
+          errors: [
+            {
+              messageId: 'unexpectedArraysOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [options],
+        })
+      })
     })
 
     describe('oxlint', () => {

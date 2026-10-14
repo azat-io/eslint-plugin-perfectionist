@@ -6,6 +6,7 @@ import type {
 import { createRuleTester } from 'eslint-vitest-rule-tester'
 import typescriptParser from '@typescript-eslint/parser'
 import { describe, expect, it, vi } from 'vitest'
+import { fileURLToPath } from 'node:url'
 import dedent from 'dedent'
 
 import type { Options } from '../../rules/sort-imports/types'
@@ -731,6 +732,28 @@ describe('sort-imports', () => {
         code: dedent`
           const { b1 } = require('b')
           const { a1, a2 } = require('a')
+        `,
+        options: [options],
+      })
+    })
+
+    it('adds a safety semicolon when the statement after the imports starts with a computed member access', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          const a = require('a');
+          const b = require('b');
+          [1].forEach(element => element)
+        `,
+        code: dedent`
+          const b = require('b')
+          const a = require('a');
+          [1].forEach(element => element)
         `,
         options: [options],
       })
@@ -11438,17 +11461,17 @@ describe('sort-imports', () => {
 
     it('classifies TypeScript configured imports as internal', async () => {
       await valid({
+        before: () => {
+          mockReadClosestTsConfigByPathWith({
+            baseUrl: fileURLToPath(new URL('../../rules/', import.meta.url)),
+          })
+        },
         options: [
           {
             groups: ['internal', 'unknown'],
             tsconfig: { rootDir: '.' },
           },
         ],
-        before: () => {
-          mockReadClosestTsConfigByPathWith({
-            baseUrl: './rules/',
-          })
-        },
         code: dedent`
           import { x } from 'sort-imports'
 
@@ -11546,7 +11569,7 @@ describe('sort-imports', () => {
         ],
         before: () => {
           mockReadClosestTsConfigByPathWith({
-            baseUrl: './rules/',
+            baseUrl: fileURLToPath(new URL('../../rules/', import.meta.url)),
           })
         },
         code: dedent`
@@ -11930,6 +11953,80 @@ describe('sort-imports', () => {
           import { b } from './b'
           // Shouldn't move
           /* eslint-enable */
+          import { a } from './a'
+        `,
+        errors: [
+          {
+            data: { right: './a', left: './b' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+    })
+
+    it('honors a disable directive that carries a description', async () => {
+      await invalid({
+        output: dedent`
+          import { b } from './b'
+          import { c } from './c'
+          // eslint-disable-next-line rule-to-test/sort-imports -- Pinned.
+          import { a } from './a'
+        `,
+        code: dedent`
+          import { c } from './c'
+          import { b } from './b'
+          // eslint-disable-next-line rule-to-test/sort-imports -- Pinned.
+          import { a } from './a'
+        `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import { b } from './b'
+          import { c } from './c'
+          import { a } from './a' // eslint-disable-line -- Pinned.
+        `,
+        code: dedent`
+          import { c } from './c'
+          import { b } from './b'
+          import { a } from './a' // eslint-disable-line -- Pinned.
+        `,
+        errors: [
+          {
+            data: { right: './b', left: './c' },
+            messageId: 'unexpectedImportsOrder',
+          },
+        ],
+        options: [{}],
+      })
+
+      await invalid({
+        output: dedent`
+          import { a } from './a'
+          import { d } from './d'
+          /* eslint-disable rule-to-test/sort-imports -- Pinned. */
+          import { c } from './c'
+          import { b } from './b'
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-imports -- Done. */
+          import { e } from './e'
+        `,
+        code: dedent`
+          import { d } from './d'
+          import { e } from './e'
+          /* eslint-disable rule-to-test/sort-imports -- Pinned. */
+          import { c } from './c'
+          import { b } from './b'
+          // Shouldn't move
+          /* eslint-enable rule-to-test/sort-imports -- Done. */
           import { a } from './a'
         `,
         errors: [

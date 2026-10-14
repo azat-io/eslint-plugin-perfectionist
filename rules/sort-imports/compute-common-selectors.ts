@@ -127,7 +127,17 @@ let bunModules = new Set([
 
 let nodeBuiltinModules = new Set(builtinModules)
 
-let builtinPrefixOnlyModules = new Set(['node:sqlite', 'node:test', 'node:sea'])
+/**
+ * Node.js builtin modules that can only be imported with the `node:` prefix.
+ * Since Node.js 23.5.0, `builtinModules` lists them with the prefix. The
+ * explicit entries cover older versions.
+ */
+let builtinPrefixOnlyModules = new Set([
+  ...builtinModules.filter(name => name.startsWith('node:')),
+  'node:sqlite',
+  'node:test',
+  'node:sea',
+])
 
 /**
  * Determines whether an import is internal or external to the project.
