@@ -11,7 +11,7 @@ import type { TSESTree } from '@typescript-eslint/types'
  * @example
  *
  * ```ts
- * const eslintDisabledLines = [5, 10, 11, 12] // Lines where ESLint is disabled
+ * const eslintDisabledLines = new Set([5, 10, 11, 12]) // Lines where ESLint is disabled
  *
  * const nodeOnLine5 = { loc: { start: { line: 5 } } }
  * const nodeOnLine6 = { loc: { start: { line: 6 } } }
@@ -24,12 +24,12 @@ import type { TSESTree } from '@typescript-eslint/types'
  * ```
  *
  * @param node - AST node to check for ESLint disable status.
- * @param eslintDisabledLines - Array of line numbers where ESLint is disabled.
+ * @param eslintDisabledLines - Line numbers where ESLint is disabled.
  * @returns True if the node is on a disabled line, false otherwise.
  */
 export function isNodeEslintDisabled(
   node: TSESTree.Node,
-  eslintDisabledLines: number[],
+  eslintDisabledLines: ReadonlySet<number>,
 ): boolean {
-  return eslintDisabledLines.includes(node.loc.start.line)
+  return eslintDisabledLines.has(node.loc.start.line)
 }

@@ -1,7 +1,16 @@
 import type { TSESLint } from '@typescript-eslint/utils'
+import type { TSESTree } from '@typescript-eslint/types'
 
 import { getEslintDisabledRules } from './get-eslint-disabled-rules'
 import { UnreachableCaseError } from './unreachable-case-error'
+
+/**
+ * Keyed by AST since Oxlint reuses `sourceCode` across files.
+ */
+let cachedEslintDisabledLinesByAst = new WeakMap<
+  TSESTree.Program,
+  Map<string, ReadonlySet<number>>
+>()
 
 /**
  * Determines which lines have the specified ESLint rule disabled via comments.
@@ -37,19 +46,53 @@ import { UnreachableCaseError } from './unreachable-case-error'
  *   sourceCode,
  *   ruleName: 'perfectionist/sort-imports',
  * })
- * // Returns: [2, 5, 6] (lines where the rule is disabled)
+ * // Returns: Set { 2, 5, 6 } (lines where the rule is disabled)
  * ```
  *
  * @param props - Configuration object.
  * @param props.sourceCode - ESLint source code object containing comments.
  * @param props.ruleName - Name of the rule to check for disable directives.
- * @returns Array of line numbers (1-indexed) where the rule is disabled.
+ * @returns Line numbers (1-indexed) where the rule is disabled.
  */
 export function getEslintDisabledLines(props: {
   sourceCode: TSESLint.SourceCode
   ruleName: string
-}): number[] {
+}): ReadonlySet<number> {
   let { sourceCode, ruleName } = props
+  let cachedEslintDisabledLinesByRuleName = cachedEslintDisabledLinesByAst.get(
+    sourceCode.ast,
+  )
+  if (!cachedEslintDisabledLinesByRuleName) {
+    cachedEslintDisabledLinesByRuleName = new Map()
+    cachedEslintDisabledLinesByAst.set(
+      sourceCode.ast,
+      cachedEslintDisabledLinesByRuleName,
+    )
+  }
+
+  let eslintDisabledLines = cachedEslintDisabledLinesByRuleName.get(ruleName)
+  if (!eslintDisabledLines) {
+    eslintDisabledLines = computeEslintDisabledLines({ sourceCode, ruleName })
+    cachedEslintDisabledLinesByRuleName.set(ruleName, eslintDisabledLines)
+  }
+  return eslintDisabledLines
+}
+
+/**
+ * Scans the file comments for directives that disable the rule.
+ *
+ * @param params - Parameters.
+ * @param params.sourceCode - ESLint source code object containing comments.
+ * @param params.ruleName - Name of the rule to check for disable directives.
+ * @returns Line numbers (1-indexed) where the rule is disabled.
+ */
+function computeEslintDisabledLines({
+  sourceCode,
+  ruleName,
+}: {
+  sourceCode: TSESLint.SourceCode
+  ruleName: string
+}): ReadonlySet<number> {
   let returnValue: number[] = []
   let lineRulePermanentlyDisabled: number | null = null
   for (let comment of sourceCode.getAllComments()) {
@@ -97,7 +140,7 @@ export function getEslintDisabledLines(props: {
         )
     }
   }
-  return returnValue
+  return new Set(returnValue)
 }
 
 /**
