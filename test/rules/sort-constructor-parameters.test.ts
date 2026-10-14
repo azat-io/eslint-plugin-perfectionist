@@ -2840,6 +2840,81 @@ describe('sort-constructor-parameters', () => {
       })
     })
 
+    it('keeps trailing comments attached when elements are reordered', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              a, /* a */
+              b /* b */ ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b, /* b */
+              a /* a */ ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              a,
+              b /* b */) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b, /* b */
+              a) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              a,
+              b // b
+           ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b, // b
+              a ) {}
+          }
+        `,
+        options: [options],
+      })
+    })
+
     it('preserves partition boundaries regardless of newlinesBetween 0', async () => {
       let partitionOptions = [
         {
