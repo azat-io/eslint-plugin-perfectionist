@@ -135,6 +135,39 @@ describe('sort-constructor-parameters', () => {
       })
     })
 
+    it('does not sort overloaded constructors', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(b: B, a: A);
+            constructor(a: any, b?: any) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(b: B, a: A);
+            constructor(b: any, a: any) {}
+          }
+        `,
+        options: [options],
+      })
+    })
+
+    it('does not sort bodiless constructor signatures', async () => {
+      await valid({
+        code: dedent`
+          declare class Foo {
+            constructor(b: B, a: A);
+          }
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts TypeScript parameter properties', async () => {
       await invalid({
         output: dedent`

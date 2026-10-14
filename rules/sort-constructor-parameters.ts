@@ -24,6 +24,7 @@ import {
 } from '../utils/json-schemas/common-partition-json-schemas'
 import { sortConstructorParameters } from './sort-constructor-parameters/sort-constructor-parameters'
 import { additionalCustomGroupMatchOptionsJsonSchema } from './sort-constructor-parameters/types'
+import { isConstructorOverloaded } from './sort-constructor-parameters/is-constructor-overloaded'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
@@ -127,7 +128,7 @@ function sorter({
   matchedAstSelectors: ReadonlySet<string>
   node: TSESTree.MethodDefinition
 }): void {
-  if (node.kind !== 'constructor') {
+  if (node.kind !== 'constructor' || isConstructorOverloaded(node)) {
     return
   }
 
