@@ -48,12 +48,12 @@ export function computeDependenciesBySortingNode<
 }): Map<T, T[]> {
   let returnValue = new Map<T, T[]>()
 
-  let references = sortingNodes.flatMap(sortingNode =>
-    computeDeepScopeReferences(sortingNode.node, sourceCode),
+  let references = computeDeepScopeReferences(
+    sortingNodes.map(sortingNode => sortingNode.node),
+    sourceCode,
   )
 
-  let uniqueReferences = new Set(references)
-  for (let reference of uniqueReferences) {
+  for (let reference of references) {
     let { identifier, resolved } = reference
     if (!resolved) {
       continue
