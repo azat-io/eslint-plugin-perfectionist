@@ -40,22 +40,39 @@ export function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
 }): Options[number] | undefined {
-  let nodeNames = nodeObject.properties
-    .filter(
-      property =>
-        property.type !== AST_NODE_TYPES.SpreadElement &&
-        property.type !== AST_NODE_TYPES.RestElement,
-    )
-    .map(property =>
-      computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
-    )
+  let conditions = context.options.map(options => options.useConfigurationIf)
 
-  let parentNodes = computeParentNodesWithTypes({
-    allowedTypes: [...objectParentTypes],
-    consecutiveOnly: false,
-    node: nodeObject,
-    maxParent: null,
-  })
+  /* Only compute what the configured conditions read. */
+  let nodeNames: string[] = []
+  if (conditions.some(condition => condition?.allNamesMatchPattern)) {
+    nodeNames = nodeObject.properties
+      .filter(
+        property =>
+          property.type !== AST_NODE_TYPES.SpreadElement &&
+          property.type !== AST_NODE_TYPES.RestElement,
+      )
+      .map(property =>
+        computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
+      )
+  }
+
+  let parentNodes: ObjectParent[] = []
+  if (
+    conditions.some(condition =>
+      [
+        condition?.callingFunctionNamePattern,
+        condition?.declarationMatchesPattern,
+        condition?.declarationCommentMatchesPattern,
+      ].some(Boolean),
+    )
+  ) {
+    parentNodes = computeParentNodesWithTypes({
+      allowedTypes: [...objectParentTypes],
+      consecutiveOnly: false,
+      node: nodeObject,
+      maxParent: null,
+    })
+  }
 
   return context.options.find(options =>
     isContextOptionMatching({
