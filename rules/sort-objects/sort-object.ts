@@ -27,10 +27,10 @@ import { computePropertyOrVariableDeclaratorName } from './compute-property-or-v
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
-import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
+import { canReportErrors, reportAllErrors } from '../../utils/report-all-errors'
 import { canHavePropertyDependencies } from './can-have-property-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -39,7 +39,6 @@ import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { isNodeOnSingleLine } from '../../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { computeDependencyNames } from './compute-dependency-names'
-import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeDependencies } from './compute-dependencies'
 import { computeGroup } from '../../utils/compute-group'
@@ -54,6 +53,14 @@ import { complete } from '../../utils/complete'
  * Cache computed groups by modifiers and selectors for performance.
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
+
+let availableMessageIds = {
+  missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+  unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+  extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+  unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+  unexpectedOrder: ORDER_ERROR_ID,
+} as const
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
@@ -124,7 +131,14 @@ export function sortObject({
   }
 
   let canHaveDependencies = canHavePropertyDependencies(node)
-  if (isSortingNoOp({ canHaveDependencies, options })) {
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: nameOrValueComparatorByOptionsComputer,
+      availableMessageIds,
+      canHaveDependencies,
+      options,
+    })
+  ) {
     return
   }
 
@@ -253,14 +267,8 @@ export function sortObject({
   let sortingNodes = sortingNodeGroups.flat()
 
   reportAllErrors<MessageId>({
-    availableMessageIds: {
-      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-      unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-      unexpectedOrder: ORDER_ERROR_ID,
-    },
     sortNodesExcludingEslintDisabled,
+    availableMessageIds,
     nodes: sortingNodes,
     options,
     context,
@@ -283,39 +291,4 @@ export function sortObject({
       ignoreEslintDisabledNodes,
     })
   }
-}
-
-/**
- * Checks whether sorting the object cannot report any error: nothing is sorted,
- * grouped, spaced or reordered by dependencies.
- *
- * @param params - Parameters.
- * @param params.canHaveDependencies - Whether properties may depend on each
- *   other.
- * @param params.options - The completed options.
- * @returns True if the object can be skipped.
- */
-function isSortingNoOp({
-  canHaveDependencies,
-  options,
-}: {
-  options: Required<Options[number]>
-  canHaveDependencies: boolean
-}): boolean {
-  if (
-    canHaveDependencies ||
-    options.type !== 'unsorted' ||
-    options.groups.length > 0
-  ) {
-    return false
-  }
-
-  /* Without groups, every element is in group 0. */
-  return (
-    getNewlinesBetweenOption({
-      nextNodeGroupIndex: 0,
-      nodeGroupIndex: 0,
-      options,
-    }) === 'ignore'
-  )
 }
