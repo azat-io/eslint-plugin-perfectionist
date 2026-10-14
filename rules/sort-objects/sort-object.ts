@@ -77,6 +77,14 @@ export let defaultOptions: Required<Options[number]> = {
   groups: [],
 }
 
+/**
+ * Sorts the properties of an object literal or pattern.
+ *
+ * @param params - Parameters.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.context - The rule context.
+ * @param params.node - Object literal or pattern being sorted.
+ */
 export function sortObject({
   matchedAstSelectors,
   context,

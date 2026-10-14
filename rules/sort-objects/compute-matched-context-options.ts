@@ -177,6 +177,14 @@ function passesObjectTypeFilter({
   }
 }
 
+/**
+ * Computes the names of the object properties, excluding spread and rest.
+ *
+ * @param params - Parameters.
+ * @param params.nodeObject - Object literal or pattern to inspect.
+ * @param params.sourceCode - The source code object.
+ * @returns The property names.
+ */
 function computeNodeNames({
   nodeObject,
   sourceCode,
@@ -195,6 +203,12 @@ function computeNodeNames({
     )
 }
 
+/**
+ * Checks whether any option has a condition that reads parent nodes.
+ *
+ * @param options - The rule options.
+ * @returns True if parent nodes are needed.
+ */
 function isUsingParentNodes(options: Options): boolean {
   return options.some(
     ({ useConfigurationIf }) =>
@@ -204,6 +218,12 @@ function isUsingParentNodes(options: Options): boolean {
   )
 }
 
+/**
+ * Computes the parent nodes that conditions can match against.
+ *
+ * @param nodeObject - Object literal or pattern to inspect.
+ * @returns The matching parent nodes.
+ */
 function computeParentNodes(
   nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
 ): ObjectParent[] {
@@ -215,6 +235,12 @@ function computeParentNodes(
   })
 }
 
+/**
+ * Checks whether any option has a condition that reads property names.
+ *
+ * @param options - The rule options.
+ * @returns True if property names are needed.
+ */
 function isUsingNodeNames(options: Options): boolean {
   return options.some(
     ({ useConfigurationIf }) => !!useConfigurationIf?.allNamesMatchPattern,

@@ -21,6 +21,12 @@ export function canHavePropertyDependencies(
   return mayContainReferences(node)
 }
 
+/**
+ * Checks whether a pattern can contain references to other variables.
+ *
+ * @param node - The pattern, property value or rest element.
+ * @returns True if the pattern may contain references.
+ */
 function mayContainReferences(
   node:
     | TSESTree.PropertyNonComputedName['value']
@@ -43,6 +49,12 @@ function mayContainReferences(
   }
 }
 
+/**
+ * Checks whether an object pattern property can contain references.
+ *
+ * @param node - The object pattern property or rest element.
+ * @returns True if the property may contain references.
+ */
 function mayObjectPatternPropertyContainReferences(
   node: TSESTree.RestElement | TSESTree.Property,
 ): boolean {
