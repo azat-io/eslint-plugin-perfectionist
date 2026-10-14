@@ -27,7 +27,7 @@ describe('get-node-decorators', () => {
         name,
       },
       type: 'Decorator',
-    } as unknown as TSESTree.Decorator
+    } as TSESTree.Decorator
   }
 
   function createNodeWithDecorators(
@@ -36,6 +36,6 @@ describe('get-node-decorators', () => {
     return {
       type: 'ClassDeclaration',
       ...(decorators && { decorators }),
-    } as unknown as NodeWithDecoratorsParameter
+    } as NodeWithDecoratorsParameter
   }
 })

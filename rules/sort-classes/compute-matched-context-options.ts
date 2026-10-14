@@ -1,13 +1,12 @@
 import type { RuleContext } from '@typescript-eslint/utils/ts-eslint'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { MessageId, Options } from './types'
 
-import { passesAllNamesMatchPatternFilter } from '../../utils/context-matching/passes-all-names-match-pattern-filter'
 import { computeMethodOrPropertyNameDetails } from './node-info/compute-method-or-property-name-details'
-import { passesAstSelectorFilter } from '../../utils/context-matching/passes-ast-selector-filter'
+import { isContextOptionMatching } from '../../utils/context-matching/is-context-option-matching'
 
 /**
  * Computes the matched context options for a given class node.
@@ -40,30 +39,5 @@ export function computeMatchedContextOptions({
 
   return context.options.find(options =>
     isContextOptionMatching({ matchedAstSelectors, nodeNames, options }),
-  )
-}
-
-function isContextOptionMatching({
-  matchedAstSelectors,
-  nodeNames,
-  options,
-}: {
-  matchedAstSelectors: ReadonlySet<string>
-  options: Options[number]
-  nodeNames: string[]
-}): boolean {
-  if (!options.useConfigurationIf) {
-    return true
-  }
-
-  return (
-    passesAllNamesMatchPatternFilter({
-      allNamesMatchPattern: options.useConfigurationIf.allNamesMatchPattern,
-      nodeNames,
-    }) &&
-    passesAstSelectorFilter({
-      matchesAstSelector: options.useConfigurationIf.matchesAstSelector,
-      matchedAstSelectors,
-    })
   )
 }

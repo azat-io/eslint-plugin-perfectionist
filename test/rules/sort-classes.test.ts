@@ -34,9 +34,12 @@ function injectUnknownClassElement({
     )
   }
 
-  classBody.body[matchingNodeIndex] = {
+  let glimmerTemplate: unknown = {
     type: 'GlimmerTemplate',
-  } as unknown as (typeof classBody.body)[number]
+  }
+
+  classBody.body[matchingNodeIndex] =
+    glimmerTemplate as (typeof classBody.body)[number]
 }
 
 let unknownClassElementParser = {

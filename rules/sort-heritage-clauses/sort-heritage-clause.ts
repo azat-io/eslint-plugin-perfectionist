@@ -1,7 +1,7 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 import type { TSESTree } from '@typescript-eslint/types'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { SortingNode } from '../../types/sorting-node'
 import type { MessageId, Options } from './types'

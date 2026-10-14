@@ -1,7 +1,7 @@
 import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 /**
  * Computes the name of an array member.

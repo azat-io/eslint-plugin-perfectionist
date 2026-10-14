@@ -76,8 +76,10 @@ describe('build-subgroup-order-comparator', () => {
   })
 
   it('throws on unsupported group options', () => {
+    let unsupportedGroup: unknown = { foo: 'bar' }
+
     let comparator = buildSubgroupOrderComparator({
-      groups: [{ foo: 'bar' } as unknown as { group: string[] }],
+      groups: [unsupportedGroup as { group: string[] }],
       order: 'asc',
     })
 

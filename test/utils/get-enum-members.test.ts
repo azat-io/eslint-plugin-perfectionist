@@ -9,19 +9,21 @@ describe('get-enum-members', () => {
     let members = [createEnumMember('Variant')]
     let enumNode = {
       members,
-    } as unknown as TSESTree.TSEnumDeclaration
+    } as TSESTree.TSEnumDeclaration
 
     expect(getEnumMembers(enumNode)).toBe(members)
   })
 
   it('falls back to body.members shape when members is missing', () => {
     let legacyMembers = [createEnumMember('LegacyVariant')]
-    let enumNode = {
+    let enumNode: unknown = {
       body: { members: legacyMembers },
       members: undefined,
-    } as unknown as TSESTree.TSEnumDeclaration
+    }
 
-    expect(getEnumMembers(enumNode)).toBe(legacyMembers)
+    expect(getEnumMembers(enumNode as TSESTree.TSEnumDeclaration)).toBe(
+      legacyMembers,
+    )
   })
 
   function createEnumMember(name: string): TSESTree.TSEnumMember {
@@ -31,6 +33,6 @@ describe('get-enum-members', () => {
         name,
       },
       type: 'TSEnumMember',
-    } as unknown as TSESTree.TSEnumMember
+    } as TSESTree.TSEnumMember
   }
 })

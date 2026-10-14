@@ -1,6 +1,6 @@
 import type { TSESTree } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import { OverloadSignatureGroup } from '../../utils/overload-signature/overload-signature-group'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'

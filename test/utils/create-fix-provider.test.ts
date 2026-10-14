@@ -69,7 +69,7 @@ describe('create-fix-provider', () => {
     nodes: SortingNode[]
   } {
     return {
-      sourceCode: { text: '0123456789' } as unknown as TSESLint.SourceCode,
+      sourceCode: { text: '0123456789' } as TSESLint.SourceCode,
       sortedNodes: [],
       nodes: [],
     }

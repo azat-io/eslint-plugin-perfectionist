@@ -1,10 +1,10 @@
 import type { ComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import type { SortEnumsSortingNode, Options } from './types'
 
-import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
-import { buildLineLengthComparator } from '../../utils/compare/build-line-length-comparator'
-import { compareAlphabetically } from '../../utils/compare/compare-alphabetically'
-import { compareByCustomSort } from '../../utils/compare/compare-by-custom-sort'
+import {
+  buildStringComparatorByOptionsComputer,
+  defaultComparatorByOptionsComputer,
+} from '../../utils/compare/default-comparator-by-options-computer'
 import { unsortedComparator } from '../../utils/compare/unsorted-comparator'
 import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { compareNaturally } from '../../utils/compare/compare-naturally'
@@ -47,31 +47,10 @@ export function buildComparatorByOptionsComputer(
   }
 }
 
-let byNonNumericValueComparatorComputer: ComparatorByOptionsComputer<
-  Required<Options[number]>,
-  SortEnumsSortingNode
-> = options => {
-  switch (options.type) {
-    /* v8 ignore next 2 -- @preserve Untested for now as not a relevant sort for this rule. */
-    case 'subgroup-order':
-      return defaultComparatorByOptionsComputer(options)
-    case 'alphabetical':
-      return (a, b) =>
-        compareAlphabetically(a.value ?? '', b.value ?? '', options)
-    case 'line-length':
-      return buildLineLengthComparator(options)
-    case 'unsorted':
-      return unsortedComparator
-    case 'natural':
-      return (a, b) => compareNaturally(a.value ?? '', b.value ?? '', options)
-    case 'custom':
-      return (a, b) =>
-        compareByCustomSort(a.value ?? '', b.value ?? '', options)
-    /* v8 ignore next 2 -- @preserve Exhaustive guard. */
-    default:
-      throw new UnreachableCaseError(options.type)
-  }
-}
+let byNonNumericValueComparatorComputer =
+  buildStringComparatorByOptionsComputer<SortEnumsSortingNode>(
+    node => node.value ?? '',
+  )
 
 let byNumericValueComparatorComputer: ComparatorByOptionsComputer<
   Required<Options[number]>,

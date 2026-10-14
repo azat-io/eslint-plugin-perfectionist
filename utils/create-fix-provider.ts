@@ -45,7 +45,7 @@ interface FixProviderParameters {
  * copies the `text` by reference, so the retained text collapses from `O(n²)`
  * to `O(n)` characters.
  *
- * The provider's lifetime is the closure's — exactly one sortable list. It must
+ * The provider's lifetime is the closure's: exactly one sortable list. It must
  * never be hoisted above the loop that owns the invariant `nodes` and
  * `sortedNodes` arrays, or one list's fix would be handed to another list's
  * reports.

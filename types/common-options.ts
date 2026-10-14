@@ -1,10 +1,9 @@
 /**
  * Core sorting configuration options used across all Perfectionist rules.
  *
- * Provides a comprehensive set of options to control how elements are sorted,
- * including the sorting algorithm, character handling, locale settings, and
- * sort direction. These options form the foundation for all sorting operations
- * in the plugin.
+ * Provides options that control how elements are sorted, including the sorting
+ * algorithm, character handling, locale settings, and sort direction. These
+ * options form the foundation for all sorting operations in the plugin.
  *
  * @example
  *

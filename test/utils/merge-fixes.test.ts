@@ -51,6 +51,6 @@ describe('merge-fixes', () => {
   })
 
   function getSourceCodeMock(): TSESLint.SourceCode {
-    return { text: '0123456789' } as unknown as TSESLint.SourceCode
+    return { text: '0123456789' } as TSESLint.SourceCode
   }
 })

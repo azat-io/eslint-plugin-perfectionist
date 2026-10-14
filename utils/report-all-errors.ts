@@ -17,7 +17,7 @@ import { reportErrors } from './report-errors'
 import { pairwise } from './pairwise'
 
 /**
- * Parameters for comprehensive error reporting across all sorting rules.
+ * Parameters for error reporting across all sorting rules.
  *
  * @template MessageIds - Union of available message IDs for the rule.
  * @template T - Type of sorting node extending the base SortingNode.
@@ -173,7 +173,7 @@ interface ReportAllErrorsParameters<
 }
 
 /**
- * Detects and reports all sorting violations in a comprehensive manner.
+ * Detects and reports all sorting violations.
  *
  * Performs a complete analysis of sorting errors including:
  *
@@ -232,12 +232,18 @@ export function reportAllErrors<
   let sortedNodesExcludingEslintDisabled =
     sortNodesExcludingEslintDisabled(true)
   let nodeIndexMap = createNodeIndexMap(sortedNodes)
+
+  /**
+   * Only rules that report dependency violations pass nodes carrying
+   * dependencies, so the dependency shape is used behind
+   * `unexpectedDependencyOrder` alone.
+   */
+  let nodesWithDependencies = nodes as (SortingNodeWithDependencies & T)[]
+
   let nodesInCircularDependencies =
     availableMessageIds.unexpectedDependencyOrder ?
-      computeNodesInCircularDependencies(
-        nodes as unknown as SortingNodeWithDependencies[],
-      )
-    : new Set<SortingNodeWithDependencies>()
+      computeNodesInCircularDependencies(nodesWithDependencies)
+    : new Set<SortingNodeWithDependencies & T>()
 
   let getFix = createFixProvider({
     sortedNodes: sortedNodesExcludingEslintDisabled,
@@ -268,10 +274,10 @@ export function reportAllErrors<
     let firstUnorderedNodeDependentOnRight: undefined | T
     if (availableMessageIds.unexpectedDependencyOrder) {
       firstUnorderedNodeDependentOnRight = getFirstUnorderedNodeDependentOn({
-        nodes: nodes as unknown as SortingNodeWithDependencies[],
-        node: right as unknown as SortingNodeWithDependencies,
+        node: right as SortingNodeWithDependencies & T,
+        nodes: nodesWithDependencies,
         nodesInCircularDependencies,
-      }) as unknown as T
+      })
     }
 
     if (
@@ -349,7 +355,7 @@ export function reportAllErrors<
  * Finds the first node that depends on the given node but appears before it.
  *
  * Detects dependency violations where a dependent element appears before its
- * dependency in the current order. This is crucial for maintaining logical
+ * dependency in the current order. This is important for maintaining logical
  * ordering in code where some elements reference others.
  *
  * Nodes in circular dependencies are excluded from this check as they cannot be

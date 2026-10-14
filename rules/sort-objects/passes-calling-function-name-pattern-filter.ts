@@ -1,6 +1,6 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import { AST_NODE_TYPES } from '@typescript-eslint/utils'
+import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type { NodeValuesComputer } from '../../utils/scoped-regex/matches-scoped-expressions'
 import type { ScopedRegexOption } from '../../types/scoped-regex-option'

@@ -37,7 +37,7 @@ describe('report-all-errors', () => {
   })
 
   function getConfig(): Linter.Config[] {
-    return [
+    let config: unknown = [
       {
         rules: {
           'perfectionist/sort-objects': [
@@ -48,6 +48,8 @@ describe('report-all-errors', () => {
         plugins: { perfectionist: { rules: { 'sort-objects': rule } } },
         files: ['**/*.js'],
       },
-    ] as unknown as Linter.Config[]
+    ]
+
+    return config as Linter.Config[]
   }
 })

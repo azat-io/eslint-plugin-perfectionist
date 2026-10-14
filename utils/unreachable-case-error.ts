@@ -7,7 +7,7 @@
  * the default case has type `never`, making this error theoretically
  * unreachable in correctly typed code.
  *
- * This pattern is crucial for maintaining type safety when adding new options
+ * This pattern is important for maintaining type safety when adding new options
  * to existing types - TypeScript will error if a new case isn't handled.
  *
  * @example
