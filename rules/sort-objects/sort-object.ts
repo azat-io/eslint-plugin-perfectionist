@@ -30,6 +30,7 @@ import { validateCustomSortConfig } from '../../utils/validate-custom-sort-confi
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
+import { canHavePropertyDependencies } from './can-have-property-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
@@ -222,7 +223,10 @@ export function sortObject({
     })
   }
 
-  if (options.useExperimentalDependencyDetection) {
+  if (
+    options.useExperimentalDependencyDetection &&
+    canHavePropertyDependencies(node)
+  ) {
     let dependenciesBySortingNode =
       computeDependenciesOutsideDeferredFunctionsBySortingNode({
         ignoreCallbackDependenciesPatterns:
