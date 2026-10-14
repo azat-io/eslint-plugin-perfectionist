@@ -1609,12 +1609,26 @@ describe('sort-constructor-parameters', () => {
         })
       })
 
-      it('ignores dependencies inside functions passed as arguments', async () => {
-        await valid({
+      it('detects dependencies inside functions passed as arguments', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedConstructorParametersDependencyOrder',
+              data: { nodeDependentOnRight: 'a', right: 'b' },
+            },
+          ],
+          output: dedent`
+            class Foo {
+              constructor(
+                b = 1,
+                a = [1].map(() => b),
+              ) {}
+            }
+          `,
           code: dedent`
             class Foo {
               constructor(
-                a = f(() => b),
+                a = [1].map(() => b),
                 b = 1,
               ) {}
             }

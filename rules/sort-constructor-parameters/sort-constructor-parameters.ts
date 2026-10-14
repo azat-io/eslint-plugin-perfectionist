@@ -9,7 +9,7 @@ import type {
   Options,
 } from './types'
 
-import { computeDependenciesOutsideFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-functions-by-sorting-node'
+import { computeDependenciesOutsideDeferredFunctionsBySortingNode } from '../../utils/compute-dependencies-outside-deferred-functions-by-sorting-node'
 import { populateSortingNodeGroupsWithDependencies } from '../../utils/populate-sorting-node-groups-with-dependencies'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -167,7 +167,8 @@ export function sortConstructorParameters<MessageIds extends string>({
     )
 
   let dependenciesBySortingNode =
-    computeDependenciesOutsideFunctionsBySortingNode({
+    computeDependenciesOutsideDeferredFunctionsBySortingNode({
+      ignoreCallbackDependenciesPatterns: [],
       sortingNodes: sortingNodeGroups.flat(),
       sourceCode,
     })
