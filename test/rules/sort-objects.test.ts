@@ -441,50 +441,6 @@ describe('sort-objects', () => {
       })
     })
 
-    it('detects dependencies inside nested destructuring patterns', async () => {
-      await valid({
-        code: dedent`
-          let {
-            c,
-            a: [, b = c],
-          } = obj
-        `,
-        options: [options],
-      })
-
-      await valid({
-        code: dedent`
-          let {
-            c,
-            a: [...[b = c]],
-          } = obj
-        `,
-        options: [options],
-      })
-
-      await invalid({
-        errors: [
-          {
-            messageId: 'unexpectedObjectsOrder',
-            data: { right: 'a', left: 'c' },
-          },
-        ],
-        output: dedent`
-          let {
-            a: { ...rest },
-            c,
-          } = obj
-        `,
-        code: dedent`
-          let {
-            c,
-            a: { ...rest },
-          } = obj
-        `,
-        options: [options],
-      })
-    })
-
     function testDependencyDetection(
       useExperimentalDependencyDetection: boolean,
     ): void {
@@ -1391,6 +1347,35 @@ describe('sort-objects', () => {
             ],
           })
         })
+
+        it('sorts nested rest elements without dependencies', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'a', left: 'c' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let {
+                a: { ...rest },
+                c,
+              } = obj
+            `,
+            code: dedent`
+              let {
+                c,
+                a: { ...rest },
+              } = obj
+            `,
+          })
+        })
       })
     }
     testDependencyDetection(true)
@@ -1440,6 +1425,38 @@ describe('sort-objects', () => {
     })
 
     describe('experimental detection specific', () => {
+      it('detects dependencies inside nested destructuring patterns', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let {
+              c,
+              a: [, b = c],
+            } = obj
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let {
+              c,
+              a: [...[b = c]],
+            } = obj
+          `,
+        })
+      })
+
       it('detects dependencies inside functions passed as arguments', async () => {
         await invalid({
           errors: [
