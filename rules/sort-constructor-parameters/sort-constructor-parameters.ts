@@ -94,6 +94,7 @@ export function sortConstructorParameters<MessageIds extends string>({
   })
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
 
+  let hasReachedOptionalParameters = false
   let sortingNodeGroups: SortConstructorParametersSortingNode[][] =
     params.reduce(
       (
@@ -145,8 +146,22 @@ export function sortConstructorParameters<MessageIds extends string>({
           name,
         }
 
+        /*
+         * Optional parameters must follow required ones.
+         */
+        let isOptional = (
+          parameter.type === AST_NODE_TYPES.TSParameterProperty ?
+            parameter.parameter
+          : parameter).optional
+        let isFirstOptionalParameter =
+          !hasReachedOptionalParameters && isOptional
+        if (isFirstOptionalParameter) {
+          hasReachedOptionalParameters = true
+        }
+
         let lastSortingNode = accumulator.at(-1)?.at(-1)
         if (
+          isFirstOptionalParameter ||
           shouldPartition({
             lastSortingNode,
             sortingNode,

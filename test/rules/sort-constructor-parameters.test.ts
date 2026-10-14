@@ -298,6 +298,54 @@ describe('sort-constructor-parameters', () => {
       })
     })
 
+    it('treats the first optional parameter as a partition boundary', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              b: any,
+              a?: any,
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'aa', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'cc', left: 'd' },
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              aa: any,
+              b: any,
+              cc?: any,
+              d?: any,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b: any,
+              aa: any,
+              d?: any,
+              cc?: any,
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts elements within newline-separated groups independently', async () => {
       let partitionOptions = [
         {
@@ -3457,6 +3505,54 @@ describe('sort-constructor-parameters', () => {
       })
     })
 
+    it('treats the first optional parameter as a partition boundary', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              b: any,
+              a?: any,
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'aa', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'cc', left: 'd' },
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              aa: any,
+              b: any,
+              cc?: any,
+              d?: any,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b: any,
+              aa: any,
+              d?: any,
+              cc?: any,
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts elements within newline-separated groups independently', async () => {
       let partitionOptions = [
         {
@@ -5298,6 +5394,54 @@ describe('sort-constructor-parameters', () => {
             data: { right: 'aa', left: 'b' },
           },
         ],
+        options: [options],
+      })
+    })
+
+    it('treats the first optional parameter as a partition boundary', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              b: any,
+              a?: any,
+            ) {}
+          }
+        `,
+        options: [options],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'aa', left: 'b' },
+          },
+          {
+            messageId: 'unexpectedConstructorParametersOrder',
+            data: { right: 'cc', left: 'd' },
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              aa: any,
+              b: any,
+              cc?: any,
+              d?: any,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              b: any,
+              aa: any,
+              d?: any,
+              cc?: any,
+            ) {}
+          }
+        `,
         options: [options],
       })
     })
