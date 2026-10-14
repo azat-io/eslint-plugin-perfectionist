@@ -27,6 +27,7 @@ import { computePropertyOrVariableDeclaratorName } from './compute-property-or-v
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
+import { getNewlinesBetweenOption } from '../../utils/get-newlines-between-option'
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
@@ -293,12 +294,20 @@ function isSortingNoOp({
   options: Required<Options[number]>
   canHaveDependencies: boolean
 }): boolean {
+  if (
+    canHaveDependencies ||
+    options.type !== 'unsorted' ||
+    options.groups.length > 0
+  ) {
+    return false
+  }
+
+  /* Without groups, every element is in group 0. */
   return (
-    options.type === 'unsorted' &&
-    options.groups.length === 0 &&
-    (options.newlinesInside === 'ignore' ||
-      (options.newlinesInside === 'newlinesBetween' &&
-        options.newlinesBetween === 'ignore')) &&
-    !canHaveDependencies
+    getNewlinesBetweenOption({
+      nextNodeGroupIndex: 0,
+      nodeGroupIndex: 0,
+      options,
+    }) === 'ignore'
   )
 }

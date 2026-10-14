@@ -40,39 +40,12 @@ export function computeMatchedContextOptions({
   sourceCode: TSESLint.SourceCode
   isDestructuredObject: boolean
 }): Options[number] | undefined {
-  let conditions = context.options.map(options => options.useConfigurationIf)
-
-  /* Only compute what the configured conditions read. */
-  let nodeNames: string[] = []
-  if (conditions.some(condition => condition?.allNamesMatchPattern)) {
-    nodeNames = nodeObject.properties
-      .filter(
-        property =>
-          property.type !== AST_NODE_TYPES.SpreadElement &&
-          property.type !== AST_NODE_TYPES.RestElement,
-      )
-      .map(property =>
-        computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
-      )
-  }
-
-  let parentNodes: ObjectParent[] = []
-  if (
-    conditions.some(condition =>
-      [
-        condition?.callingFunctionNamePattern,
-        condition?.declarationMatchesPattern,
-        condition?.declarationCommentMatchesPattern,
-      ].some(Boolean),
-    )
-  ) {
-    parentNodes = computeParentNodesWithTypes({
-      allowedTypes: [...objectParentTypes],
-      consecutiveOnly: false,
-      node: nodeObject,
-      maxParent: null,
-    })
-  }
+  let nodeNames =
+    isUsingNodeNames(context.options) ?
+      computeNodeNames({ nodeObject, sourceCode })
+    : []
+  let parentNodes =
+    isUsingParentNodes(context.options) ? computeParentNodes(nodeObject) : []
 
   return context.options.find(options =>
     isContextOptionMatching({
@@ -202,4 +175,48 @@ function passesObjectTypeFilter({
     default:
       throw new UnreachableCaseError(objectType)
   }
+}
+
+function computeNodeNames({
+  nodeObject,
+  sourceCode,
+}: {
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern
+  sourceCode: TSESLint.SourceCode
+}): string[] {
+  return nodeObject.properties
+    .filter(
+      property =>
+        property.type !== AST_NODE_TYPES.SpreadElement &&
+        property.type !== AST_NODE_TYPES.RestElement,
+    )
+    .map(property =>
+      computePropertyOrVariableDeclaratorName({ node: property, sourceCode }),
+    )
+}
+
+function isUsingParentNodes(options: Options): boolean {
+  return options.some(
+    ({ useConfigurationIf }) =>
+      !!useConfigurationIf?.callingFunctionNamePattern ||
+      !!useConfigurationIf?.declarationMatchesPattern ||
+      !!useConfigurationIf?.declarationCommentMatchesPattern,
+  )
+}
+
+function computeParentNodes(
+  nodeObject: TSESTree.ObjectExpression | TSESTree.ObjectPattern,
+): ObjectParent[] {
+  return computeParentNodesWithTypes({
+    allowedTypes: [...objectParentTypes],
+    consecutiveOnly: false,
+    node: nodeObject,
+    maxParent: null,
+  })
+}
+
+function isUsingNodeNames(options: Options): boolean {
+  return options.some(
+    ({ useConfigurationIf }) => !!useConfigurationIf?.allNamesMatchPattern,
+  )
 }
