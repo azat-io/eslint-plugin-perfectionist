@@ -28,6 +28,7 @@ import { getNodeDecorators } from '../../utils/get-node-decorators'
 import { getDecoratorName } from '../../utils/get-decorator-name'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
+import { getGroupIndex } from '../../utils/get-group-index'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
@@ -182,6 +183,8 @@ export function sortConstructorParameters<MessageIds extends string>({
   ): SortConstructorParametersSortingNode[] {
     let nodesSortedByGroups = sortingNodeGroups.flatMap(nodes =>
       sortNodesByGroups({
+        isNodeIgnored: sortingNode =>
+          getGroupIndex(options.groups, sortingNode) === options.groups.length,
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
         optionsByGroupIndexComputer,
         ignoreEslintDisabledNodes,

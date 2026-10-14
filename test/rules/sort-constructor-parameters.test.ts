@@ -827,6 +827,72 @@ describe('sort-constructor-parameters', () => {
       })
     })
 
+    it('ignores unknown group', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              b,
+              aa,
+            ) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['private-parameter'],
+          },
+        ],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'private-parameter',
+              rightGroup: 'unknown',
+              right: 'c',
+              left: 'b',
+            },
+            messageId: 'unexpectedConstructorParametersGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'private-parameter',
+              leftGroup: 'unknown',
+              right: 'aa',
+              left: 'c',
+            },
+            messageId: 'unexpectedConstructorParametersGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              private aa,
+              c,
+              private b,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              private b,
+              c,
+              private aa,
+            ) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['private-parameter'],
+          },
+        ],
+      })
+    })
+
     it('ignores special characters at start when trimming', async () => {
       await valid({
         code: dedent`
@@ -3920,6 +3986,72 @@ describe('sort-constructor-parameters', () => {
       })
     })
 
+    it('ignores unknown group', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              b,
+              aa,
+            ) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['private-parameter'],
+          },
+        ],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'private-parameter',
+              rightGroup: 'unknown',
+              right: 'c',
+              left: 'b',
+            },
+            messageId: 'unexpectedConstructorParametersGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'private-parameter',
+              leftGroup: 'unknown',
+              right: 'aa',
+              left: 'c',
+            },
+            messageId: 'unexpectedConstructorParametersGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              private aa,
+              c,
+              private b,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              private b,
+              c,
+              private aa,
+            ) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['private-parameter'],
+          },
+        ],
+      })
+    })
+
     it('ignores special characters at start when trimming', async () => {
       await valid({
         code: dedent`
@@ -5694,6 +5826,72 @@ describe('sort-constructor-parameters', () => {
           {
             ...options,
             partitionByComment: ['^(?!.*foo).*$'],
+          },
+        ],
+      })
+    })
+
+    it('ignores unknown group', async () => {
+      await valid({
+        code: dedent`
+          class Foo {
+            constructor(
+              b,
+              aa,
+            ) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['private-parameter'],
+          },
+        ],
+      })
+
+      await invalid({
+        errors: [
+          {
+            data: {
+              leftGroup: 'private-parameter',
+              rightGroup: 'unknown',
+              right: 'c',
+              left: 'b',
+            },
+            messageId: 'unexpectedConstructorParametersGroupOrder',
+          },
+          {
+            data: {
+              rightGroup: 'private-parameter',
+              leftGroup: 'unknown',
+              right: 'aa',
+              left: 'c',
+            },
+            messageId: 'unexpectedConstructorParametersGroupOrder',
+          },
+        ],
+        output: dedent`
+          class Foo {
+            constructor(
+              private aa,
+              c,
+              private b,
+            ) {}
+          }
+        `,
+        code: dedent`
+          class Foo {
+            constructor(
+              private b,
+              c,
+              private aa,
+            ) {}
+          }
+        `,
+        options: [
+          {
+            ...options,
+            groups: ['private-parameter'],
           },
         ],
       })
