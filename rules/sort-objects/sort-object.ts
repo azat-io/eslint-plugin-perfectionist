@@ -114,6 +114,11 @@ export function sortObject({
     return
   }
 
+  let canHaveDependencies = canHavePropertyDependencies(node)
+  if (isSortingNoOp({ canHaveDependencies, options })) {
+    return
+  }
+
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -223,10 +228,7 @@ export function sortObject({
     })
   }
 
-  if (
-    options.useExperimentalDependencyDetection &&
-    canHavePropertyDependencies(node)
-  ) {
+  if (canHaveDependencies && options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
       computeDependenciesOutsideDeferredFunctionsBySortingNode({
         ignoreCallbackDependenciesPatterns:
@@ -272,4 +274,31 @@ export function sortObject({
       ignoreEslintDisabledNodes,
     })
   }
+}
+
+/**
+ * Checks whether sorting the object cannot report any error: nothing is sorted,
+ * grouped, spaced or reordered by dependencies.
+ *
+ * @param params - Parameters.
+ * @param params.canHaveDependencies - Whether properties may depend on each
+ *   other.
+ * @param params.options - The completed options.
+ * @returns True if the object can be skipped.
+ */
+function isSortingNoOp({
+  canHaveDependencies,
+  options,
+}: {
+  options: Required<Options[number]>
+  canHaveDependencies: boolean
+}): boolean {
+  return (
+    options.type === 'unsorted' &&
+    options.groups.length === 0 &&
+    (options.newlinesInside === 'ignore' ||
+      (options.newlinesInside === 'newlinesBetween' &&
+        options.newlinesBetween === 'ignore')) &&
+    !canHaveDependencies
+  )
 }

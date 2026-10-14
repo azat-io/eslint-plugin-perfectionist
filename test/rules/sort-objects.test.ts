@@ -11572,6 +11572,66 @@ describe('sort-objects', () => {
         options: [options],
       })
     })
+
+    it('enforces newlines inside for unsorted type', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenObjectMembers',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            b: 'b',
+
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+        options: [{ ...options, newlinesInside: 1 }],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenObjectMembers',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            b: 'b',
+
+            a: 'a',
+          }
+        `,
+        options: [{ ...options, newlinesBetween: 0 }],
+      })
+    })
+
+    it('ignores fallback sort for unsorted type', async () => {
+      await valid({
+        code: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+        options: [{ ...options, fallbackSort: { type: 'alphabetical' } }],
+      })
+    })
   })
 
   describe('misc', () => {
