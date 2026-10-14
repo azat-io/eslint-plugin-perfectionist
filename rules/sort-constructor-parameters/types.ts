@@ -108,7 +108,6 @@ export let allModifiers = [
   'protected',
   'private',
   'public',
-  'optional',
 ] as const
 
 /**

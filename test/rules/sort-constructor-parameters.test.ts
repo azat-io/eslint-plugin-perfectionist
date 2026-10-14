@@ -3309,15 +3309,16 @@ describe('sort-constructor-parameters', () => {
       it.each([
         ['protected', 'protected'],
         ['private', 'private'],
+        ['public', 'public'],
       ])(
-        'prioritizes %s accessibility over optional',
+        'prioritizes readonly over %s accessibility',
         async (_name, accessibilityModifier) => {
           await invalid({
             errors: [
               {
                 data: {
-                  rightGroup: `${accessibilityModifier}-parameter`,
-                  leftGroup: 'optional-parameter',
+                  leftGroup: `${accessibilityModifier}-parameter`,
+                  rightGroup: 'readonly-parameter',
                   right: 'z',
                   left: 'a',
                 },
@@ -3328,24 +3329,24 @@ describe('sort-constructor-parameters', () => {
               {
                 ...options,
                 groups: [
+                  'readonly-parameter',
                   `${accessibilityModifier}-parameter`,
-                  'optional-parameter',
                 ],
               },
             ],
             output: dedent`
               class Foo {
                 constructor(
-                  ${accessibilityModifier} z?,
-                  a?,
+                  ${accessibilityModifier} readonly z,
+                  ${accessibilityModifier} a,
                 ) {}
               }
             `,
             code: dedent`
               class Foo {
                 constructor(
-                  a?,
-                  ${accessibilityModifier} z?,
+                  ${accessibilityModifier} a,
+                  ${accessibilityModifier} readonly z,
                 ) {}
               }
             `,

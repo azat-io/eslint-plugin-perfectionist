@@ -26,7 +26,6 @@ export function computeParameterModifiers(parameter: Parameter): Modifier[] {
     ...computeOverrideModifier(parameter),
     ...computeReadonlyModifier(parameter),
     ...computeAccessibilityModifier(parameter),
-    ...computeOptionalModifier(parameter),
   ]
 }
 
@@ -47,14 +46,6 @@ function computeAccessibilityModifier(parameter: Parameter): Modifier[] {
     default:
       throw new UnreachableCaseError(parameter.accessibility)
   }
-}
-
-function computeOptionalModifier(parameter: Parameter): Modifier[] {
-  let isOptional = (
-    parameter.type === AST_NODE_TYPES.TSParameterProperty ?
-      parameter.parameter
-    : parameter).optional
-  return isOptional ? ['optional'] : []
 }
 
 function computeOverrideModifier(parameter: Parameter): Modifier[] {
