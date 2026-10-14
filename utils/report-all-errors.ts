@@ -1,19 +1,15 @@
 import type { TSESLint } from '@typescript-eslint/utils'
 
-import type { ComparatorByOptionsComputer } from './compare/default-comparator-by-options-computer'
 import type { SortingNodeWithDependencies } from './sort-nodes-by-dependencies'
 import type { NewlinesBetweenValueGetter } from './get-newlines-between-errors'
 import type { CommonPartitionOptions } from '../types/common-partition-options'
 import type { CommonGroupsOptions } from '../types/common-groups-options'
-import type { CommonOptions } from '../types/common-options'
 import type { SortingNode } from '../types/sorting-node'
 
 import { computeNodesInCircularDependencies } from './compute-nodes-in-circular-dependencies'
 import { getCommentAboveThatShouldExist } from './get-comment-above-that-should-exist'
 import { isNodeDependentOnOtherNode } from './is-node-dependent-on-other-node'
 import { getNewlinesBetweenErrors } from './get-newlines-between-errors'
-import { getNewlinesBetweenOption } from './get-newlines-between-option'
-import { computeComparators } from './compare/compute-comparators'
 import { createNodeIndexMap } from './create-node-index-map'
 import { createFixProvider } from './create-fix-provider'
 import { getGroupIndex } from './get-group-index'
@@ -26,7 +22,7 @@ import { pairwise } from './pairwise'
  * @template MessageIds - Union of available message IDs for the rule.
  * @template T - Type of sorting node extending the base SortingNode.
  */
-interface ReportAllErrorsParameters<
+export interface ReportAllErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
@@ -353,77 +349,6 @@ export function reportAllErrors<
       left,
     })
   })
-}
-
-/**
- * Checks, before sorting nodes are built, whether `reportAllErrors` could
- * report anything for elements using these options.
- *
- * @param params - Parameters.
- * @param params.comparatorByOptionsComputer - The rule's comparator computer.
- * @param params.newlinesBetweenValueGetter - The rule's newlines override.
- * @param params.availableMessageIds - The message IDs the rule reports with.
- * @param params.canHaveDependencies - Whether elements may depend on each
- *   other.
- * @param params.options - The completed options.
- * @returns True if an error could be reported.
- */
-export function canReportErrors<
-  MessageIds extends string,
-  T extends SortingNode,
-  Options extends CommonGroupsOptions<string, unknown, unknown> &
-    Pick<CommonOptions, 'fallbackSort'>,
->({
-  comparatorByOptionsComputer,
-  newlinesBetweenValueGetter,
-  availableMessageIds,
-  canHaveDependencies,
-  options,
-}: {
-  availableMessageIds: ReportAllErrorsParameters<
-    MessageIds,
-    T
-  >['availableMessageIds']
-  comparatorByOptionsComputer: ComparatorByOptionsComputer<Options, T>
-  newlinesBetweenValueGetter?: NewlinesBetweenValueGetter<T>
-  canHaveDependencies: boolean
-  options: Options
-}): boolean {
-  let hasGroups = options.groups.length > 0
-
-  /* Exhaustive: a new message ID must declare when it can be reported. */
-  let canReportByMessageId: Record<
-    keyof typeof availableMessageIds,
-    () => boolean
-  > = {
-    unexpectedOrder: () =>
-      hasGroups ||
-      canHaveDependencies ||
-      computeComparators(comparatorByOptionsComputer, options).length > 0,
-    unexpectedDependencyOrder: () => canHaveDependencies,
-    missedSpacingBetweenMembers: canReportSpacing,
-    extraSpacingBetweenMembers: canReportSpacing,
-    unexpectedGroupOrder: () => hasGroups,
-    missedCommentAbove: () => hasGroups,
-  }
-
-  return Object.entries(canReportByMessageId).some(
-    ([messageId, canReport]) =>
-      availableMessageIds[messageId as keyof typeof availableMessageIds] !==
-        undefined && canReport(),
-  )
-
-  function canReportSpacing(): boolean {
-    return (
-      hasGroups ||
-      !!newlinesBetweenValueGetter ||
-      getNewlinesBetweenOption({
-        nextNodeGroupIndex: 0,
-        nodeGroupIndex: 0,
-        options,
-      }) !== 'ignore'
-    )
-  }
 }
 
 /**

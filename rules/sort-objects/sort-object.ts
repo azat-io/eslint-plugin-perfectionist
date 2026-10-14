@@ -30,7 +30,6 @@ import { validateCustomSortConfig } from '../../utils/validate-custom-sort-confi
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
-import { canReportErrors, reportAllErrors } from '../../utils/report-all-errors'
 import { canHavePropertyDependencies } from './can-have-property-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
@@ -39,6 +38,8 @@ import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { isNodeOnSingleLine } from '../../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { computeDependencyNames } from './compute-dependency-names'
+import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeDependencies } from './compute-dependencies'
 import { computeGroup } from '../../utils/compute-group'
@@ -134,6 +135,7 @@ export function sortObject({
   if (
     !canReportErrors({
       comparatorByOptionsComputer: nameOrValueComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
       availableMessageIds,
       canHaveDependencies,
       options,
