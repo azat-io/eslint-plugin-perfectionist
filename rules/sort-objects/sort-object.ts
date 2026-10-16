@@ -30,6 +30,7 @@ import { validateCustomSortConfig } from '../../utils/validate-custom-sort-confi
 import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
+import { canHavePropertyDependencies } from './can-have-property-dependencies'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
 import { doesCustomGroupMatch } from '../../utils/does-custom-group-match'
 import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
@@ -38,6 +39,7 @@ import { isNodeOnSingleLine } from '../../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { computeDependencyNames } from './compute-dependency-names'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeDependencies } from './compute-dependencies'
 import { computeGroup } from '../../utils/compute-group'
@@ -52,6 +54,14 @@ import { complete } from '../../utils/complete'
  * Cache computed groups by modifiers and selectors for performance.
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
+
+let availableMessageIds = {
+  missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+  unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
+  extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+  unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+  unexpectedOrder: ORDER_ERROR_ID,
+} as const
 
 export let defaultOptions: Required<Options[number]> = {
   useExperimentalDependencyDetection: true,
@@ -75,6 +85,14 @@ export let defaultOptions: Required<Options[number]> = {
   groups: [],
 }
 
+/**
+ * Sorts the properties of an object literal or pattern.
+ *
+ * @param params - Parameters.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.context - The rule context.
+ * @param params.node - Object literal or pattern being sorted.
+ */
 export function sortObject({
   matchedAstSelectors,
   context,
@@ -110,6 +128,19 @@ export function sortObject({
   validateNewlinesAndPartitionConfig(options)
 
   if (!options.styledComponents && isStyleComponent(node)) {
+    return
+  }
+
+  let canHaveDependencies = canHavePropertyDependencies(node)
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: nameOrValueComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      availableMessageIds,
+      canHaveDependencies,
+      options,
+    })
+  ) {
     return
   }
 
@@ -222,7 +253,7 @@ export function sortObject({
     })
   }
 
-  if (options.useExperimentalDependencyDetection) {
+  if (canHaveDependencies && options.useExperimentalDependencyDetection) {
     let dependenciesBySortingNode =
       computeDependenciesOutsideDeferredFunctionsBySortingNode({
         ignoreCallbackDependenciesPatterns:
@@ -238,14 +269,8 @@ export function sortObject({
   let sortingNodes = sortingNodeGroups.flat()
 
   reportAllErrors<MessageId>({
-    availableMessageIds: {
-      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-      unexpectedDependencyOrder: DEPENDENCY_ORDER_ERROR_ID,
-      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-      unexpectedOrder: ORDER_ERROR_ID,
-    },
     sortNodesExcludingEslintDisabled,
+    availableMessageIds,
     nodes: sortingNodes,
     options,
     context,

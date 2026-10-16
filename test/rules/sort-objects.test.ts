@@ -1347,6 +1347,35 @@ describe('sort-objects', () => {
             ],
           })
         })
+
+        it('sorts nested rest elements without dependencies', async () => {
+          await invalid({
+            errors: [
+              {
+                messageId: 'unexpectedObjectsOrder',
+                data: { right: 'a', left: 'c' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
+            output: dedent`
+              let {
+                a: { ...rest },
+                c,
+              } = obj
+            `,
+            code: dedent`
+              let {
+                c,
+                a: { ...rest },
+              } = obj
+            `,
+          })
+        })
       })
     }
     testDependencyDetection(true)
@@ -1396,6 +1425,38 @@ describe('sort-objects', () => {
     })
 
     describe('experimental detection specific', () => {
+      it('detects dependencies inside nested destructuring patterns', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let {
+              c,
+              a: [, b = c],
+            } = obj
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+            },
+          ],
+          code: dedent`
+            let {
+              c,
+              a: [...[b = c]],
+            } = obj
+          `,
+        })
+      })
+
       it('detects dependencies inside functions passed as arguments', async () => {
         await invalid({
           errors: [
@@ -11526,6 +11587,66 @@ describe('sort-objects', () => {
           }
         `,
         options: [options],
+      })
+    })
+
+    it('enforces newlines inside for unsorted type', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenObjectMembers',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            b: 'b',
+
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+        options: [{ ...options, newlinesInside: 1 }],
+      })
+
+      await invalid({
+        errors: [
+          {
+            messageId: 'extraSpacingBetweenObjectMembers',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            b: 'b',
+
+            a: 'a',
+          }
+        `,
+        options: [{ ...options, newlinesBetween: 0 }],
+      })
+    })
+
+    it('ignores fallback sort for unsorted type', async () => {
+      await valid({
+        code: dedent`
+          let obj = {
+            b: 'b',
+            a: 'a',
+          }
+        `,
+        options: [{ ...options, fallbackSort: { type: 'alphabetical' } }],
       })
     })
   })

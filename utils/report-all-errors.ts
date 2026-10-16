@@ -22,7 +22,7 @@ import { pairwise } from './pairwise'
  * @template MessageIds - Union of available message IDs for the rule.
  * @template T - Type of sorting node extending the base SortingNode.
  */
-interface ReportAllErrorsParameters<
+export interface ReportAllErrorsParameters<
   MessageIds extends string,
   T extends SortingNode,
 > {
