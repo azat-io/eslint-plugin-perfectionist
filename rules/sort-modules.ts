@@ -191,6 +191,16 @@ export default createEslintRule<Options, MessageId>({
   name: 'sort-modules',
 })
 
+/**
+ * Sorts the statements of a module body and reports ordering errors.
+ *
+ * @param params - Parameters.
+ * @param params.eslintDisabledLines - Lines where the rule is disabled.
+ * @param params.sourceCode - The source code object.
+ * @param params.options - The completed options.
+ * @param params.context - The rule context.
+ * @param params.module - The program or module block to sort.
+ */
 function analyzeModule({
   eslintDisabledLines,
   sourceCode,
@@ -200,9 +210,9 @@ function analyzeModule({
 }: {
   context: TSESLint.RuleContext<MessageId, Options>
   module: { body: TSESTree.ProgramStatement[] }
+  eslintDisabledLines: ReadonlySet<number>
   options: Required<Options[number]>
   sourceCode: TSESLint.SourceCode
-  eslintDisabledLines: number[]
 }): void {
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
   let overloadSignatureNewlinesBetweenValueGetter =

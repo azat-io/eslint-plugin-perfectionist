@@ -17,6 +17,18 @@ let eslintDisableDirectives = [
 type EslintDisableDirective = (typeof eslintDisableDirectives)[number]
 
 /**
+ * Rule list matchers for each directive, built once.
+ */
+let disabledRulesRegexpByDirective: Record<EslintDisableDirective, RegExp> = {
+  'eslint-disable-next-line': buildDisabledRulesRegexp(
+    'eslint-disable-next-line',
+  ),
+  'eslint-disable-line': buildDisabledRulesRegexp('eslint-disable-line'),
+  'eslint-disable': buildDisabledRulesRegexp('eslint-disable'),
+  'eslint-enable': buildDisabledRulesRegexp('eslint-enable'),
+}
+
+/**
  * Parses an ESLint disable comment to extract the directive type and affected
  * rules.
  *
@@ -67,6 +79,10 @@ export function getEslintDisabledRules(comment: string): {
   eslintDisableDirective: EslintDisableDirective
   rules: string[] | 'all'
 } | null {
+  if (!comment.includes('eslint-')) {
+    return null
+  }
+
   let directivePart = getDirectivePart(comment)
   for (let eslintDisableDirective of eslintDisableDirectives) {
     let disabledRules = getEslintDisabledRulesByType(
@@ -132,8 +148,9 @@ function getEslintDisabledRulesByType(
   if (eslintDisableDirective === directivePart) {
     return 'all' as const
   }
-  let regexp = new RegExp(String.raw`^${eslintDisableDirective} ((?:.|\s)*)$`)
-  let disabledRulesMatch = directivePart.match(regexp)
+  let disabledRulesMatch = directivePart.match(
+    disabledRulesRegexpByDirective[eslintDisableDirective],
+  )
   let disableRulesMatchValue = disabledRulesMatch?.[1]
   if (!disableRulesMatchValue) {
     return null
@@ -177,4 +194,16 @@ function getDirectivePart(comment: string): string {
     return comment.trim()
   }
   return comment.slice(0, justificationMatch.index).trim()
+}
+
+/**
+ * Builds the matcher for the rule list following a directive.
+ *
+ * @param eslintDisableDirective - The directive to match.
+ * @returns A regexp capturing the rule list.
+ */
+function buildDisabledRulesRegexp(
+  eslintDisableDirective: EslintDisableDirective,
+): RegExp {
+  return new RegExp(String.raw`^${eslintDisableDirective} ((?:.|\s)*)$`)
 }
