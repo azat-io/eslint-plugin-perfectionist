@@ -19,6 +19,7 @@ import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { computeArrayElements } from './compute-array-elements'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
@@ -32,6 +33,20 @@ type SortArraySortingNode = SortingNode<
   TSESTree.SpreadElement | TSESTree.Expression
 >
 
+/**
+ * Sorts the elements of an array-like expression.
+ *
+ * @param params - Parameters.
+ * @param params.cachedGroupsByModifiersAndSelectors - Cache of predefined
+ *   groups.
+ * @param params.mustHaveMatchedContextOptions - Whether to skip nodes matching
+ *   no option.
+ * @param params.availableMessageIds - The message IDs to report with.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.defaultOptions - The rule default options.
+ * @param params.context - The rule context.
+ * @param params.node - Array or `new` expression whose elements are sorted.
+ */
 export function sortArray<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
   mustHaveMatchedContextOptions,
@@ -84,6 +99,18 @@ export function sortArray<MessageIds extends string>({
     options,
   })
   validateNewlinesAndPartitionConfig(options)
+
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      canHaveDependencies: false,
+      availableMessageIds,
+      options,
+    })
+  ) {
+    return
+  }
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,

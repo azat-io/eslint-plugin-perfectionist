@@ -23,6 +23,7 @@ import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { typeContainsCallableType } from './type-contains-callable-type'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
@@ -30,6 +31,20 @@ import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
 import { complete } from '../../utils/complete'
 
+/**
+ * Sorts the members of a union or intersection type.
+ *
+ * @param params - Parameters.
+ * @param params.cachedGroupsByModifiersAndSelectors - Cache of predefined
+ *   groups.
+ * @param params.tokenValueToIgnoreBefore - Separator token skipped before each
+ *   member.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.availableMessageIds - The message IDs to report with.
+ * @param params.defaultOptions - The rule default options.
+ * @param params.context - The rule context.
+ * @param params.node - Union or intersection type to sort.
+ */
 export function sortUnionOrIntersectionTypes<MessageIds extends string>({
   cachedGroupsByModifiersAndSelectors,
   tokenValueToIgnoreBefore,
@@ -68,6 +83,18 @@ export function sortUnionOrIntersectionTypes<MessageIds extends string>({
     options,
   })
   validateNewlinesAndPartitionConfig(options)
+
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      canHaveDependencies: false,
+      availableMessageIds,
+      options,
+    })
+  ) {
+    return
+  }
 
   if (
     options.ignoreCallableTypes &&

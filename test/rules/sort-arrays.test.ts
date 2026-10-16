@@ -5853,6 +5853,19 @@ describe('sort-arrays', () => {
       })
     })
 
+    it('allows any order when type is unsorted without groups', async () => {
+      await valid({
+        code: dedent`
+          [
+            'b',
+            c,
+            'a'
+          ]
+        `,
+        options: [{ ...unsortedOptions, groups: [] }],
+      })
+    })
+
     it('enforces grouping even with unsorted type', async () => {
       let groupingOptions = [
         {
