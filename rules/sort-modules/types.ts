@@ -11,7 +11,10 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
-import { buildRegexJsonSchema } from '../../utils/json-schemas/common-json-schemas'
+import {
+  buildCommonJsonSchemas,
+  buildRegexJsonSchema,
+} from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-modules rule.
@@ -154,3 +157,12 @@ export let additionalCustomGroupMatchOptionsJsonSchema: Record<
 }
 
 export const USAGE_TYPE_OPTION = 'usage'
+
+/**
+ * Common options JSON schemas, used by ESLint to validate rule options and by
+ * `complete` to validate settings.
+ */
+export let commonJsonSchemas: Record<string, JSONSchema4> =
+  buildCommonJsonSchemas({
+    allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
+  })

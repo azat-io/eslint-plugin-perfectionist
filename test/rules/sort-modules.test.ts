@@ -11317,6 +11317,61 @@ describe('sort-modules', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            function a() {}
+            function bb() {}
+            function ccc() {}
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          function a() {}
+          function bb() {}
+          function ccc() {}
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
+    it('accepts rule-specific values in settings', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'B', left: 'A' },
+          },
+        ],
+        settings: {
+          perfectionist: {
+            type: 'usage',
+          },
+        },
+        output: dedent`
+          type B = 'b';
+          type A = B;
+        `,
+        code: dedent`
+          type A = B;
+          type B = 'b';
+        `,
+        options: [{}],
+      })
+    })
+
     it('preserves comments attached to their respective nodes', async () => {
       await invalid({
         output: dedent`

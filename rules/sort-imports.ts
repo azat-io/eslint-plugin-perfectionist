@@ -14,6 +14,7 @@ import {
   additionalCustomGroupMatchOptionsJsonSchema,
   additionalSortOptionsJsonSchema,
   TYPE_IMPORT_FIRST_TYPE_OPTION,
+  commonJsonSchemas,
   allModifiers,
   allSelectors,
 } from './sort-imports/types'
@@ -26,14 +27,13 @@ import {
   ORDER_ERROR,
 } from '../utils/report-errors'
 import {
-  useExperimentalDependencyDetectionJsonSchema,
-  buildCommonJsonSchemas,
-  buildRegexJsonSchema,
-} from '../utils/json-schemas/common-json-schemas'
-import {
   partitionByCommentJsonSchema,
   partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
+import {
+  useExperimentalDependencyDetectionJsonSchema,
+  buildRegexJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { isNonExternalReferenceTsImportEquals } from './sort-imports/is-non-external-reference-ts-import-equals'
 import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
@@ -123,13 +123,39 @@ let defaultOptions: Required<Options[number]> = {
   order: 'asc',
 }
 
+/**
+ * Default options when `partitionByNewLine` is enabled.
+ *
+ * The newline options can't be used together with `partitionByNewLine`, so
+ * their defaults fall back to `'ignore'` instead of conflicting with it.
+ */
+let partitionByNewLineDefaultOptions: Required<Options[number]> = {
+  ...defaultOptions,
+  newlinesBetween: 'ignore',
+  newlinesInside: 'ignore',
+}
+
 export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
 
     let userOptions = context.options.at(0)
+    let { partitionByNewLine } = complete({
+      defaults: defaultOptions,
+      options: userOptions,
+      commonJsonSchemas,
+      settings,
+    })
     let options = getOptionsWithCleanGroups(
-      complete(userOptions, settings, defaultOptions),
+      complete({
+        defaults:
+          partitionByNewLine ?
+            partitionByNewLineDefaultOptions
+          : defaultOptions,
+        options: userOptions,
+        commonJsonSchemas,
+        settings,
+      }),
     )
 
     validateGroupsConfig({
@@ -304,10 +330,7 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...buildCommonJsonSchemas({
-            allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
-            additionalSortProperties: additionalSortOptionsJsonSchema,
-          }),
+          ...commonJsonSchemas,
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,

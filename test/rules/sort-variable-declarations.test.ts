@@ -6354,6 +6354,38 @@ describe('sort-variable-declarations', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            let
+              a,
+              bb,
+              ccc,
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          let
+            a,
+            bb,
+            ccc,
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('handles inline eslint-disable-line comments', async () => {
       await invalid({
         errors: [

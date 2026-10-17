@@ -5327,6 +5327,40 @@ describe('sort-sets', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            new Set([
+              a,
+              bb,
+              ccc,
+            ])
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          new Set([
+            a,
+            bb,
+            ccc,
+          ])
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('respects eslint-disable-next-line comments', async () => {
       await valid({
         code: dedent`

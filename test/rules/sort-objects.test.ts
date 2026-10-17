@@ -11833,6 +11833,69 @@ describe('sort-objects', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            let obj = {
+              a: 'a',
+              bb: 'bb',
+              ccc: 'ccc',
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          let obj = {
+            a: 'a',
+            bb: 'bb',
+            ccc: 'ccc',
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
+    it('accepts rule-specific values in settings', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedObjectsOrder',
+            data: { right: 'b', left: 'a' },
+          },
+        ],
+        settings: {
+          perfectionist: {
+            fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+          },
+        },
+        output: dedent`
+          let obj = {
+            b: 'a',
+            a: 'b',
+          }
+        `,
+        code: dedent`
+          let obj = {
+            a: 'b',
+            b: 'a',
+          }
+        `,
+        options: [{ type: 'line-length' }],
+      })
+    })
+
     it('preserves comments with their associated properties', async () => {
       await invalid({
         output: dedent`

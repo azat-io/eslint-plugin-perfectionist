@@ -4659,6 +4659,40 @@ describe('sort-jsx-props', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            <Element
+              a="a"
+              bb="bb"
+              ccc="ccc"
+            />
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          <Element
+            a="a"
+            bb="bb"
+            ccc="ccc"
+          />
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('ignores props disabled with eslint-disable-next-line', async () => {
       await valid({
         code: dedent`

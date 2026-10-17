@@ -1627,6 +1627,40 @@ describe('sort-import-attributes', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            import data from 'module' with {
+              a: 'a',
+              bb: 'bb',
+              ccc: 'ccc',
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          import data from 'module' with {
+            a: 'a',
+            bb: 'bb',
+            ccc: 'ccc',
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('sorts attributes with eslint-disable-line comments', async () => {
       await invalid({
         output: dedent`

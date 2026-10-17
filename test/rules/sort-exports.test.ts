@@ -4661,6 +4661,36 @@ describe('sort-exports', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            export { a } from 'module'
+            export { bb } from 'module'
+            export { ccc } from 'module'
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          export { a } from 'module'
+          export { bb } from 'module'
+          export { ccc } from 'module'
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('handles eslint-disable-next-line comments', async () => {
       await valid({
         code: dedent`

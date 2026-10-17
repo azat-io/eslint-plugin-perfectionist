@@ -6,6 +6,7 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import {
   type SortObjectTypesSortingNode,
   type ObjectTypeParent,
+  commonJsonSchemas,
   type Modifier,
   type Selector,
   allModifiers,
@@ -74,7 +75,12 @@ export function sortObjectTypeElements<MessageIds extends string>({
     elements,
     context,
   })
-  let options = complete(matchedContextOptions, settings, defaultOptions)
+  let options = complete({
+    options: matchedContextOptions,
+    defaults: defaultOptions,
+    commonJsonSchemas,
+    settings,
+  })
   validateCustomSortConfig(options)
   validateGroupsConfig({
     selectors: allSelectors,

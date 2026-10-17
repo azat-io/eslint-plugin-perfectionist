@@ -5725,6 +5725,78 @@ describe('sort-decorators', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            @A
+            @BB
+            @CCC
+            class Class {
+
+              @A
+              @BB
+              @CCC
+              property
+
+              @A
+              @BB
+              @CCC
+              accessor field
+
+              @A
+              @BB
+              @CCC
+              method(
+                @A
+                @BB
+                @CCC
+                parameter) {}
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          @A
+          @BB
+          @CCC
+          class Class {
+
+            @A
+            @BB
+            @CCC
+            property
+
+            @A
+            @BB
+            @CCC
+            accessor field
+
+            @A
+            @BB
+            @CCC
+            method(
+              @A
+              @BB
+              @CCC
+              parameter) {}
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('sorts decorators with eslint-disable-line comments', async () => {
       await invalid({
         output: dedent`

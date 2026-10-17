@@ -10,12 +10,8 @@ import {
   additionalCustomGroupMatchOptionsJsonSchema,
   additionalSortOptionsJsonSchema,
   objectTypeParentTypes,
+  commonJsonSchemas,
 } from './sort-object-types/types'
-import {
-  matchesAstSelectorJsonSchema,
-  buildUseConfigIfJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
 import {
   partitionByCommentJsonSchema,
   partitionByNewlineJsonSchema,
@@ -26,6 +22,10 @@ import {
   GROUP_ORDER_ERROR,
   ORDER_ERROR,
 } from '../utils/report-errors'
+import {
+  matchesAstSelectorJsonSchema,
+  buildUseConfigIfJsonSchema,
+} from '../utils/json-schemas/common-json-schemas'
 import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-groups-json-schemas'
 import { computeParentNodesWithTypes } from '../utils/compute-parent-nodes-with-types'
 import { scopedRegexJsonSchema } from '../utils/json-schemas/scoped-regex-json-schema'
@@ -65,9 +65,7 @@ export let defaultOptions: Required<Options[number]> = {
 export let jsonSchema: JSONSchema4 = {
   items: {
     properties: {
-      ...buildCommonJsonSchemas({
-        additionalSortProperties: additionalSortOptionsJsonSchema,
-      }),
+      ...commonJsonSchemas,
       ...buildCommonGroupsJsonSchemas({
         additionalCustomGroupMatchProperties:
           additionalCustomGroupMatchOptionsJsonSchema,
