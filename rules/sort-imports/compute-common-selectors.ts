@@ -231,10 +231,9 @@ function isCoreModule(value: string, environment: 'node' | 'bun'): boolean {
   }
 
   if (
-    builtinPrefixOnlyModules.has(value) ||
-    builtinPrefixOnlyModules.has(`node:${cleanValue}`) ||
-    builtinPrefixOnlyModules.has(basePath!) ||
-    builtinPrefixOnlyModules.has(`node:${cleanBase}`)
+    value.startsWith('node:') &&
+    (builtinPrefixOnlyModules.has(`node:${cleanValue}`) ||
+      builtinPrefixOnlyModules.has(`node:${cleanBase}`))
   ) {
     return true
   }

@@ -90,6 +90,7 @@ describe('compute-common-selector', () => {
         ...builtinModules,
         ...builtinModules.map(name => `node:${name}`),
         'node:sqlite',
+        'node:sqlite/x',
         'node:test',
         'node:sea',
       ])("should match with '%s'", name => {
@@ -97,6 +98,15 @@ describe('compute-common-selector', () => {
           'builtin',
         )
       })
+
+      it.each(['sqlite', 'sqlite/x', 'test', 'test/reporters', 'sea', 'ffi'])(
+        "should not match prefix-only modules without prefix with '%s'",
+        name => {
+          expect(
+            computeCommonSelectors(buildParameters({ name })),
+          ).not.toContain('builtin')
+        },
+      )
     })
 
     describe('bun environment', () => {
