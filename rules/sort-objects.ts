@@ -9,13 +9,13 @@ import {
   MISSED_SPACING_ERROR_ID,
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
+  commonJsonSchemas,
   ORDER_ERROR_ID,
 } from './sort-objects/types'
 import {
   useExperimentalDependencyDetectionJsonSchema,
   matchesAstSelectorJsonSchema,
   buildUseConfigIfJsonSchema,
-  buildCommonJsonSchemas,
   buildRegexJsonSchema,
 } from '../utils/json-schemas/common-json-schemas'
 import {
@@ -40,9 +40,7 @@ export default createEslintRule<Options, MessageId>({
     schema: {
       items: {
         properties: {
-          ...buildCommonJsonSchemas({
-            additionalSortProperties: additionalSortOptionsJsonSchema,
-          }),
+          ...commonJsonSchemas,
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,

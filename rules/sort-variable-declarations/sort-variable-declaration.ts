@@ -87,7 +87,11 @@ export function sortVariableDeclaration({
     node,
   })
 
-  let options = complete(matchedContextOptions, settings, defaultOptions)
+  let options = complete({
+    options: matchedContextOptions,
+    defaults: defaultOptions,
+    settings,
+  })
 
   validateCustomSortConfig(options)
   validateNewlinesAndPartitionConfig(options)

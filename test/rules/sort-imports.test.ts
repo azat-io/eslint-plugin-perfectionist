@@ -11694,6 +11694,163 @@ describe('sort-imports', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            import { a } from 'a'
+            import { bb } from 'bb'
+            import { ccc } from 'ccc'
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          import { a } from 'a'
+          import { bb } from 'bb'
+          import { ccc } from 'ccc'
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
+    it('accepts rule-specific values in settings', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'a' },
+          },
+        ],
+        settings: {
+          perfectionist: {
+            fallbackSort: { type: 'type-import-first' },
+          },
+        },
+        output: dedent`
+          import type { Type } from 'a'
+          import { value } from 'a'
+        `,
+        code: dedent`
+          import { value } from 'a'
+          import type { Type } from 'a'
+        `,
+        options: [{ groups: ['unknown'] }],
+      })
+    })
+
+    it('allows partitionByNewLine without newline options', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'c', left: 'd' },
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import { c } from 'c'
+          import { d } from 'd'
+
+          import { a } from 'a'
+          import { b } from 'b'
+        `,
+        code: dedent`
+          import { d } from 'd'
+          import { c } from 'c'
+
+          import { b } from 'b'
+          import { a } from 'a'
+        `,
+        options: [{ partitionByNewLine: true }],
+      })
+    })
+
+    it('allows partitionByNewLine in settings without newline options', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'c', left: 'd' },
+          },
+          {
+            messageId: 'unexpectedImportsOrder',
+            data: { right: 'a', left: 'b' },
+          },
+        ],
+        output: dedent`
+          import { c } from 'c'
+          import { d } from 'd'
+
+          import { a } from 'a'
+          import { b } from 'b'
+        `,
+        code: dedent`
+          import { d } from 'd'
+          import { c } from 'c'
+
+          import { b } from 'b'
+          import { a } from 'a'
+        `,
+        settings: {
+          perfectionist: {
+            partitionByNewLine: true,
+          },
+        },
+        options: [{ type: 'alphabetical', order: 'asc' }],
+      })
+    })
+
+    it('keeps newline defaults when options set partitionByNewLine to undefined', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'missedSpacingBetweenImports',
+            data: { right: '../b', left: 'a' },
+          },
+        ],
+        settings: {
+          perfectionist: {
+            partitionByNewLine: true,
+          },
+        },
+        output: dedent`
+          import { a } from 'a'
+
+          import { b } from '../b'
+        `,
+        code: dedent`
+          import { a } from 'a'
+          import { b } from '../b'
+        `,
+        options: [{ partitionByNewLine: undefined }],
+      })
+    })
+
+    it('rejects newline options combined with partitionByNewLine', async () => {
+      await expect(
+        valid({
+          options: [{ partitionByNewLine: true, newlinesBetween: 1 }],
+          code: "import { a } from 'a'",
+        }),
+      ).rejects.toThrow(
+        "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
+      )
+    })
+
     it('respects ESLint disable comments when sorting imports', async () => {
       await valid({
         code: dedent`

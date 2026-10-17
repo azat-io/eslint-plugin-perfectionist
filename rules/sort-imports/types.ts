@@ -10,6 +10,7 @@ import {
   buildCustomGroupModifiersJsonSchema,
   buildCustomGroupSelectorJsonSchema,
 } from '../../utils/json-schemas/common-groups-json-schemas'
+import { buildCommonJsonSchemas } from '../../utils/json-schemas/common-json-schemas'
 
 /**
  * Configuration options for the sort-imports rule.
@@ -193,3 +194,13 @@ export let additionalSortOptionsJsonSchema: Record<string, JSONSchema4> = {
 }
 
 export const TYPE_IMPORT_FIRST_TYPE_OPTION = 'type-import-first'
+
+/**
+ * Common options JSON schemas, used by ESLint to validate rule options and by
+ * `complete` to validate settings.
+ */
+export let commonJsonSchemas: Record<string, JSONSchema4> =
+  buildCommonJsonSchemas({
+    allowedAdditionalTypeValues: [TYPE_IMPORT_FIRST_TYPE_OPTION],
+    additionalSortProperties: additionalSortOptionsJsonSchema,
+  })

@@ -6049,6 +6049,40 @@ describe('sort-enums', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            enum Enum {
+              A = 'a',
+              BB = 'bb',
+              CCC = 'ccc',
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          enum Enum {
+            A = 'a',
+            BB = 'bb',
+            CCC = 'ccc',
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('preserves comments with their associated nodes', async () => {
       await invalid({
         output: dedent`

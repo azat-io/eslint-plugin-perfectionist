@@ -3491,6 +3491,42 @@ describe('sort-switch-case', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            switch (variable) {
+              case 'a':
+              case 'bb':
+              case 'ccc':
+                break;
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          switch (variable) {
+            case 'a':
+            case 'bb':
+            case 'ccc':
+              break;
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     describe('condition-shaped switches', () => {
       it('does not sort switches where discriminant and case tests are comparisons', async () => {
         await valid({

@@ -1,4 +1,8 @@
+import type { JSONSchema4 } from '@typescript-eslint/utils/json-schema'
+
 import type { Settings } from './get-settings'
+
+import { validateSettingsValues } from './get-settings'
 
 /**
  * Merges configuration options with settings and defaults in priority order.
@@ -12,28 +16,43 @@ import type { Settings } from './get-settings'
  * This ensures that user-provided options always override settings, and
  * settings always override defaults.
  *
+ * Before merging, validates the values of the settings that end up in the
+ * merged options with `validateSettingsValues`.
+ *
  * @example
  *
  * ```ts
- * const finalOptions = complete(
- *   { type: 'natural' }, // User options (highest priority)
- *   { order: 'asc' }, // Global settings
- *   { type: 'alphabetical', order: 'desc' }, // Defaults (lowest priority)
- * )
+ * const finalOptions = complete({
+ *   options: { type: 'natural' }, // User options (highest priority)
+ *   settings: { order: 'asc' }, // Global settings
+ *   defaults: { type: 'alphabetical', order: 'desc' }, // Defaults (lowest priority)
+ * })
  * // Returns: { type: 'natural', order: 'asc' }
  * ```
  *
  * @template T - Type of the configuration object.
- * @param options - Rule-specific options provided by the user (highest
+ * @param params - Parameters object.
+ * @param params.options - Rule-specific options provided by the user (highest
  *   priority).
- * @param settings - Global settings from ESLint configuration.
- * @param defaults - Default values for the configuration (lowest priority).
+ * @param params.settings - Global settings from ESLint configuration.
+ * @param params.defaults - Default values for the configuration (lowest
+ *   priority).
+ * @param params.commonJsonSchemas - JSON schemas of the common options of the
+ *   rule, passed by rules that allow additional values for these options.
  * @returns Merged configuration object with all three levels combined.
+ * @throws {Error} If a setting in the merged options has an invalid value.
  */
-export function complete<T extends Record<string, unknown>>(
-  options: Partial<T> = {},
-  settings: Settings = {},
-  defaults: T = {} as T,
-): T {
+export function complete<T extends Record<string, unknown>>({
+  commonJsonSchemas,
+  options = {},
+  settings,
+  defaults,
+}: {
+  commonJsonSchemas?: Record<string, JSONSchema4>
+  options?: Partial<T> | undefined
+  settings: Settings
+  defaults: T
+}): T {
+  validateSettingsValues({ commonJsonSchemas, settings, defaults, options })
   return { ...defaults, ...settings, ...options }
 }

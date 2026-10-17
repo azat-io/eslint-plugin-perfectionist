@@ -16,6 +16,7 @@ import {
   MISSED_SPACING_ERROR_ID,
   EXTRA_SPACING_ERROR_ID,
   GROUP_ORDER_ERROR_ID,
+  commonJsonSchemas,
   ORDER_ERROR_ID,
   allModifiers,
   allSelectors,
@@ -118,7 +119,12 @@ export function sortObject({
     context,
   })
 
-  let options = complete(matchedContextOptions, settings, defaultOptions)
+  let options = complete({
+    options: matchedContextOptions,
+    defaults: defaultOptions,
+    commonJsonSchemas,
+    settings,
+  })
   validateCustomSortConfig(options)
   validateGroupsConfig({
     selectors: allSelectors,
