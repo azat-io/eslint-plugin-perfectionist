@@ -151,10 +151,14 @@ export let configs: PluginConfigs = {
   }),
 }
 
-export default {
-  ...plugin,
-  configs,
-} as { configs: PluginConfigs } & ESLint.Plugin
+/**
+ * The configs register `plugin` under its name, so the default export must be
+ * the same object. ESLint compares plugins by reference and throws "Cannot
+ * redefine plugin" when a user config registers a copy.
+ */
+plugin.configs = configs
+
+export default plugin as { configs: PluginConfigs } & ESLint.Plugin
 
 export type { Options as SortVariableDeclarationsOptions } from './rules/sort-variable-declarations/types'
 export type { Options as SortIntersectionTypesOptions } from './rules/sort-intersection-types/types'
