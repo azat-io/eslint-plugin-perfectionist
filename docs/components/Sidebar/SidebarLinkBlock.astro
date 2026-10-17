@@ -14,13 +14,12 @@ interface Link {
   url: string
 }
 
-let { class: className, title, links, url, ...props } = Astro.props
+let { class: className, title, links, url } = Astro.props
 ---
 
 <a
   class:list={['title-link', className]}
   href={url}
-  {...props}
 >
   <Typography
     class="title"

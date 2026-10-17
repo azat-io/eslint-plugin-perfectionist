@@ -78,6 +78,8 @@ export const GET: APIRoute = async () => {
     '',
     ...DEMO_LINKS.map(link => `- [${link.title}](${link.href})`),
     '',
+    'To sort your own code, paste it into the [Playground](/playground).',
+    '',
     '## Guide',
     '',
     ...guide.map(

@@ -25,6 +25,15 @@ body:
       required: true
 
   - type: input
+    id: playground-link
+    attributes:
+      label: Playground link
+      description:
+        Optional. A link to the
+        [Playground](https://perfectionist.dev/playground) that shows the bug.
+      placeholder: https://perfectionist.dev/playground#v=1&code=...
+
+  - type: input
     id: eslint-version
     attributes:
       label: ESLint version
