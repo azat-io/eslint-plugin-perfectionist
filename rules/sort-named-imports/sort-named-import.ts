@@ -32,6 +32,7 @@ import { computeImportKindModifier } from './compute-import-kind-modifier'
 import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
@@ -63,6 +64,21 @@ export let defaultOptions: Required<Options[number]> = {
   groups: [],
 }
 
+let availableMessageIds = {
+  missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+  extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+  unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+  unexpectedOrder: ORDER_ERROR_ID,
+} as const
+
+/**
+ * Sorts the specifiers of a named import.
+ *
+ * @param params - Parameters.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.context - The rule context.
+ * @param params.node - Import declaration whose specifiers are sorted.
+ */
 export function sortNamedImport({
   matchedAstSelectors,
   context,
@@ -95,6 +111,18 @@ export function sortNamedImport({
     options,
   })
   validateNewlinesAndPartitionConfig(options)
+
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      canHaveDependencies: false,
+      availableMessageIds,
+      options,
+    })
+  ) {
+    return
+  }
 
   let { sourceCode, id } = context
   let eslintDisabledLines = getEslintDisabledLines({
@@ -169,13 +197,8 @@ export function sortNamedImport({
 
   let nodes = formattedMembers.flat()
   reportAllErrors<MessageId>({
-    availableMessageIds: {
-      missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-      extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-      unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-      unexpectedOrder: ORDER_ERROR_ID,
-    },
     sortNodesExcludingEslintDisabled,
+    availableMessageIds,
     options,
     context,
     nodes,

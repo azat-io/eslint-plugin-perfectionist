@@ -26,6 +26,7 @@ import { UnreachableCaseError } from '../../utils/unreachable-case-error'
 import { isNodeOnSingleLine } from '../../utils/is-node-on-single-line'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { isNodeFunctionType } from './is-node-function-type'
 import { computeGroup } from '../../utils/compute-group'
@@ -42,6 +43,16 @@ import { complete } from '../../utils/complete'
  */
 let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
+/**
+ * Sorts the members of an object type or interface.
+ *
+ * @param params - Parameters.
+ * @param params.availableMessageIds - The message IDs to report with.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.parentNodes - Declarations that conditions can match against.
+ * @param params.elements - Members to sort.
+ * @param params.context - The rule context.
+ */
 export function sortObjectTypeElements<MessageIds extends string>({
   availableMessageIds,
   matchedAstSelectors,
@@ -82,6 +93,18 @@ export function sortObjectTypeElements<MessageIds extends string>({
     options,
   })
   validateNewlinesAndPartitionConfig(options)
+
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: nameOrValueComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      canHaveDependencies: false,
+      availableMessageIds,
+      options,
+    })
+  ) {
+    return
+  }
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,

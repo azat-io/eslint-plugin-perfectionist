@@ -22,6 +22,7 @@ import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
@@ -47,6 +48,21 @@ export let defaultOptions: Required<Options[number]> = {
   groups: [],
 }
 
+let availableMessageIds = {
+  missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
+  extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
+  unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
+  unexpectedOrder: ORDER_ERROR_ID,
+} as const
+
+/**
+ * Sorts the entries passed to a `Map` constructor.
+ *
+ * @param params - Parameters.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.context - The rule context.
+ * @param params.node - Expression that may construct a map.
+ */
 export function sortPotentialMap({
   matchedAstSelectors,
   context,
@@ -85,6 +101,18 @@ export function sortPotentialMap({
     modifiers: [],
     options,
   })
+
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      canHaveDependencies: false,
+      availableMessageIds,
+      options,
+    })
+  ) {
+    return
+  }
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
@@ -169,14 +197,9 @@ export function sortPotentialMap({
       }
 
       reportAllErrors<MessageId>({
-        availableMessageIds: {
-          missedSpacingBetweenMembers: MISSED_SPACING_ERROR_ID,
-          extraSpacingBetweenMembers: EXTRA_SPACING_ERROR_ID,
-          unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
-          unexpectedOrder: ORDER_ERROR_ID,
-        },
         sortNodesExcludingEslintDisabled:
           createSortNodesExcludingEslintDisabled(nodes),
+        availableMessageIds,
         options,
         context,
         nodes,
