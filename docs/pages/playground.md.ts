@@ -39,7 +39,7 @@ export const GET: APIRoute = async () => {
     '## Differences from running ESLint locally',
     '',
     "- With all rules, only `type` and `order` have controls. Set the options of a rule with a comment in the code, such as `/* eslint perfectionist/sort-objects: ['error', { partitionByComment: true }] */`. A comment also overrides the Options field.",
-    '- `sort-arrays` sorts only arrays with `as const` by default, because the rule needs `useConfigurationIf` to run. The Options field or a comment can set another `useConfigurationIf`.',
+    '- `sort-arrays` and `sort-constructor-parameters` need `useConfigurationIf` to run. By default, `sort-arrays` sorts only arrays with `as const`, and `sort-constructor-parameters` only constructors of classes decorated with `@Component`, `@Injectable` or `@Pipe`. The Options field or a comment can set another `useConfigurationIf`.',
     '- Syntax that only works in `.ts` files does not parse: write `<T,>(value: T) => value` instead of `<T>(value: T) => value`, and `value as Type` instead of `<Type>value`.',
     "- ESLint's built-in rules and other plugins are not loaded, so comments that configure them are ignored.",
     "- Strings are compared with the browser's `Intl`, which can order some characters differently from Node.js.",

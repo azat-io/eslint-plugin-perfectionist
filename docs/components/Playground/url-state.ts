@@ -231,7 +231,6 @@ async function decompress(value: string): Promise<string> {
   if (value.length > ENCODED_SIZE_LIMIT) {
     throw new RangeError('The code in the link is too large.')
   }
-  // eslint-disable-next-line unicorn/prefer-uint8array-base64 -- Chrome 109 and Safari 17 lack Uint8Array.fromBase64
   let binary = atob(value.replaceAll('-', '+').replaceAll('_', '/'))
   let bytes = new Uint8Array(binary.length)
   for (let index = 0; index < binary.length; index++) {
@@ -279,7 +278,6 @@ async function compress(text: string): Promise<string> {
   for (let byte of bytes) {
     binary += String.fromCodePoint(byte)
   }
-  // eslint-disable-next-line unicorn/prefer-uint8array-base64 -- Chrome 109 and Safari 17 lack Uint8Array#toBase64
   return btoa(binary)
     .replaceAll('+', '-')
     .replaceAll('/', '_')

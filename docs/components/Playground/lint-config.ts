@@ -350,9 +350,9 @@ export function lintCode(
   parser: Linter.Parser,
 ): LintResult {
   let read =
-    rule !== null && optionsText.trim() !== '' ?
-      readOptions(optionsText, rule, program => parseProgram(parser, program))
-    : null
+    rule === null || optionsText.trim() === '' ?
+      null
+    : readOptions(optionsText, rule, program => parseProgram(parser, program))
   if (read && 'message' in read) {
     return { kind: 'options-error', config: null, ...read }
   }
@@ -505,7 +505,7 @@ function withReportData(
     return problem
   }
   let [report] = reports.splice(index, 1)
-  let { rightGroup, leftGroup, right, left } = report!.data
+  let { rightGroup, right = '', leftGroup, left = '' } = report!.data
   let template = getMessageTemplate(report!.ruleId, report!.messageId)
   let used = new Set(
     Array.from(
@@ -524,10 +524,10 @@ function withReportData(
     ) ?
       {
         leftFirst: isLeftFirst(template),
-        rightName: right ?? '',
-        leftName: left ?? '',
         right: rightGroup,
+        rightName: right,
         left: leftGroup,
+        leftName: left,
       }
     : null
   return {

@@ -69,7 +69,7 @@
         fragment.append(span)
       }
     }
-    fragment.append('​')
+    fragment.append('\u{200B}')
     element.replaceChildren(fragment)
   })
 </script>
