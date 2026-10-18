@@ -5858,7 +5858,7 @@ describe('sort-arrays', () => {
         code: dedent`
           [
             'b',
-            c,
+            'c',
             'a'
           ]
         `,
