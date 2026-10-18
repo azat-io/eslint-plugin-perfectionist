@@ -2,7 +2,7 @@ import type { Diagnostic } from 'typescript'
 import type { PathLike } from 'node:fs'
 import type { Mock } from 'vitest'
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import ts from 'typescript'
 
@@ -305,6 +305,90 @@ describe('readClosestTsConfigByPath', () => {
           readClosestTsConfigByPath({ ...testInput, tsconfigRootDir: '/' }),
         ).toThrowErrorMatchingInlineSnapshot(
           `[Error: Couldn't find any tsconfig.json relative to '../../repos/repo/packages/package/file.ts' within '/'.]`,
+        )
+      })
+
+      describe('on Windows', () => {
+        /**
+         * Unlike the posix root, the root of a Windows drive or UNC share is
+         * longer than one character.
+         */
+        beforeEach(async () => {
+          vi.doMock(import('node:path'), async importOriginal => {
+            let { win32 } = await importOriginal()
+            return { ...win32, default: win32 }
+          })
+          ;({ readClosestTsConfigByPath } =
+            await import('../../../utils/tsconfig/read-closest-ts-config-by-path'))
+        })
+
+        afterEach(() => {
+          vi.doUnmock('node:path')
+          vi.resetModules()
+        })
+
+        it.each([
+          [
+            'drive',
+            String.raw`C:\repo\src\file.ts`,
+            String.raw`C:\tsconfig.json`,
+          ],
+          [
+            'UNC share',
+            String.raw`\\server\repo\src\file.ts`,
+            String.raw`\\server\repo\tsconfig.json`,
+          ],
+        ])(
+          'returns a tsconfig.json at the root of a %s',
+          (_root, filePath, tsconfigPath) => {
+            mockExistsSync.mockImplementation(input => input === tsconfigPath)
+            mockReadConfigFileReturnValue()
+            mockParseJsonConfigFileContentReturnValue()
+
+            let result = readClosestTsConfigByPath({
+              tsconfigFilename: 'tsconfig.json',
+              tsconfigRootDir: '.',
+              contextCwd: '.',
+              filePath,
+            })
+
+            expect(result?.compilerOptions).toEqual(compilerOptions)
+            expect(mockReadConfigFile).toHaveBeenCalledExactlyOnceWith(
+              tsconfigPath,
+            )
+          },
+        )
+
+        it.each(['C:\\', '.'])(
+          'stops after the drive root when tsconfigRootDir is %s',
+          tsconfigRootDirectory => {
+            /**
+             * An endless search would hang the test worker, so the mock stops
+             * it.
+             */
+            mockExistsSync.mockImplementation(() => {
+              if (mockExistsSync.mock.calls.length > 10) {
+                throw new Error('The search did not stop')
+              }
+              return false
+            })
+
+            expect(() =>
+              readClosestTsConfigByPath({
+                filePath: String.raw`C:\repo\src\file.ts`,
+                tsconfigRootDir: tsconfigRootDirectory,
+                tsconfigFilename: 'tsconfig.json',
+                contextCwd: String.raw`C:\repo`,
+              }),
+            ).toThrow(
+              String.raw`Couldn't find any tsconfig.json relative to 'C:\repo\src\file.ts' within '${tsconfigRootDirectory}'.`,
+            )
+            expect(mockExistsSync.mock.calls).toEqual([
+              [String.raw`C:\repo\src\tsconfig.json`],
+              [String.raw`C:\repo\tsconfig.json`],
+              [String.raw`C:\tsconfig.json`],
+            ])
+          },
         )
       })
     })

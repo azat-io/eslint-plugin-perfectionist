@@ -114,7 +114,16 @@ export function readClosestTsConfigByPath({
       return getCompilerOptions(typescriptImport, contextCwd, cachedDirectory)
     }
 
-    directory = path.dirname(directory)
+    /**
+     * The root of a Windows drive or UNC share is longer than one character, so
+     * only being its own parent tells it apart.
+     */
+    let parentDirectory = path.dirname(directory)
+    if (parentDirectory === directory) {
+      break
+    }
+
+    directory = parentDirectory
     checkedDirectories.push(directory)
   } while (directory.length > 1 && directory.length >= tsconfigRootDir.length)
 
