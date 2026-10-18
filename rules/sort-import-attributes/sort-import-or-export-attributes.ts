@@ -14,6 +14,7 @@ import { isNodeEslintDisabled } from '../../utils/is-node-eslint-disabled'
 import { validateGroupsConfig } from '../../utils/validate-groups-config'
 import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
+import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { computeGroup } from '../../utils/compute-group'
 import { rangeToDiff } from '../../utils/range-to-diff'
@@ -22,6 +23,16 @@ import { computeNodeName } from './compute-node-name'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
+/**
+ * Sorts the attributes of an import or export declaration.
+ *
+ * @param params - Parameters.
+ * @param params.matchedAstSelectors - The AST selectors the node matched.
+ * @param params.availableMessageIds - The message IDs to report with.
+ * @param params.defaultOptions - The rule default options.
+ * @param params.context - The rule context.
+ * @param params.node - Declaration whose attributes are sorted.
+ */
 export function sortImportOrExportAttributes<MessageIds extends string>({
   matchedAstSelectors,
   availableMessageIds,
@@ -62,6 +73,18 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
     options,
   })
   validateNewlinesAndPartitionConfig(options)
+
+  if (
+    !canReportErrors({
+      comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
+      newlinesBetweenValueGetter: undefined,
+      canHaveDependencies: false,
+      availableMessageIds,
+      options,
+    })
+  ) {
+    return
+  }
 
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
