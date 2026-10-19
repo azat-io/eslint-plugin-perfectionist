@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Settings } from '../../utils/get-settings'
 
+import { buildCommonJsonSchemas } from '../../utils/json-schemas/common-json-schemas'
 import { complete } from '../../utils/complete'
 
 describe('complete', () => {
@@ -19,7 +20,7 @@ describe('complete', () => {
       c: 'defaults_c',
     }
 
-    let result = complete(options, settings, defaults)
+    let result = complete({ settings, defaults, options })
 
     expect(result).toEqual({
       defaultsField: 'foo',
@@ -43,7 +44,7 @@ describe('complete', () => {
       let settings = { field: settingsValue } as Settings
       let defaults = { field: defaultsValue }
 
-      let result = complete(options, settings, defaults)
+      let result = complete({ settings, defaults, options })
 
       expect(result).toEqual({ field: false })
     },
@@ -56,9 +57,40 @@ describe('complete', () => {
       let settings = { field: false } as Settings
       let defaults = { field: defaultsValue }
 
-      let result = complete(options, settings, defaults)
+      let result = complete({ settings, defaults, options })
 
       expect(result).toEqual({ field: false })
     },
   )
+
+  it('validates the settings values used by the merged options', () => {
+    expect(() => {
+      complete({
+        defaults: { type: 'alphabetical' },
+        settings: { type: 'Natural' },
+      })
+    }).toThrow('Invalid value(s) for Perfectionist setting(s): type')
+  })
+
+  it('does not validate settings overridden by options', () => {
+    let result = complete({
+      defaults: { type: 'alphabetical' },
+      settings: { type: 'Natural' },
+      options: { type: 'natural' },
+    })
+
+    expect(result).toEqual({ type: 'natural' })
+  })
+
+  it('validates the settings against the given common JSON schemas', () => {
+    let result = complete({
+      commonJsonSchemas: buildCommonJsonSchemas({
+        allowedAdditionalTypeValues: ['type-import-first'],
+      }),
+      settings: { type: 'type-import-first' },
+      defaults: { type: 'alphabetical' },
+    })
+
+    expect(result).toEqual({ type: 'type-import-first' })
+  })
 })

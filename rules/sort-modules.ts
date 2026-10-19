@@ -6,6 +6,13 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
 import type { SortModulesSortingNode, Options } from './sort-modules/types'
 
 import {
+  additionalCustomGroupMatchOptionsJsonSchema,
+  USAGE_TYPE_OPTION,
+  commonJsonSchemas,
+  allModifiers,
+  allSelectors,
+} from './sort-modules/types'
+import {
   DEPENDENCY_ORDER_ERROR,
   MISSED_SPACING_ERROR,
   EXTRA_SPACING_ERROR,
@@ -15,25 +22,16 @@ import {
 import { buildOverloadSignatureNewlinesBetweenValueGetter } from '../utils/overload-signature/build-overload-signature-newlines-between-value-getter'
 import { populateSortingNodeGroupsWithOverloadSignature } from '../utils/overload-signature/populate-sorting-node-groups-with-overload-signature'
 import {
-  additionalCustomGroupMatchOptionsJsonSchema,
-  USAGE_TYPE_OPTION,
-  allModifiers,
-  allSelectors,
-} from './sort-modules/types'
-import {
   partitionByCommentJsonSchema,
   partitionByNewlineJsonSchema,
 } from '../utils/json-schemas/common-partition-json-schemas'
-import {
-  useExperimentalDependencyDetectionJsonSchema,
-  buildCommonJsonSchemas,
-} from '../utils/json-schemas/common-json-schemas'
 import {
   buildCommonGroupsJsonSchemas,
   newlinesBetweenJsonSchema,
 } from '../utils/json-schemas/common-groups-json-schemas'
 import { populateSortingNodeGroupsWithDependencies } from '../utils/populate-sorting-node-groups-with-dependencies'
 import { computeDependenciesBySortingNode } from './sort-modules/dependencies/compute-dependencies-by-sorting-node'
+import { useExperimentalDependencyDetectionJsonSchema } from '../utils/json-schemas/common-json-schemas'
 import { computeAdditionalModuleStatements } from './sort-modules/compute-additional-module-statements'
 import { buildComparatorByOptionsComputer } from './sort-modules/build-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-and-partition-config'
@@ -117,9 +115,7 @@ export default createEslintRule<Options, MessageId>({
     schema: [
       {
         properties: {
-          ...buildCommonJsonSchemas({
-            allowedAdditionalTypeValues: [USAGE_TYPE_OPTION],
-          }),
+          ...commonJsonSchemas,
           ...buildCommonGroupsJsonSchemas({
             additionalCustomGroupMatchProperties:
               additionalCustomGroupMatchOptionsJsonSchema,
@@ -161,7 +157,12 @@ export default createEslintRule<Options, MessageId>({
   },
   create: context => {
     let settings = getSettings(context.settings)
-    let options = complete(context.options.at(0), settings, defaultOptions)
+    let options = complete({
+      options: context.options.at(0),
+      defaults: defaultOptions,
+      commonJsonSchemas,
+      settings,
+    })
     validateCustomSortConfig(options)
     validateGroupsConfig({
       modifiers: allModifiers,

@@ -6067,6 +6067,40 @@ describe('sort-array-includes', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            [
+              a,
+              bb,
+              ccc,
+            ].includes(value)
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          [
+            a,
+            bb,
+            ccc,
+          ].includes(value)
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     describe('with eslint-disable comments', () => {
       it('excludes disabled elements from sorting', async () => {
         await valid({

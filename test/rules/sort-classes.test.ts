@@ -16473,6 +16473,40 @@ describe('sort-classes', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            class Class {
+              a
+              bb
+              ccc
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          class Class {
+            a
+            bb
+            ccc
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
     it('keeps comments associated to their node', async () => {
       await invalid({
         output: dedent`

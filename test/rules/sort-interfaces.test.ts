@@ -8332,6 +8332,69 @@ describe('sort-interfaces', () => {
       })
     })
 
+    it('rejects invalid settings values that options do not override', async () => {
+      let settings = {
+        perfectionist: {
+          type: 'Natural',
+        },
+      }
+
+      await expect(
+        valid({
+          code: dedent`
+            interface Interface {
+              a: string
+              bb: string
+              ccc: string
+            }
+          `,
+          options: [{}],
+          settings,
+        }),
+      ).rejects.toThrow('Invalid value(s) for Perfectionist setting(s): type')
+
+      await valid({
+        code: dedent`
+          interface Interface {
+            a: string
+            bb: string
+            ccc: string
+          }
+        `,
+        options: [{ type: 'alphabetical' }],
+        settings,
+      })
+    })
+
+    it('accepts rule-specific values in settings', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedInterfacePropertiesOrder',
+            data: { right: 'b', left: 'a' },
+          },
+        ],
+        settings: {
+          perfectionist: {
+            fallbackSort: { type: 'alphabetical', sortBy: 'value' },
+          },
+        },
+        output: dedent`
+          interface Interface {
+            b: a;
+            a: b;
+          }
+        `,
+        code: dedent`
+          interface Interface {
+            a: b;
+            b: a;
+          }
+        `,
+        options: [{ type: 'line-length' }],
+      })
+    })
+
     it('supports eslint-disable for individual nodes', async () => {
       await valid({
         code: dedent`

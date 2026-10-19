@@ -86,7 +86,11 @@ export default createEslintRule<Options, MessageId>({
   create: context => {
     let settings = getSettings(context.settings)
 
-    let options = complete(context.options.at(0), settings, defaultOptions)
+    let options = complete({
+      options: context.options.at(0),
+      defaults: defaultOptions,
+      settings,
+    })
     validateCustomSortConfig(options)
     validateGroupsConfig({
       modifiers: allModifiers,

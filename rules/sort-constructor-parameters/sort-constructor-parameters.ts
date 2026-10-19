@@ -79,7 +79,11 @@ export function sortConstructorParameters<MessageIds extends string>({
     return
   }
 
-  let options = complete(matchedContextOptions, settings, defaultOptions)
+  let options = complete({
+    options: matchedContextOptions,
+    defaults: defaultOptions,
+    settings,
+  })
   validateCustomSortConfig(options)
   validateGroupsConfig({
     selectors: allSelectors,

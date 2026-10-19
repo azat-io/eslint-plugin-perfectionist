@@ -154,6 +154,8 @@ In settings, you can set the following options:
 - `newlinesInside` — Specifies how to handle newlines between elements of each group. Values can be `'ignore'`, `'newlinesBetween'` or a number.
 - `tsconfig` — `tsconfig` configuration option used by rules such as [`sort-imports`](/rules/sort-imports#tsconfig) or [`sort-modules`](/rules/sort-modules#tsconfig).
 
+An unknown setting causes a configuration error. So does an invalid value, in each rule that has this option and does not override it.
+
 Example:
 
 <CodeTabs

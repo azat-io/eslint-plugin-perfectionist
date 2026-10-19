@@ -209,7 +209,10 @@ export function buildCommonGroupsJsonSchemas({
   additionalCustomGroupMatchProperties?: Record<string, JSONSchema4>
   additionalSortProperties?: Record<string, JSONSchema4>
   allowedAdditionalTypeValues?: string[]
-} = {}): Record<string, JSONSchema4> {
+} = {}): Record<
+  'newlinesBetween' | 'newlinesInside' | 'customGroups' | 'groups',
+  JSONSchema4
+> {
   return {
     customGroups: buildCustomGroupsArrayJsonSchema({
       additionalCustomGroupMatchProperties,
