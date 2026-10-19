@@ -36,6 +36,7 @@ jobs:
             sort-array-includes
             sort-arrays
             sort-classes
+            sort-constructor-parameters
             sort-decorators
             sort-enums
             sort-export-attributes
