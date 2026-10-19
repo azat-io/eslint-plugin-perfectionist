@@ -17,11 +17,11 @@ describe('common-groups-json-schemas', () => {
     )
 
     it.each(['ignore', 1, 0])("should allow '%s'", newlinesBetween => {
-      expect(newlinesBetweenJsonSchemaValidator(newlinesBetween)).toBeTruthy()
+      expect(newlinesBetweenJsonSchemaValidator(newlinesBetween)).toBe(true)
     })
 
     it('should not allow invalid values', () => {
-      expect(newlinesBetweenJsonSchemaValidator('invalid')).toBeFalsy()
+      expect(newlinesBetweenJsonSchemaValidator('invalid')).toBe(false)
     })
   })
 
@@ -31,11 +31,11 @@ describe('common-groups-json-schemas', () => {
     )
 
     it.each(['ignore', 1, 0])("should allow '%s'", newlinesInside => {
-      expect(newlinesInsideJsonSchemaValidator(newlinesInside)).toBeTruthy()
+      expect(newlinesInsideJsonSchemaValidator(newlinesInside)).toBe(true)
     })
 
     it('should not allow invalid values', () => {
-      expect(newlinesInsideJsonSchemaValidator('invalid')).toBeFalsy()
+      expect(newlinesInsideJsonSchemaValidator('invalid')).toBe(false)
     })
   })
 
@@ -50,22 +50,22 @@ describe('common-groups-json-schemas', () => {
     )
 
     it('should allow an array of strings', () => {
-      expect(groupsJsonSchemaValidator(['group1', 'group2'])).toBeTruthy()
+      expect(groupsJsonSchemaValidator(['group1', 'group2'])).toBe(true)
     })
 
     it('should allow an array of non-empty arrays of strings', () => {
-      expect(groupsJsonSchemaValidator([['group1'], ['group3']])).toBeTruthy()
+      expect(groupsJsonSchemaValidator([['group1'], ['group3']])).toBe(true)
     })
 
     it('should not allow empty sub-arrays', () => {
-      expect(groupsJsonSchemaValidator([[], ['group3']])).toBeFalsy()
+      expect(groupsJsonSchemaValidator([[], ['group3']])).toBe(false)
     })
 
     describe('newlinesBetween', () => {
       it.each(['ignore', 1, 0])("should allow '%s'", newlinesBetween => {
         expect(
           groupsJsonSchemaValidator(['group1', { newlinesBetween }, 'group2']),
-        ).toBeTruthy()
+        ).toBe(true)
       })
 
       it('should not allow invalid values', () => {
@@ -75,7 +75,7 @@ describe('common-groups-json-schemas', () => {
             { newlinesBetween: 'invalid' },
             'group2',
           ]),
-        ).toBeFalsy()
+        ).toBe(false)
       })
 
       it('should not allow additional properties', () => {
@@ -85,13 +85,13 @@ describe('common-groups-json-schemas', () => {
             { something: 'something', newlinesBetween: 1 },
             'group2',
           ]),
-        ).toBeFalsy()
+        ).toBe(false)
       })
     })
 
     describe('group with overrides option', () => {
       it('should not allow less than 2 properties set', () => {
-        expect(groupsJsonSchemaValidator([{ group: 'group' }])).toBeFalsy()
+        expect(groupsJsonSchemaValidator([{ group: 'group' }])).toBe(false)
       })
 
       it('should not allow group to be undefined', () => {
@@ -99,7 +99,7 @@ describe('common-groups-json-schemas', () => {
           groupsJsonSchemaValidator([
             { commentAbove: 'foo', type: 'unsorted' },
           ]),
-        ).toBeFalsy()
+        ).toBe(false)
       })
 
       it('should allow overriding options', () => {
@@ -115,7 +115,7 @@ describe('common-groups-json-schemas', () => {
               order: 'asc',
             },
           ]),
-        ).toBeTruthy()
+        ).toBe(true)
       })
 
       it('should allow additional sort properties', () => {
@@ -130,7 +130,7 @@ describe('common-groups-json-schemas', () => {
               group: 'group',
             },
           ]),
-        ).toBeTruthy()
+        ).toBe(true)
       })
 
       describe('type', () => {
@@ -149,7 +149,7 @@ describe('common-groups-json-schemas', () => {
                 group: 'group',
               },
             ]),
-          ).toBeTruthy()
+          ).toBe(true)
         })
       })
 
@@ -161,7 +161,7 @@ describe('common-groups-json-schemas', () => {
               { commentAbove: 'foo', group: 'group' },
               'group2',
             ]),
-          ).toBeTruthy()
+          ).toBe(true)
         })
 
         it("should allow 'commentAbove' with non-empty string array groups", () => {
@@ -171,7 +171,7 @@ describe('common-groups-json-schemas', () => {
               { commentAbove: 'foo', group: ['group'] },
               'group2',
             ]),
-          ).toBeTruthy()
+          ).toBe(true)
         })
 
         it("should not allow 'commentAbove' with empty sub-arrays", () => {
@@ -181,7 +181,7 @@ describe('common-groups-json-schemas', () => {
               { commentAbove: 'foo', group: [] },
               'group2',
             ]),
-          ).toBeFalsy()
+          ).toBe(false)
         })
 
         it('should not allow additional properties', () => {
@@ -191,7 +191,7 @@ describe('common-groups-json-schemas', () => {
               { something: 'something', commentAbove: 'foo' },
               'group2',
             ]),
-          ).toBeFalsy()
+          ).toBe(false)
         })
       })
     })
@@ -203,11 +203,11 @@ describe('common-groups-json-schemas', () => {
           { commentAbove: 'foo', newlinesBetween: 1 },
           'group2',
         ]),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     it('should not allow the empty object', () => {
-      expect(groupsJsonSchemaValidator(['group1', {}, 'group2'])).toBeFalsy()
+      expect(groupsJsonSchemaValidator(['group1', {}, 'group2'])).toBe(false)
     })
   })
 
@@ -233,7 +233,7 @@ describe('common-groups-json-schemas', () => {
             groupName: 'group',
           },
         ]),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('should allow additional sort fields', () => {
@@ -244,7 +244,7 @@ describe('common-groups-json-schemas', () => {
             groupName: 'group',
           },
         ]),
-      ).toBeTruthy()
+      ).toBe(true)
 
       expect(
         customGroupsJsonSchema([
@@ -253,7 +253,7 @@ describe('common-groups-json-schemas', () => {
             groupName: 'group',
           },
         ]),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     it("should allow arrays of 'anyOf' custom groups", () => {
@@ -268,7 +268,7 @@ describe('common-groups-json-schemas', () => {
             groupName: 'group',
           },
         ]),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it("should enforce at least 1 element in 'anyOf'", () => {
@@ -279,7 +279,7 @@ describe('common-groups-json-schemas', () => {
             anyOf: [],
           },
         ]),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     it('should enforce at least 2 properties if no `anyOf`', () => {
@@ -289,7 +289,7 @@ describe('common-groups-json-schemas', () => {
             groupName: 'group',
           },
         ]),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     it("should enforce 'groupName'", () => {
@@ -300,7 +300,7 @@ describe('common-groups-json-schemas', () => {
             customGroupProperty: 'value',
           },
         ]),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     describe('type', () => {
@@ -320,7 +320,7 @@ describe('common-groups-json-schemas', () => {
               type: 'my-type',
             },
           ]),
-        ).toBeTruthy()
+        ).toBe(true)
       })
     })
 
@@ -343,7 +343,7 @@ describe('common-groups-json-schemas', () => {
               groupName: 'group',
             },
           ]),
-        ).toBeTruthy()
+        ).toBe(true)
       })
     })
   })

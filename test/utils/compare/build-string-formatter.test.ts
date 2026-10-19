@@ -16,7 +16,9 @@ describe('build-string-formatter', () => {
       specialCharacters: 'keep',
       ignoreCase: false,
     })
-    expect(formatString('a b c d e fg h')).toBe('abcdefgh')
+    expect(
+      formatString('a b\u{2005}c\u{200A}d\u{2006}e\u{2009}fg\u{2003}h'),
+    ).toBe('abcdefgh')
   })
 
   describe('special characters', () => {

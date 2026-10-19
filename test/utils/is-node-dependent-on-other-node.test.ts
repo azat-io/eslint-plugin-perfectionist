@@ -11,7 +11,7 @@ describe('isNodeDependentOnOtherNode', () => {
       dependencies: [],
     })
 
-    expect(isNodeDependentOnOtherNode(node, node)).toBeFalsy()
+    expect(isNodeDependentOnOtherNode(node, node)).toBe(false)
   })
 
   it('should return true if a dependency is among the dependency names', () => {
@@ -24,7 +24,7 @@ describe('isNodeDependentOnOtherNode', () => {
       dependencies: ['b'],
     })
 
-    expect(isNodeDependentOnOtherNode(node1, node2)).toBeTruthy()
+    expect(isNodeDependentOnOtherNode(node1, node2)).toBe(true)
   })
 
   function createNodeWithDependencies({

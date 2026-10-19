@@ -10,7 +10,7 @@ describe('passes-ast-selector-filter', () => {
 
       expect(
         passesAstSelectorFilter({ matchedAstSelectors, matchesAstSelector }),
-      ).toBeTruthy()
+      ).toBe(true)
     },
   )
 
@@ -22,7 +22,7 @@ describe('passes-ast-selector-filter', () => {
         matchesAstSelector: 'TSTypeAnnotation',
         matchedAstSelectors,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns false if `matchedAstSelectors` does not contain `matchesAstSelector`', () => {
@@ -33,6 +33,6 @@ describe('passes-ast-selector-filter', () => {
         matchesAstSelector: 'ClassBody',
         matchedAstSelectors,
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 })

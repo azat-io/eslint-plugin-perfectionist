@@ -98,7 +98,7 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
 
   let formattedMembers: SortImportAttributesSortingNode[][] = [[]]
   for (let attribute of attributes) {
-    let name = computeNodeName(attribute, sourceCode)
+    let name = computeNodeName(attribute)
 
     let group = computeGroup({
       customGroupMatcher: customGroup =>

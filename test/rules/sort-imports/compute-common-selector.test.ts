@@ -212,8 +212,8 @@ describe('compute-common-selector', () => {
   })
 
   function buildParameters({
+    environment = 'node',
     internalPattern,
-    environment,
     tsConfig,
     name,
   }: {
@@ -237,7 +237,7 @@ describe('compute-common-selector', () => {
         : null,
       options: {
         internalPattern: internalPattern ?? [],
-        environment: environment ?? 'node',
+        environment,
       },
       filename: '',
       name,

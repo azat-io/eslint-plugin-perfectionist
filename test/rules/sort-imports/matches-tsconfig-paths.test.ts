@@ -16,7 +16,7 @@ describe('matches-tsconfig-paths', () => {
         tsConfigOutput: createTsConfig(paths),
         name,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it.each([
@@ -29,7 +29,7 @@ describe('matches-tsconfig-paths', () => {
         tsConfigOutput: createTsConfig(paths),
         name,
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 
   function createTsConfig(paths: string[]): ReadClosestTsConfigByPathValue {

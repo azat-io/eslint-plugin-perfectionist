@@ -14,7 +14,7 @@ describe('get-group-index', () => {
           { commentAbove: 'foo', group: 'group' },
           { commentAbove: 'foo', group: ['group'] },
         ],
-        createSortingNode('group'),
+        createSortingNode(),
       ),
     ).toBe(0)
   })
@@ -28,7 +28,7 @@ describe('get-group-index', () => {
           { commentAbove: 'foo', group: 'group' },
           { commentAbove: 'foo', group: ['group'] },
         ],
-        createSortingNode('group'),
+        createSortingNode(),
       ),
     ).toBe(0)
   })
@@ -42,7 +42,7 @@ describe('get-group-index', () => {
           ['group'],
           { commentAbove: 'foo', group: ['group'] },
         ],
-        createSortingNode('group'),
+        createSortingNode(),
       ),
     ).toBe(0)
   })
@@ -56,12 +56,12 @@ describe('get-group-index', () => {
           ['group'],
           { commentAbove: 'foo', group: 'group' },
         ],
-        createSortingNode('group'),
+        createSortingNode(),
       ),
     ).toBe(0)
   })
 
-  function createSortingNode(group: string): SortingNode {
-    return { group } as SortingNode
+  function createSortingNode(): SortingNode {
+    return { group: 'group' } as SortingNode
   }
 })

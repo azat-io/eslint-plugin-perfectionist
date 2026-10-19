@@ -362,10 +362,10 @@ describe('get-newlines-between-option', () => {
   })
 
   function buildParameters({
-    nextNodeGroupIndexGroup,
-    sortingNodeGroup,
+    nextNodeGroupIndexGroup = 'group2',
+    sortingNodeGroup = 'group1',
+    newlinesInside = 'ignore',
     newlinesBetween,
-    newlinesInside,
     customGroups,
     groups,
   }: {
@@ -379,19 +379,16 @@ describe('get-newlines-between-option', () => {
     let finalGroups = groups ?? ['group1', 'group2']
     return {
       options: {
-        newlinesInside: newlinesInside ?? 'ignore',
         customGroups: customGroups ?? [],
         groups: finalGroups,
         newlinesBetween,
+        newlinesInside,
       },
       nextNodeGroupIndex: generateNodeGroupIndex(
         finalGroups,
-        nextNodeGroupIndexGroup ?? 'group2',
+        nextNodeGroupIndexGroup,
       ),
-      nodeGroupIndex: generateNodeGroupIndex(
-        finalGroups,
-        sortingNodeGroup ?? 'group1',
-      ),
+      nodeGroupIndex: generateNodeGroupIndex(finalGroups, sortingNodeGroup),
     }
   }
 

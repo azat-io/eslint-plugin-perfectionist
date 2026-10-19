@@ -24,7 +24,7 @@ describe('common-json-schemas', () => {
       commonJsonSchemaValidator({
         myProperty: 'my-property',
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   describe('type', () => {
@@ -40,7 +40,7 @@ describe('common-json-schemas', () => {
         commonJsonSchemaValidator({
           type,
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('should allow additional values', () => {
@@ -54,7 +54,7 @@ describe('common-json-schemas', () => {
         commonJsonSchemaValidator({
           type: 'my-type',
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('should not allow invalid values', () => {
@@ -62,7 +62,7 @@ describe('common-json-schemas', () => {
         commonJsonSchemaValidator({
           type: 'invalid',
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
   })
 
@@ -72,7 +72,7 @@ describe('common-json-schemas', () => {
         commonJsonSchemaValidator({
           order,
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('should not allow invalid values', () => {
@@ -80,7 +80,7 @@ describe('common-json-schemas', () => {
         commonJsonSchemaValidator({
           order: 'invalid',
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
   })
 
@@ -92,7 +92,7 @@ describe('common-json-schemas', () => {
           commonJsonSchemaValidator({
             specialCharacters,
           }),
-        ).toBeTruthy()
+        ).toBe(true)
       },
     )
 
@@ -101,7 +101,7 @@ describe('common-json-schemas', () => {
         commonJsonSchemaValidator({
           specialCharacters: 'invalid',
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
   })
 
@@ -121,7 +121,7 @@ describe('common-json-schemas', () => {
               type,
             },
           }),
-        ).toBeTruthy()
+        ).toBe(true)
       })
 
       it('should allow additional values', () => {
@@ -137,7 +137,7 @@ describe('common-json-schemas', () => {
               type: 'my-type',
             },
           }),
-        ).toBeTruthy()
+        ).toBe(true)
       })
 
       it('should not allow undefined type', () => {
@@ -147,7 +147,7 @@ describe('common-json-schemas', () => {
               order: 'asc',
             },
           }),
-        ).toBeFalsy()
+        ).toBe(false)
       })
 
       it('should not allow invalid values', () => {
@@ -157,7 +157,7 @@ describe('common-json-schemas', () => {
               type: 'invalid',
             },
           }),
-        ).toBeFalsy()
+        ).toBe(false)
       })
     })
 
@@ -170,7 +170,7 @@ describe('common-json-schemas', () => {
               order,
             },
           }),
-        ).toBeTruthy()
+        ).toBe(true)
       })
 
       it('should not allow invalid values', () => {
@@ -181,7 +181,7 @@ describe('common-json-schemas', () => {
               order: 'invalid',
             },
           }),
-        ).toBeFalsy()
+        ).toBe(false)
       })
     })
 
@@ -201,7 +201,7 @@ describe('common-json-schemas', () => {
             type: 'alphabetical',
           },
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('should not allow additional properties', () => {
@@ -212,7 +212,7 @@ describe('common-json-schemas', () => {
             type: 'alphabetical',
           },
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
   })
 
@@ -220,13 +220,13 @@ describe('common-json-schemas', () => {
     let regexJsonSchemaValidator = ajv.compile(buildRegexJsonSchema())
 
     it('should allow string values', () => {
-      expect(regexJsonSchemaValidator('some string')).toBeTruthy()
+      expect(regexJsonSchemaValidator('some string')).toBe(true)
     })
 
     it.each([{ pattern: 'pattern' }, { pattern: 'pattern', flags: 'flags' }])(
       "should allow '%s'",
       regex => {
-        expect(regexJsonSchemaValidator(regex)).toBeTruthy()
+        expect(regexJsonSchemaValidator(regex)).toBe(true)
       },
     )
 
@@ -236,7 +236,7 @@ describe('common-json-schemas', () => {
           something: 'something',
           pattern: 'pattern',
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     it('should not allow additional properties', () => {
@@ -245,11 +245,11 @@ describe('common-json-schemas', () => {
           something: 'something',
           pattern: 'pattern',
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
 
     it('should not allow the empty object', () => {
-      expect(regexJsonSchemaValidator({})).toBeFalsy()
+      expect(regexJsonSchemaValidator({})).toBe(false)
     })
   })
 

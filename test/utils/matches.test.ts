@@ -4,11 +4,11 @@ import { matches } from '../../utils/matches'
 
 describe('matches', () => {
   it('should return true if the value matches the string option', () => {
-    expect(matches('foo', '^foo$')).toBeTruthy()
+    expect(matches('foo', '^foo$')).toBe(true)
   })
 
   it('should return true if the value matches one of the string options', () => {
-    expect(matches('foo', ['bar', '^foo$'])).toBeTruthy()
+    expect(matches('foo', ['bar', '^foo$'])).toBe(true)
   })
 
   it('should allow passing regex flags', () => {
@@ -17,7 +17,7 @@ describe('matches', () => {
         pattern: '^foo$',
         flags: 'i',
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('should allow passing regex flags in an array', () => {
@@ -29,7 +29,7 @@ describe('matches', () => {
           flags: 'i',
         },
       ]),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('should throw an error if the regex option is not a string', () => {

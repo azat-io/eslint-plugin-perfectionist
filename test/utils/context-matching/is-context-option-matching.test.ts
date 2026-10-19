@@ -10,7 +10,7 @@ describe('is-context-option-matching', () => {
         nodeNames: ['bar'],
         options: {},
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns true if all conditions of `useConfigurationIf` are met', () => {
@@ -25,7 +25,7 @@ describe('is-context-option-matching', () => {
         matchedAstSelectors: new Set(['ClassBody']),
         nodeNames: ['bar1', 'bar2'],
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns false if `allNamesMatchPattern` is not met', () => {
@@ -40,7 +40,7 @@ describe('is-context-option-matching', () => {
         matchedAstSelectors: new Set(['ClassBody']),
         nodeNames: ['bar1', 'bar2'],
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 
   it('returns false if `matchesAstSelector` is not met', () => {
@@ -55,6 +55,6 @@ describe('is-context-option-matching', () => {
         matchedAstSelectors: new Set(['ClassBody']),
         nodeNames: ['bar1', 'bar2'],
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 })

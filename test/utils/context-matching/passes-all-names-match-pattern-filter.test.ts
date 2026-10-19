@@ -10,7 +10,7 @@ describe('passes-all-names-match-pattern-filter', () => {
 
       expect(
         passesAllNamesMatchPatternFilter({ allNamesMatchPattern, nodeNames }),
-      ).toBeTruthy()
+      ).toBe(true)
     },
   )
 
@@ -22,7 +22,7 @@ describe('passes-all-names-match-pattern-filter', () => {
         allNamesMatchPattern: 'bar',
         nodeNames,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns false if the configuration does not matches `allNamesMatchPattern`', () => {
@@ -33,7 +33,7 @@ describe('passes-all-names-match-pattern-filter', () => {
         allNamesMatchPattern: 'foo',
         nodeNames,
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 
   it('returns false if the configuration does not matches', () => {
@@ -44,6 +44,6 @@ describe('passes-all-names-match-pattern-filter', () => {
         allNamesMatchPattern: 'foo',
         nodeNames,
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 })

@@ -27,9 +27,7 @@ export function computeMatchedContextOptions<MessageIds extends string>({
   matchedAstSelectors: ReadonlySet<string>
   attributes: TSESTree.ImportAttribute[]
 }): Options[number] | undefined {
-  let nodeNames = attributes.map(attribute =>
-    computeNodeName(attribute, context.sourceCode),
-  )
+  let nodeNames = attributes.map(attribute => computeNodeName(attribute))
 
   return context.options.find(options =>
     isContextOptionMatching({ matchedAstSelectors, nodeNames, options }),

@@ -43,7 +43,7 @@ describe('canReportErrors', () => {
         options: buildOptions(),
         availableMessageIds,
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 
   it('returns true when elements are sorted', () => {
@@ -55,7 +55,7 @@ describe('canReportErrors', () => {
         canHaveDependencies: false,
         availableMessageIds,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns true when elements are grouped', () => {
@@ -67,7 +67,7 @@ describe('canReportErrors', () => {
         canHaveDependencies: false,
         availableMessageIds,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns true when newlines are enforced or overridden', () => {
@@ -79,7 +79,7 @@ describe('canReportErrors', () => {
         canHaveDependencies: false,
         availableMessageIds,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
     expect(
       canReportErrors({
         comparatorByOptionsComputer: defaultComparatorByOptionsComputer,
@@ -88,7 +88,7 @@ describe('canReportErrors', () => {
         options: buildOptions(),
         availableMessageIds,
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('returns true when dependencies can be reported', () => {
@@ -103,7 +103,7 @@ describe('canReportErrors', () => {
         canHaveDependencies: true,
         options: buildOptions(),
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it('ignores errors the rule does not report', () => {
@@ -118,6 +118,6 @@ describe('canReportErrors', () => {
         newlinesBetweenValueGetter: undefined,
         canHaveDependencies: false,
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 })

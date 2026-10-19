@@ -14,7 +14,7 @@ describe('does-custom-group-match', () => {
           elementName: '',
           modifiers: [],
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('returns false if custom group does not match at least one selector', () => {
@@ -27,7 +27,7 @@ describe('does-custom-group-match', () => {
           elementName: '',
           modifiers: [],
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
   })
 
@@ -42,7 +42,7 @@ describe('does-custom-group-match', () => {
           elementName: '',
           selectors: [],
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     })
 
     it('returns false if custom group does not match all modifiers', () => {
@@ -55,7 +55,7 @@ describe('does-custom-group-match', () => {
           elementName: '',
           selectors: [],
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     })
   })
 
@@ -76,7 +76,7 @@ describe('does-custom-group-match', () => {
           modifiers: [],
           selectors: [],
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     },
   )
 
@@ -98,7 +98,7 @@ describe('does-custom-group-match', () => {
           modifiers: [],
           selectors: [],
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     },
   )
 
@@ -120,7 +120,7 @@ describe('does-custom-group-match', () => {
           modifiers: [],
           selectors: [],
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     },
   )
 })

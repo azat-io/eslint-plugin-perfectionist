@@ -9,7 +9,7 @@
   import IconChevronRight from '../icons/chevron-right.svg?component'
   import HighlightText from './HighlightText.svelte'
 
-  let { onclose, isOpen } = $props<{ isOpen: boolean; onclose(): void }>()
+  let { onclose, isOpen }: { isOpen: boolean; onclose(): void } = $props()
 
   let dialog: HTMLDialogElement
   let previouslyFocused: HTMLElement | null = null

@@ -4,7 +4,7 @@ import { isSideEffectOnlyGroup } from '../../../rules/sort-imports/is-side-effec
 
 describe('is-side-effect-only-group', () => {
   it('should return false if option is undefined', () => {
-    expect(isSideEffectOnlyGroup(undefined)).toBeFalsy()
+    expect(isSideEffectOnlyGroup(undefined)).toBe(false)
   })
 
   it('should return false if option is a newlinesBetween option', () => {
@@ -12,26 +12,26 @@ describe('is-side-effect-only-group', () => {
       isSideEffectOnlyGroup({
         newlinesBetween: 'ignore',
       }),
-    ).toBeFalsy()
+    ).toBe(false)
   })
 
   it.each(['side-effect', 'side-effect-style'])(
     'should return true if option `%s`',
     group => {
-      expect(isSideEffectOnlyGroup(group)).toBeTruthy()
+      expect(isSideEffectOnlyGroup(group)).toBe(true)
     },
   )
 
   it('should return true if all elements of a subgroup is a side-effect group `%s`', () => {
-    expect(
-      isSideEffectOnlyGroup(['side-effect', 'side-effect-style']),
-    ).toBeTruthy()
+    expect(isSideEffectOnlyGroup(['side-effect', 'side-effect-style'])).toBe(
+      true,
+    )
   })
 
   it.each(['side-effect', 'side-effect-style'])(
     'should return false if at least one element of a subgroup is not a side-effect group (`%s`)',
     group => {
-      expect(isSideEffectOnlyGroup(['group1', group])).toBeFalsy()
+      expect(isSideEffectOnlyGroup(['group1', group])).toBe(false)
     },
   )
 
@@ -43,7 +43,7 @@ describe('is-side-effect-only-group', () => {
           commentAbove: 'foo',
           group,
         }),
-      ).toBeTruthy()
+      ).toBe(true)
     },
   )
 
@@ -53,7 +53,7 @@ describe('is-side-effect-only-group', () => {
         group: ['side-effect', 'side-effect-style'],
         commentAbove: 'foo',
       }),
-    ).toBeTruthy()
+    ).toBe(true)
   })
 
   it.each(['side-effect', 'side-effect-style'])(
@@ -64,7 +64,7 @@ describe('is-side-effect-only-group', () => {
           group: ['group1', group],
           commentAbove: 'foo',
         }),
-      ).toBeFalsy()
+      ).toBe(false)
     },
   )
 })

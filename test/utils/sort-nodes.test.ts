@@ -74,16 +74,10 @@ describe('sort-nodes', () => {
     })
   })
 
-  function createTestNode<T extends object>(
-    node: {
-      isEslintDisabled?: boolean
-      name: string
-    },
-    additionalParameters?: T,
-  ): SortingNode & T {
-    return {
-      ...node,
-      ...additionalParameters,
-    } as SortingNode & T
+  function createTestNode(node: {
+    isEslintDisabled?: boolean
+    name: string
+  }): SortingNode {
+    return node as SortingNode
   }
 })

@@ -178,7 +178,7 @@ function getInternalOrExternalGroup({
 }): 'internal' | 'external' | null {
   let typescriptImport = getTypescriptImport()
   if (!typescriptImport) {
-    return !name.startsWith('.') && !name.startsWith('/') ? 'external' : null
+    return name.startsWith('.') || name.startsWith('/') ? null : 'external'
   }
 
   let isRelativeImport = typescriptImport.isExternalModuleNameRelative(name)

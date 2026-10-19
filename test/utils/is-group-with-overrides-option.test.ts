@@ -6,14 +6,14 @@ describe('is-group-with-overrides-option', () => {
   it.each([{ group: 'group' }, { group: ['group'] }])(
     'should return `true` if the element is a group with overrides option (%s)',
     (option: { group: string[] | string }) => {
-      expect(isGroupWithOverridesOption(option)).toBeTruthy()
+      expect(isGroupWithOverridesOption(option)).toBe(true)
     },
   )
 
   it.each(['group', ['group'], {}, { foo: 'bar' }, { newlinesBetween: 1 }])(
     'should return `false` if the element is not a group with overrides option (%s)',
     option => {
-      expect(isGroupWithOverridesOption(option as string)).toBeFalsy()
+      expect(isGroupWithOverridesOption(option as string)).toBe(false)
     },
   )
 })

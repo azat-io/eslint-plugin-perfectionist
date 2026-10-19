@@ -120,17 +120,11 @@ describe('sort-nodes-by-groups', () => {
     })
   })
 
-  function createTestNode<T extends object>(
-    node: {
-      isEslintDisabled?: boolean
-      group: string
-      name: string
-    },
-    additionalParameters?: T,
-  ): SortingNode & T {
-    return {
-      ...node,
-      ...additionalParameters,
-    } as SortingNode & T
+  function createTestNode(node: {
+    isEslintDisabled?: boolean
+    group: string
+    name: string
+  }): SortingNode {
+    return node as SortingNode
   }
 })

@@ -12,20 +12,20 @@ describe('common-partition-json-schemas', () => {
     )
 
     it('should allow boolean values', () => {
-      expect(partitionByCommentJsonSchemaValidator(true)).toBeTruthy()
+      expect(partitionByCommentJsonSchemaValidator(true)).toBe(true)
     })
 
     it.each([{ block: true }, { line: true }, { block: true, line: true }])(
       "should allow '%s'",
       partitionByComment => {
-        expect(
-          partitionByCommentJsonSchemaValidator(partitionByComment),
-        ).toBeTruthy()
+        expect(partitionByCommentJsonSchemaValidator(partitionByComment)).toBe(
+          true,
+        )
       },
     )
 
     it('should not allow the empty object', () => {
-      expect(partitionByCommentJsonSchemaValidator({})).toBeFalsy()
+      expect(partitionByCommentJsonSchemaValidator({})).toBe(false)
     })
   })
 })
