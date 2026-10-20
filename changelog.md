@@ -1,5 +1,46 @@
 # Changelog
 
+## v5.13.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.12.1...v5.13.0)
+
+### 🚀 Features
+
+- Add sort-constructor-parameters rule
+  ([4d542f6](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4d542f6))
+
+### 🏎 Performance Improvements
+
+- **sort-objects:** Skip work for objects that cannot be reported
+  ([0f3cda2](https://github.com/azat-io/eslint-plugin-perfectionist/commit/0f3cda2))
+- Cache disabled lines and narrow dependency scope walks
+  ([8b7f6d1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8b7f6d1))
+- Skip elements whose options cannot report errors
+  ([4d06954](https://github.com/azat-io/eslint-plugin-perfectionist/commit/4d06954))
+
+### 🐞 Bug Fixes
+
+- Restore alphabet reverse method
+  ([8292ce8](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8292ce8))
+- **sort-imports:** Treat prefix-only modules without prefix as external
+  ([2e94623](https://github.com/azat-io/eslint-plugin-perfectionist/commit/2e94623))
+- Register the exported plugin object in configs
+  ([a93611b](https://github.com/azat-io/eslint-plugin-perfectionist/commit/a93611b))
+- Stop the tsconfig search at the drive root on windows
+  ([8a8f4f3](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8a8f4f3))
+- Validate setting values and allow partitioning imports by newlines
+  ([7951342](https://github.com/azat-io/eslint-plugin-perfectionist/commit/7951342))
+- Support lists of locales in natural sorting
+  ([f1665c1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f1665c1))
+- **sort-maps:** Reject newline options combined with partitioning by newlines
+  ([8c713e1](https://github.com/azat-io/eslint-plugin-perfectionist/commit/8c713e1))
+
+### ❤️ Contributors
+
+- Azat S. <to@azat.io>
+- Matt Parrish <matt.r.parrish@icloud.com>
+- Hugo
+
 ## v5.12.1
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.12.0...v5.12.1)
