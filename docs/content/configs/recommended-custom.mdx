@@ -33,7 +33,7 @@ Use this configuration to precisely tune how elements should be sorted while kee
 You must provide an `alphabet` option in the `perfectionist` settings object or for each rule individually.
 This option should be a string that represents an ordered alphabet.
 
-Example: `01234564789abcdef...`
+Example: `0123456789abcdef...`
 
 Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to quickly generate a custom alphabet.
 
@@ -44,11 +44,10 @@ Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to 
         // eslint.config.js
         import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
         import perfectionist from 'eslint-plugin-perfectionist'
-        import naturalCompare from 'natural-compare-lite';
 
         const myCustomAlphabet = Alphabet
           .generateRecommendedAlphabet()
-          .sortingBy((a, b) => naturalCompare(a, b))
+          .sortByNaturalSort()
           .getCharacters();
 
         export default [
@@ -68,13 +67,11 @@ Use the `Alphabet` utility class from `eslint-plugin-perfectionist/alphabet` to 
     {
       source: dedent`
         // .eslintrc.js
-        import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
-        import perfectionist from 'eslint-plugin-perfectionist'
-        import naturalCompare from 'natural-compare-lite';
+        const { Alphabet } = require('eslint-plugin-perfectionist/alphabet')
 
         const myCustomAlphabet = Alphabet
           .generateRecommendedAlphabet()
-          .sortingBy((a, b) => naturalCompare(a, b))
+          .sortByNaturalSort()
           .getCharacters();
 
         module.exports = {

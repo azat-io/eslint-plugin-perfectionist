@@ -420,7 +420,6 @@ interface CustomGroupAnyOfDefinition {
   fallbackSort?: { type: string; order?: 'asc' | 'desc' }
   newlinesInside?: number | 'ignore'
   anyOf: Array<{
-      selector?: string
       elementNamePattern?: string | string[] | { pattern: string; flags?: string } | { pattern: string; flags?: string }[]
   }>
 }

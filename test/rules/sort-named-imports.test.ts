@@ -184,7 +184,7 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('allows to ignore import aliases', async () => {
+    it('allows to use import aliases', async () => {
       await valid({
         code: dedent`
           import {
@@ -2165,7 +2165,7 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('allows to ignore import aliases', async () => {
+    it('allows to use import aliases', async () => {
       await valid({
         code: dedent`
           import {
@@ -3592,7 +3592,7 @@ describe('sort-named-imports', () => {
       })
     })
 
-    it('allows to ignore import aliases', async () => {
+    it('allows to use import aliases', async () => {
       await valid({
         code: dedent`
           import {
