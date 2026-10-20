@@ -35,7 +35,12 @@ export function compareNaturally(
   >,
 ): number {
   let naturalCompare = createNaturalCompare({
-    locale: locales.toString(),
+    /**
+     * Natural-orderby passes the locale to `localeCompare` as is, so a list of
+     * locales works, though its types accept only a string. Joining the list
+     * gives an invalid language tag.
+     */
+    locale: locales as string,
   })
   let formatString = buildStringFormatter({
     specialCharacters,

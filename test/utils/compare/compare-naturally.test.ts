@@ -51,4 +51,13 @@ describe('natural', () => {
 
     expect(result).toBe(0)
   })
+
+  it('sorts with a list of locales', () => {
+    let result = compareNaturally('ä', 'z', {
+      ...options,
+      locales: ['sv-SE', 'en-US'],
+    })
+
+    expect(result).toBe(1)
+  })
 })
