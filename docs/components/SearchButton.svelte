@@ -52,6 +52,13 @@
   .title {
     font: var(--font-s);
     line-height: 1.25;
+
+    /* The header shows every navigation item from 800px, and the label would
+    make it overflow below 900px. The icon and aria-label stay. */
+
+    @media (800px <= width < 900px) {
+      display: none;
+    }
   }
 
   .button :global(.icon) {

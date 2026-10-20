@@ -19,12 +19,18 @@
 /guide/*
   Vary: Accept
 
+/playground
+  Vary: Accept
+
 /rules
   Vary: Accept
 
 /rules/*
   Vary: Accept
 
+# 'unsafe-eval' is required: the Playground runs ESLint in the browser, and
+# ESLint validates rule options with ajv, which compiles schemas with
+# new Function(). Without it every rule fails to load on /playground.
 /*
   content-security-policy: default-src 'self'; script-src 'self' cdn.usefathom.com 'unsafe-inline' 'unsafe-eval' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' cdn.usefathom.com; img-src 'self' data: cdn.usefathom.com img.shields.io;
   strict-transport-security: max-age=63072000; includeSubDomains; preload;

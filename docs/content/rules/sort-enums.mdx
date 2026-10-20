@@ -25,6 +25,7 @@ This rule ensures that TypeScript enum members are sorted, making it easier to r
 ## Try it out
 
 <CodeExample
+  rule="sort-enums"
   alphabetical={dedent`
     enum Priority {
       Critical = 'Critical',
@@ -46,14 +47,14 @@ This rule ensures that TypeScript enum members are sorted, making it easier to r
     enum Priority {
       Critical = 'Critical',
       Medium = 'Medium',
-      High = 'High',
       None = 'None',
+      High = 'High',
       Low = 'Low',
     }
 
     enum Status {
-      NotStarted = 'Not Started',
       InProgress = 'In Progress',
+      NotStarted = 'Not Started',
       Completed = 'Completed',
       Cancelled = 'Cancelled',
       OnHold = 'On Hold',

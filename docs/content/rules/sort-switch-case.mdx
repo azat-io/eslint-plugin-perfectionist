@@ -30,6 +30,7 @@ By integrating this rule into your ESLint configuration, you can focus on the fu
 ## Try it out
 
 <CodeExample
+  rule="sort-switch-case"
   alphabetical={dedent`
     const userReducer = (state = initialState, action) => {
       switch (action.type) {
@@ -69,17 +70,17 @@ By integrating this rule into your ESLint configuration, you can focus on the fu
   lineLength={dedent`
     const userReducer = (state = initialState, action) => {
       switch (action.type) {
-        case 'FETCH_USER_REQUEST':
-          return {
-            ...state,
-            loading: true,
-            error: null,
-          }
         case 'FETCH_USER_SUCCESS':
           return {
             ...state,
             loading: false,
             currentUser: action.payload,
+          }
+        case 'FETCH_USER_REQUEST':
+          return {
+            ...state,
+            loading: true,
+            error: null,
           }
         case 'FETCH_USER_ERROR':
           return {

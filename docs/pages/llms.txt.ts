@@ -59,6 +59,7 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     `- [Documentation Homepage](${origin}/index.md): Overview of the plugin, installation, and all documentation sections`,
     `- [Full Rules List](${origin}/rules.md): All rules with short descriptions in one table`,
+    `- [Playground](${origin}/playground.md): Try the rules on your own code in the browser, with links to share examples`,
     '- [GitHub Repository](https://github.com/azat-io/eslint-plugin-perfectionist): Source code, issues, and contributions',
     '- [NPM Package](https://npmjs.com/package/eslint-plugin-perfectionist): Package details and version history',
     '',
