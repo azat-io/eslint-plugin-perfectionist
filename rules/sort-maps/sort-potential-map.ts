@@ -13,6 +13,7 @@ import {
   ORDER_ERROR_ID,
 } from './types'
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
+import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
@@ -105,6 +106,7 @@ export function sortPotentialMap({
     modifiers: [],
     options,
   })
+  validateNewlinesAndPartitionConfig(options)
 
   if (
     !canReportErrors({

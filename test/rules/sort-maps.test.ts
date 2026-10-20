@@ -5026,6 +5026,22 @@ describe('sort-maps', () => {
       })
     })
 
+    it('rejects newline options combined with partitionByNewLine', async () => {
+      await expect(
+        valid({
+          code: dedent`
+            new Map([
+              [a, 'a'],
+              [b, 'b'],
+            ])
+          `,
+          options: [{ partitionByNewLine: true, newlinesBetween: 1 }],
+        }),
+      ).rejects.toThrow(
+        "The 'partitionByNewLine' and 'newlinesBetween' options cannot be used together",
+      )
+    })
+
     it('excludes disabled elements from sorting', async () => {
       await valid({
         code: dedent`
