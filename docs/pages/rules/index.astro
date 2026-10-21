@@ -5,8 +5,12 @@ import Typography from '../../components/Typography.astro'
 import ContentLayout from '../../layouts/Content.astro'
 import IconTool from '../../icons/tool.svg'
 import IconStar from '../../icons/star.svg'
+import { configs } from '../../../index'
 
 let rules = await getCollection('rules')
+let recommendedRules = new Set(
+  Object.keys(configs['recommended-alphabetical'].rules ?? {}),
+)
 ---
 
 <ContentLayout
@@ -75,7 +79,11 @@ let rules = await getCollection('rules')
             <td>
               <IconTool class="icon" />
             </td>
-            <td>{!rule.data.deprecated && <IconStar class="icon" />}</td>
+            <td>
+              {recommendedRules.has(`perfectionist/${rule.id}`) && (
+                <IconStar class="icon" />
+              )}
+            </td>
           </tr>
         ))
       }
