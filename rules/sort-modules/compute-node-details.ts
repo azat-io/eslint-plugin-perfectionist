@@ -9,6 +9,7 @@ import type {
   Selector,
 } from './types'
 
+import { computeArrowFunctionDeclarator } from './compute-arrow-function-declarator'
 import { isPropertyOrAccessorNode } from './is-property-or-accessor-node'
 import { getNodeDecorators } from '../../utils/get-node-decorators'
 import { isArrowFunctionNode } from './is-arrow-function-node'
@@ -41,14 +42,18 @@ type Details = NonParsableNodeDetails | ParsableNodeDetails
  * @param params.node - The AST node to compute details for.
  * @param params.useExperimentalDependencyDetection - Whether to use
  *   experimental dependency detection.
+ * @param params.sortArrowFunctions - Whether `const` arrow functions are
+ *   sorted.
  * @returns The computed details about the node, such as whether it should be
  *   ignored, if a module block was found, and information about the node.
  */
 export function computeNodeDetails({
   useExperimentalDependencyDetection,
+  sortArrowFunctions,
   node,
 }: {
   useExperimentalDependencyDetection: boolean
+  sortArrowFunctions: boolean
   node: SortModulesNode
 }): Details {
   let selector: undefined | Selector
@@ -111,9 +116,24 @@ export function computeNodeDetails({
         shouldPartitionAfterNode = true
         moduleBlock = nodeToParse.body ?? null
         break
-      case AST_NODE_TYPES.VariableDeclaration:
-        shouldPartitionAfterNode = true
+      case AST_NODE_TYPES.VariableDeclaration: {
+        let arrowFunctionDeclarator =
+          sortArrowFunctions ?
+            computeArrowFunctionDeclarator(nodeToParse)
+          : null
+        if (!arrowFunctionDeclarator) {
+          shouldPartitionAfterNode = true
+          break
+        }
+        selector = 'function'
+        ;({ name } = arrowFunctionDeclarator.id)
+        modifiers.push('arrow')
+        if (arrowFunctionDeclarator.init.async) {
+          modifiers.push('async')
+        }
+        addSafetySemicolonWhenInline = true
         break
+      }
       case AST_NODE_TYPES.TSEnumDeclaration:
         selector = 'enum'
         ;({ name } = nodeToParse.id)
@@ -128,6 +148,7 @@ export function computeNodeDetails({
       case AST_NODE_TYPES.ClassDeclaration:
         selector = 'class'
         name = nodeToParse.id?.name
+        shouldPartitionAfterNode = !nodeToParse.id
         // eslint-disable-next-line no-case-declarations -- Easier to handle
         let nodeDecorators = getNodeDecorators(nodeToParse)
         if (nodeDecorators[0]) {
@@ -142,8 +163,9 @@ export function computeNodeDetails({
           ),
         )
         break
-      /* v8 ignore next 2 -- @preserve Unhandled cases */
+      /* Default-exported expressions and exported import aliases run code. */
       default:
+        shouldPartitionAfterNode = true
         break
     }
   }

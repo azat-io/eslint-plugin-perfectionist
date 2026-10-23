@@ -172,6 +172,7 @@ This rule sorts the following module members:
 The following elements are not sorted by this rule:
 - `imports` (see the `sort-imports` rule).
 - `'from' exports` (see the `sort-exports` rule).
+- Other variable declarations. They split the module into blocks that are sorted independently.
 - Any other `expression`, in order to ensure compilation and runtime behavior.
 
 ## Options
@@ -399,6 +400,21 @@ Specifies additional node types to analyze as module blocks, in addition to the 
 
 Each node type should have a `body` property containing an array of statements.
 
+### sortArrowFunctions
+
+<sub>default: `false`</sub>
+
+Enables sorting of arrow functions declared with `const`, such as `export const load = async () => {}`.
+
+- `false` — Arrow functions are not sorted. Like other variable declarations, they split the module into blocks that are sorted independently.
+- `true` — Arrow functions are sorted as functions with the `arrow` modifier.
+
+Only a `const` declaration of a single arrow function is sorted. Declarations with `let` or `var`, several declarators or wrapped functions such as `memo(() => {})` still split the module.
+
+Classes and enums run code while the module is evaluated, so moving an arrow function they call could break the code.
+For this reason, arrow functions are not sorted in a block that contains a class or an enum, unless it is declared with `declare`. They keep their position and split this block instead.
+A block ends at any other code, such as a function call. Comments and empty lines don't end it, even when they create partitions.
+
 ### groups
 
 <sub>
@@ -471,8 +487,10 @@ Predefined groups are characterized by a single selector and potentially multipl
 #### Functions
 
 - Selector: `function`.
-- Modifiers: `declare`, `default`, `async`, `export`.
-- Example: `async-function`, `export-default-function` or `function`.
+- Modifiers: `declare`, `default`, `arrow`, `async`, `export`.
+- Example: `async-function`, `export-default-function`, `arrow-function` or `function`.
+
+The `arrow` modifier matches arrow functions declared with `const`. They are only sorted when [`sortArrowFunctions`](#sortarrowfunctions) is enabled.
 
 #### Enums
 
@@ -498,10 +516,10 @@ In case of multiple groups matching an element, the following rules will be appl
 Example :
 
 ```ts
-export default class {}
+export default class Example {}
 ```
 
-`class` can be matched by the following groups, from most to least important:
+`Example` can be matched by the following groups, from most to least important:
 - `default-export-class` or `export-default-class`.
 - `default-class`.
 - `export-class`.
@@ -698,6 +716,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                   newlinesInside: 'ignore',
                   tsconfig: { rootDir: '' },
                   additionalModuleBlockTypes: [],
+                  sortArrowFunctions: false,
                   groups: [
                     'declare-enum',
                     'export-enum',
@@ -745,6 +764,7 @@ Specifies whether to use a new experimental dependency detection logic, with red
                 newlinesInside: 'ignore',
                 tsconfig: { rootDir: '' },
                 additionalModuleBlockTypes: [],
+                sortArrowFunctions: false,
                 groups: [
                   'declare-enum',
                   'export-enum',

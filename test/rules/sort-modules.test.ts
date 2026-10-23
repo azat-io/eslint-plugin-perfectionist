@@ -487,6 +487,61 @@ describe('sort-modules', () => {
       })
     })
 
+    it('creates partitions at default-exported expressions', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          export default B.b
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at anonymous default-exported classes', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          export default class { static b = B.b }
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at exported import-equals declarations', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          export import foo = B
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at return statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          return B.b
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('creates partitions at with statements', async () => {
+      await valid({
+        code: dedent`
+          enum B { b = 'b' }
+          with (B) {}
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
     it('sorts across empty statements', async () => {
       await invalid({
         errors: [
@@ -591,6 +646,28 @@ describe('sort-modules', () => {
         code: dedent`
           enum B { b = 'b' }
           export as namespace Foo
+          enum A { a = 'a' }
+        `,
+        options: [options],
+      })
+    })
+
+    it('sorts across anonymous default-exported functions', async () => {
+      await invalid({
+        errors: [
+          {
+            messageId: 'unexpectedModulesOrder',
+            data: { right: 'A', left: 'B' },
+          },
+        ],
+        output: dedent`
+          enum A { a = 'a' }
+          export default function () {}
+          enum B { b = 'b' }
+        `,
+        code: dedent`
+          enum B { b = 'b' }
+          export default function () {}
           enum A { a = 'a' }
         `,
         options: [options],
@@ -2657,6 +2734,25 @@ describe('sort-modules', () => {
 
               class A { static a }
             `,
+          })
+        })
+
+        it('does not move dependencies across other code', async () => {
+          await valid({
+            code: dedent`
+              class A {
+                static x = 1
+                static m() { return new B() }
+              }
+              console.log(A.x)
+              class B {}
+            `,
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+              },
+            ],
           })
         })
       })
@@ -4962,6 +5058,551 @@ describe('sort-modules', () => {
             }
           `,
           options: [options],
+        })
+      })
+    })
+
+    describe('arrow functions', () => {
+      it('does not sort arrow functions by default', async () => {
+        await valid({
+          code: dedent`
+            export const fetchUser = async () => {}
+
+            export function processData() {}
+
+            export const validateInput = (input: string) => {}
+
+            export async function handleRequest() {}
+          `,
+          options: [options],
+        })
+      })
+
+      it('sorts arrow functions as functions', async () => {
+        await invalid({
+          output: dedent`
+            export const fetchUser = async () => {}
+
+            export async function handleRequest() {}
+
+            export function processData() {}
+
+            export const validateInput = (input: string) => {}
+          `,
+          code: dedent`
+            export const fetchUser = async () => {}
+
+            export function processData() {}
+
+            export const validateInput = (input: string) => {}
+
+            export async function handleRequest() {}
+          `,
+          errors: [
+            {
+              data: { right: 'handleRequest', left: 'validateInput' },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              sortArrowFunctions: true,
+            },
+          ],
+        })
+      })
+
+      it('sorts arrow functions before functions', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'arrow-function',
+                right: 'validateInput',
+                leftGroup: 'function',
+                left: 'processData',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
+          output: dedent`
+            export const fetchUser = async () => {}
+
+            export const validateInput = (input: string) => {}
+
+            export async function handleRequest() {}
+
+            export function processData() {}
+          `,
+          code: dedent`
+            export const fetchUser = async () => {}
+
+            export function processData() {}
+
+            export const validateInput = (input: string) => {}
+
+            export async function handleRequest() {}
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['arrow-function', 'function'],
+              sortArrowFunctions: true,
+            },
+          ],
+        })
+      })
+
+      it('sorts arrow functions and functions together', async () => {
+        await invalid({
+          output: dedent`
+            export const fetchUser = async () => {}
+
+            export async function handleRequest() {}
+
+            export function processData() {}
+
+            export const validateInput = (input: string) => {}
+          `,
+          code: dedent`
+            export const fetchUser = async () => {}
+
+            export function processData() {}
+
+            export const validateInput = (input: string) => {}
+
+            export async function handleRequest() {}
+          `,
+          options: [
+            {
+              ...options,
+              groups: [['function', 'arrow-function']],
+              sortArrowFunctions: true,
+            },
+          ],
+          errors: [
+            {
+              data: { right: 'handleRequest', left: 'validateInput' },
+              messageId: 'unexpectedModulesOrder',
+            },
+          ],
+        })
+      })
+
+      it('filters arrow functions by the arrow modifier', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'arrowFunctions',
+                leftGroup: 'function',
+                right: 'b',
+                left: 'c',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              customGroups: [
+                {
+                  groupName: 'arrowFunctions',
+                  modifiers: ['arrow'],
+                  selector: 'function',
+                },
+              ],
+              groups: ['arrowFunctions', 'function'],
+              sortArrowFunctions: true,
+            },
+          ],
+          output: dedent`
+            const a = () => {}
+            const b = () => {}
+            function c() {}
+          `,
+          code: dedent`
+            function c() {}
+            const b = () => {}
+            const a = () => {}
+          `,
+        })
+      })
+
+      it('matches async arrow functions with async function groups', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'async-function',
+                leftGroup: 'interface',
+                left: 'Interface',
+                right: 'f',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['async-function', 'interface', 'function'],
+              sortArrowFunctions: true,
+            },
+          ],
+          output: dedent`
+            export const f = async () => {}
+
+            interface Interface {}
+          `,
+          code: dedent`
+            interface Interface {}
+
+            export const f = async () => {}
+          `,
+        })
+      })
+
+      it('prioritizes arrow modifier over async modifier for arrow functions', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'arrow-function',
+                leftGroup: 'interface',
+                left: 'Interface',
+                right: 'f',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['arrow-function', 'interface', 'async-function'],
+              sortArrowFunctions: true,
+            },
+          ],
+          output: dedent`
+            export const f = async () => {}
+
+            interface Interface {}
+          `,
+          code: dedent`
+            interface Interface {}
+
+            export const f = async () => {}
+          `,
+        })
+      })
+
+      it('does not sort arrow functions in blocks with classes', async () => {
+        await invalid({
+          output: dedent`
+            const c = () => 42
+            const a = () => c()
+            class B {
+              static {
+                a()
+              }
+            }
+            run()
+            const d = () => {}
+            const e = () => {}
+          `,
+          code: dedent`
+            const c = () => 42
+            const a = () => c()
+            class B {
+              static {
+                a()
+              }
+            }
+            run()
+            const e = () => {}
+            const d = () => {}
+          `,
+          options: [
+            {
+              ...options,
+              groups: ['class', 'function'],
+              sortArrowFunctions: true,
+            },
+          ],
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'd', left: 'e' },
+            },
+          ],
+        })
+      })
+
+      it('does not sort arrow functions in blocks with enums', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              groups: ['enum', 'function'],
+              sortArrowFunctions: true,
+            },
+          ],
+          code: dedent`
+            const b = () => 1
+            enum A { a = b() }
+          `,
+        })
+      })
+
+      it('sorts arrow functions in blocks with declared classes', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            declare class External {}
+
+            const a = () => 2
+            const b = () => 1
+          `,
+          code: dedent`
+            declare class External {}
+
+            const b = () => 1
+            const a = () => 2
+          `,
+          options: [
+            {
+              ...options,
+              sortArrowFunctions: true,
+            },
+          ],
+        })
+      })
+
+      it('does not sort arrow functions in blocks with classes split by comments', async () => {
+        await valid({
+          code: dedent`
+            class H {
+              c = new C()
+            }
+            // Arrow functions
+            const f = () => 1
+            // Classes
+            class C {
+              static x = f()
+            }
+          `,
+          options: [
+            {
+              ...options,
+              partitionByComment: true,
+              sortArrowFunctions: true,
+            },
+          ],
+        })
+      })
+
+      it.each([
+        [
+          'member names',
+          true,
+          dedent`
+            class C {
+              static value = C.name
+            }
+            console.log(C.value)
+            const name = () => 'x'
+          `,
+        ],
+        [
+          'legacy dependencies',
+          false,
+          dedent`
+            class C {
+              static value = 1
+              static run() { return b() }
+            }
+            console.log(C.value)
+            const b = () => 1
+          `,
+        ],
+      ])(
+        'does not move classes across code for arrow functions matched by %s',
+        async (_description, useExperimentalDependencyDetection, code) => {
+          await valid({
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                sortArrowFunctions: true,
+              },
+            ],
+            code,
+          })
+        },
+      )
+
+      it.each([
+        ['let declarations', 'let c = () => {}'],
+        ['declared constants', 'declare const c: () => void'],
+        ['multiple declarators', 'const c = () => {}, d = () => {}'],
+        ['destructuring declarations', 'const { c } = { c: () => {} }'],
+        ['function expressions', 'const c = function () {}'],
+        ['wrapped arrow functions', 'const c = memo(() => {})'],
+      ])('creates partitions at %s', async (_description, declaration) => {
+        await valid({
+          options: [
+            {
+              ...options,
+              sortArrowFunctions: true,
+            },
+          ],
+          code: dedent`
+            const b = () => {}
+            ${declaration}
+            const a = () => {}
+          `,
+        })
+      })
+
+      it('sorts arrow functions across export lists', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'a', left: 'b' },
+            },
+          ],
+          output: dedent`
+            const a = () => {}
+            export { a, b }
+            const b = () => {}
+          `,
+          options: [
+            {
+              ...options,
+              sortArrowFunctions: true,
+            },
+          ],
+          code: dedent`
+            const b = () => {}
+            export { a, b }
+            const a = () => {}
+          `,
+        })
+      })
+
+      it('does not move arrow functions across default exports', async () => {
+        await valid({
+          options: [
+            {
+              ...options,
+              sortArrowFunctions: true,
+            },
+          ],
+          code: dedent`
+            const b = () => {}
+            export default b
+            const a = () => {}
+          `,
+        })
+      })
+
+      it('adds a semicolon when moving inline arrow functions', async () => {
+        await invalid({
+          errors: [
+            {
+              data: {
+                rightGroup: 'arrow-function',
+                leftGroup: 'function',
+                right: 'a',
+                left: 'b',
+              },
+              messageId: 'unexpectedModulesGroupOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              groups: ['arrow-function', 'function'],
+              sortArrowFunctions: true,
+            },
+          ],
+          output: dedent`
+            const a = () => {}; function b() {}
+          `,
+          code: dedent`
+            function b() {} const a = () => {}
+          `,
+        })
+      })
+
+      it.each([
+        ['arrow functions', ''],
+        ['exported arrow functions', 'export '],
+      ])(
+        'adds a semicolon before expressions after moved %s',
+        async (_description, prefix) => {
+          await invalid({
+            output: dedent`
+              ${prefix}const a = () => 2;
+              ${prefix}const b = () => 1;
+              [1, 2].forEach(console.log)
+              ${prefix}const c = () => 3
+            `,
+            code: dedent`
+              ${prefix}const b = () => 1
+              ${prefix}const a = () => 2;
+              [1, 2].forEach(console.log)
+              ${prefix}const c = () => 3
+            `,
+            errors: [
+              {
+                messageId: 'unexpectedModulesOrder',
+                data: { right: 'a', left: 'b' },
+              },
+            ],
+            options: [
+              {
+                ...options,
+                sortArrowFunctions: true,
+              },
+            ],
+          })
+        },
+      )
+
+      it('sorts arrow functions by usage', async () => {
+        await invalid({
+          errors: [
+            {
+              messageId: 'unexpectedModulesOrder',
+              data: { right: 'b', left: 'a' },
+            },
+          ],
+          options: [
+            {
+              ...options,
+              sortArrowFunctions: true,
+              type: 'usage',
+            },
+          ],
+          output: dedent`
+            const b = () => 1
+            const a = () => b()
+          `,
+          code: dedent`
+            const a = () => b()
+            const b = () => 1
+          `,
         })
       })
     })
