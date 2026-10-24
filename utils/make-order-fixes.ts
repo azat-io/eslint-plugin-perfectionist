@@ -131,9 +131,14 @@ export function makeOrderFixes({
       nextToken?.loc.start.line === node.loc.end.line
     let isNextTokenSafeCharacter =
       nextToken?.value === ';' || nextToken?.value === ','
+    let nextSortingNode = nodes.at(i + 1)
     let nextSortedSortingNode = sortedNodes.at(i + 1)
+    /* Code between two sorting nodes stays in place after the fix. */
+    let isNextSortingNodeAdjacent =
+      nextSortingNode !== undefined &&
+      sourceCode.getTokensBetween(node, nextSortingNode.node).length === 0
     let followingToken =
-      nextSortedSortingNode ?
+      isNextSortingNodeAdjacent && nextSortedSortingNode ?
         sourceCode.getFirstToken(nextSortedSortingNode.node)
       : nextToken
     let isFollowedByExpressionContinuation =

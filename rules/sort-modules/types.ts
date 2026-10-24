@@ -44,6 +44,12 @@ export type Options = [
       additionalModuleBlockTypes: string[]
 
       /**
+       * Enables sorting of arrow functions declared with `const`. They are
+       * sorted as functions with the `arrow` modifier.
+       */
+      sortArrowFunctions: boolean
+
+      /**
        * TypeScript configuration used to read compiler options such as
        * `emitDecoratorMetadata`.
        */
@@ -62,6 +68,7 @@ export type SortModulesNode =
   | TSESTree.TSInterfaceDeclaration
   | TSESTree.TSTypeAliasDeclaration
   | TSESTree.FunctionDeclaration
+  | TSESTree.VariableDeclaration
   | TSESTree.TSModuleDeclaration
   | TSESTree.TSDeclareFunction
   | TSESTree.TSEnumDeclaration
@@ -73,6 +80,7 @@ export type SortModulesNode =
 export type SortModulesSortingNode = {
   overloadSignatureImplementation: SortModulesNode | null
   dependencyDetection: DependencyDetection
+  blockId: number
 } & SortingNodeWithDependencies<SortModulesNode>
 
 /**
@@ -136,6 +144,7 @@ export let allSelectors = [
  * JSON schema generation.
  */
 export let allModifiers = [
+  'arrow',
   'async',
   'declare',
   'decorated',
