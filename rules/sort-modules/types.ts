@@ -80,6 +80,7 @@ export type SortModulesNode =
 export type SortModulesSortingNode = {
   overloadSignatureImplementation: SortModulesNode | null
   dependencyDetection: DependencyDetection
+  blockId: number
 } & SortingNodeWithDependencies<SortModulesNode>
 
 /**

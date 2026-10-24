@@ -136,14 +136,7 @@ export function makeOrderFixes({
     /* Code between two sorting nodes stays in place after the fix. */
     let isNextSortingNodeAdjacent =
       nextSortingNode !== undefined &&
-      nextToken !== undefined &&
-      nextToken.range[0] >=
-        getNodeRange({
-          implicitDecorators: nextSortingNode.implicitDecorators,
-          node: nextSortingNode.node,
-          sourceCode,
-          options,
-        })[0]
+      sourceCode.getTokensBetween(node, nextSortingNode.node).length === 0
     let followingToken =
       isNextSortingNodeAdjacent && nextSortedSortingNode ?
         sourceCode.getFirstToken(nextSortedSortingNode.node)

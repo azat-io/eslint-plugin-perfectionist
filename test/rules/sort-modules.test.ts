@@ -5394,7 +5394,8 @@ describe('sort-modules', () => {
               c = new C()
             }
             // Arrow functions
-            const f = () => 1
+            const g = () => 1
+            const f = () => 2
             // Classes
             class C {
               static x = f()

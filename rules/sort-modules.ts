@@ -229,7 +229,7 @@ function analyzeModule({
 }): void {
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
   let arrowFunctionNodes = new Set<SortModulesNode>()
-  let classOrEnumNodes = new Set<SortModulesNode>()
+  let nonDeclareClassOrEnumNodes = new Set<SortModulesNode>()
   let overloadSignatureNewlinesBetweenValueGetter =
     buildOverloadSignatureNewlinesBetweenValueGetter(
       options.newlinesBetweenOverloadSignatures,
@@ -239,6 +239,7 @@ function analyzeModule({
     SortModulesSortingNode,
     'overloadSignatureImplementation'
   >[][] = [[]]
+  let blockId = 0
   for (let node of module.body) {
     let additionalModuleStatements = computeAdditionalModuleStatements(
       node,
@@ -246,6 +247,7 @@ function analyzeModule({
     )
     if (additionalModuleStatements) {
       sortingNodeGroupsWithoutOverloadSignature.push([])
+      blockId++
       analyzeModule({
         module: { body: additionalModuleStatements },
         eslintDisabledLines,
@@ -290,6 +292,7 @@ function analyzeModule({
       case AST_NODE_TYPES.TryStatement:
       case AST_NODE_TYPES.IfStatement:
         sortingNodeGroupsWithoutOverloadSignature.push([])
+        blockId++
         continue
       case AST_NODE_TYPES.TSDeclareFunction:
       case AST_NODE_TYPES.TSEnumDeclaration:
@@ -311,6 +314,7 @@ function analyzeModule({
     if (!details.nodeDetails) {
       if (details.shouldPartitionAfterNode) {
         sortingNodeGroupsWithoutOverloadSignature.push([])
+        blockId++
       }
       if (details.moduleBlock) {
         analyzeModule({
@@ -340,7 +344,7 @@ function analyzeModule({
       (selector === 'class' || selector === 'enum') &&
       !modifiers.includes('declare')
     ) {
-      classOrEnumNodes.add(node)
+      nonDeclareClassOrEnumNodes.add(node)
     }
 
     let predefinedGroups = generatePredefinedGroups({
@@ -378,6 +382,7 @@ function analyzeModule({
       dependencyNames: [name],
       dependencyDetection,
       dependencies,
+      blockId,
       group,
       name,
       node,
@@ -405,10 +410,8 @@ function analyzeModule({
 
   sortingNodeGroupsWithoutOverloadSignature = splitGroupsAtArrowFunctions({
     sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
+    nonDeclareClassOrEnumNodes,
     arrowFunctionNodes,
-    classOrEnumNodes,
-    sourceCode,
-    options,
   })
 
   let overloadSignatureGroups = computeOverloadSignatureGroups(
@@ -444,11 +447,7 @@ function analyzeModule({
       sortingNodeGroups,
     })
   }
-  sortingNodeGroups = limitDependenciesToBlocks({
-    sortingNodeGroups,
-    sourceCode,
-    options,
-  })
+  sortingNodeGroups = limitDependenciesToBlocks(sortingNodeGroups)
 
   let sortingNodes = sortingNodeGroups.flat()
 
