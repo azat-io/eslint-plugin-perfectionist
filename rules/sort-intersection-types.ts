@@ -16,11 +16,6 @@ import { buildJsonSchema } from './sort-union-or-intersection-types/build-json-s
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
 const ORDER_ERROR_ID = 'unexpectedIntersectionTypesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedIntersectionTypesGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenIntersectionTypes'
@@ -93,7 +88,6 @@ function sortIntersectionType({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
-    cachedGroupsByModifiersAndSelectors,
     tokenValueToIgnoreBefore: '&',
     matchedAstSelectors,
     defaultOptions,

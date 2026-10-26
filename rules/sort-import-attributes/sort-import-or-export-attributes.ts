@@ -2,6 +2,7 @@ import type { TSESTree } from '@typescript-eslint/types'
 import type { TSESLint } from '@typescript-eslint/utils'
 
 import type { SortImportAttributesSortingNode, Options } from './types'
+import type { Selector, Modifier } from './types'
 
 import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-comparator-by-options-computer'
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
@@ -16,10 +17,11 @@ import { sortNodesByGroups } from '../../utils/sort-nodes-by-groups'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { canReportErrors } from '../../utils/can-report-errors'
 import { shouldPartition } from '../../utils/should-partition'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
+import { allSelectors, allModifiers } from './types'
 import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 
@@ -72,8 +74,8 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
   })
   validateCustomSortConfig(options)
   validateGroupsConfig({
-    selectors: [],
-    modifiers: [],
+    selectors: allSelectors,
+    modifiers: allModifiers,
     options,
   })
   validateNewlinesAndPartitionConfig(options)
@@ -90,6 +92,11 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
     return
   }
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -100,16 +107,18 @@ export function sortImportOrExportAttributes<MessageIds extends string>({
   for (let attribute of attributes) {
     let name = computeNodeName(attribute)
 
-    let group = computeGroup({
+    let selectors: Selector[] = []
+    let modifiers: Modifier[] = []
+    let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
           elementName: name,
-          selectors: [],
-          modifiers: [],
           customGroup,
+          selectors,
+          modifiers,
         }),
-      predefinedGroups: [],
-      options,
+      selectors,
+      modifiers,
     })
 
     let sortingNode: Omit<SortImportAttributesSortingNode, 'partitionId'> = {
