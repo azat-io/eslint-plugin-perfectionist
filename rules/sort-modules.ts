@@ -3,7 +3,11 @@ import type { TSESLint } from '@typescript-eslint/utils'
 
 import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
-import type { SortModulesSortingNode, Options } from './sort-modules/types'
+import type {
+  SortModulesSortingNode,
+  SortModulesNode,
+  Options,
+} from './sort-modules/types'
 
 import {
   additionalCustomGroupMatchOptionsJsonSchema,
@@ -38,6 +42,8 @@ import { validateNewlinesAndPartitionConfig } from '../utils/validate-newlines-a
 import { buildOptionsByGroupIndexComputer } from '../utils/build-options-by-group-index-computer'
 import { computeOverloadSignatureGroups } from './sort-modules/compute-overload-signature-groups'
 import { readClosestTsConfigByPath } from '../utils/tsconfig/read-closest-ts-config-by-path'
+import { splitGroupsAtArrowFunctions } from './sort-modules/split-groups-at-arrow-functions'
+import { limitDependenciesToBlocks } from './sort-modules/limit-dependencies-to-blocks'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { tsconfigJsonSchema } from '../utils/json-schemas/tsconfig-json-schema'
 import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
@@ -98,6 +104,7 @@ let defaultOptions: Required<Options[number]> = {
   newlinesInside: 'newlinesBetween',
   additionalModuleBlockTypes: [],
   tsconfig: { rootDir: '' },
+  sortArrowFunctions: false,
   partitionByComment: false,
   partitionByNewLine: false,
   newlinesBetween: 'ignore',
@@ -128,6 +135,11 @@ export default createEslintRule<Options, MessageId>({
               type: 'string',
             },
             type: 'array',
+          },
+          sortArrowFunctions: {
+            description:
+              'Enables sorting of arrow functions declared with const.',
+            type: 'boolean',
           },
           useExperimentalDependencyDetection:
             useExperimentalDependencyDetectionJsonSchema,
@@ -216,6 +228,8 @@ function analyzeModule({
   sourceCode: TSESLint.SourceCode
 }): void {
   let optionsByGroupIndexComputer = buildOptionsByGroupIndexComputer(options)
+  let arrowFunctionNodes = new Set<SortModulesNode>()
+  let nonDeclareClassOrEnumNodes = new Set<SortModulesNode>()
   let overloadSignatureNewlinesBetweenValueGetter =
     buildOverloadSignatureNewlinesBetweenValueGetter(
       options.newlinesBetweenOverloadSignatures,
@@ -225,6 +239,7 @@ function analyzeModule({
     SortModulesSortingNode,
     'overloadSignatureImplementation'
   >[][] = [[]]
+  let blockId = 0
   for (let node of module.body) {
     let additionalModuleStatements = computeAdditionalModuleStatements(
       node,
@@ -232,6 +247,7 @@ function analyzeModule({
     )
     if (additionalModuleStatements) {
       sortingNodeGroupsWithoutOverloadSignature.push([])
+      blockId++
       analyzeModule({
         module: { body: additionalModuleStatements },
         eslintDisabledLines,
@@ -248,10 +264,8 @@ function analyzeModule({
       case AST_NODE_TYPES.ImportDeclaration:
       case AST_NODE_TYPES.DebuggerStatement:
       case AST_NODE_TYPES.ContinueStatement:
-      case AST_NODE_TYPES.ReturnStatement:
       case AST_NODE_TYPES.EmptyStatement:
       case AST_NODE_TYPES.BreakStatement:
-      case AST_NODE_TYPES.WithStatement:
         continue
       case AST_NODE_TYPES.ExportDefaultDeclaration:
       case AST_NODE_TYPES.ExportNamedDeclaration:
@@ -259,23 +273,26 @@ function analyzeModule({
       case AST_NODE_TYPES.TSTypeAliasDeclaration:
       case AST_NODE_TYPES.FunctionDeclaration:
       case AST_NODE_TYPES.TSModuleDeclaration:
+      case AST_NODE_TYPES.VariableDeclaration:
         break
       case AST_NODE_TYPES.TSImportEqualsDeclaration:
-      case AST_NODE_TYPES.VariableDeclaration:
       case AST_NODE_TYPES.ExpressionStatement:
       case AST_NODE_TYPES.TSExportAssignment:
       case AST_NODE_TYPES.DoWhileStatement:
       case AST_NODE_TYPES.LabeledStatement:
+      case AST_NODE_TYPES.ReturnStatement:
       case AST_NODE_TYPES.SwitchStatement:
       case AST_NODE_TYPES.WhileStatement:
       case AST_NODE_TYPES.ForInStatement:
       case AST_NODE_TYPES.ForOfStatement:
       case AST_NODE_TYPES.ThrowStatement:
       case AST_NODE_TYPES.BlockStatement:
+      case AST_NODE_TYPES.WithStatement:
       case AST_NODE_TYPES.ForStatement:
       case AST_NODE_TYPES.TryStatement:
       case AST_NODE_TYPES.IfStatement:
         sortingNodeGroupsWithoutOverloadSignature.push([])
+        blockId++
         continue
       case AST_NODE_TYPES.TSDeclareFunction:
       case AST_NODE_TYPES.TSEnumDeclaration:
@@ -290,12 +307,14 @@ function analyzeModule({
     let details = computeNodeDetails({
       useExperimentalDependencyDetection:
         options.useExperimentalDependencyDetection,
+      sortArrowFunctions: options.sortArrowFunctions,
       node,
     })
 
     if (!details.nodeDetails) {
       if (details.shouldPartitionAfterNode) {
         sortingNodeGroupsWithoutOverloadSignature.push([])
+        blockId++
       }
       if (details.moduleBlock) {
         analyzeModule({
@@ -318,6 +337,15 @@ function analyzeModule({
       selector,
       name,
     } = details.nodeDetails
+
+    if (modifiers.includes('arrow')) {
+      arrowFunctionNodes.add(node)
+    } else if (
+      (selector === 'class' || selector === 'enum') &&
+      !modifiers.includes('declare')
+    ) {
+      nonDeclareClassOrEnumNodes.add(node)
+    }
 
     let predefinedGroups = generatePredefinedGroups({
       cache: cachedGroupsByModifiersAndSelectors,
@@ -354,6 +382,7 @@ function analyzeModule({
       dependencyNames: [name],
       dependencyDetection,
       dependencies,
+      blockId,
       group,
       name,
       node,
@@ -378,6 +407,12 @@ function analyzeModule({
       partitionId: sortingNodeGroupsWithoutOverloadSignature.length,
     })
   }
+
+  sortingNodeGroupsWithoutOverloadSignature = splitGroupsAtArrowFunctions({
+    sortingNodeGroups: sortingNodeGroupsWithoutOverloadSignature,
+    nonDeclareClassOrEnumNodes,
+    arrowFunctionNodes,
+  })
 
   let overloadSignatureGroups = computeOverloadSignatureGroups(
     sortingNodeGroupsWithoutOverloadSignature.flat().map(({ node }) => node),
@@ -412,6 +447,7 @@ function analyzeModule({
       sortingNodeGroups,
     })
   }
+  sortingNodeGroups = limitDependenciesToBlocks(sortingNodeGroups)
 
   let sortingNodes = sortingNodeGroups.flat()
 

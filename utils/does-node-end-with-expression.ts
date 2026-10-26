@@ -31,6 +31,10 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
  */
 export function doesNodeEndWithExpression(node: TSESTree.Node): boolean {
   switch (node.type) {
+    case AST_NODE_TYPES.ExportNamedDeclaration:
+      return (
+        node.declaration !== null && doesNodeEndWithExpression(node.declaration)
+      )
     case AST_NODE_TYPES.VariableDeclaration:
       return true
     case AST_NODE_TYPES.PropertyDefinition:
