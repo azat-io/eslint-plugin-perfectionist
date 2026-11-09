@@ -29,10 +29,6 @@ import { isSortable } from '../../utils/is-sortable'
 import { complete } from '../../utils/complete'
 import { allSelectors } from './types'
 
-type SortArraySortingNode = SortingNode<
-  TSESTree.SpreadElement | TSESTree.Expression
->
-
 /**
  * Sorts the elements of an array-like expression.
  *
@@ -69,6 +65,10 @@ export function sortArray<MessageIds extends string>({
   matchedAstSelectors: ReadonlySet<string>
   mustHaveMatchedContextOptions: boolean
 }): void {
+  type SortArraySortingNode = SortingNode<
+    TSESTree.SpreadElement | TSESTree.Expression
+  >
+
   let elements = computeArrayElements(node)
   if (!elements) {
     return

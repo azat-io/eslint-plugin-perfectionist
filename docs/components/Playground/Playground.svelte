@@ -1426,7 +1426,7 @@
                 Report the bug
                 <ExternalLinkIcon class="inline-icon" />
               </a>
-            {:else if !settling && (code.trim() === '' || showLoadExample)}
+            {:else if !settling && (showLoadExample || code.trim() === '')}
               <button
                 onclick={() => {
                   actionButton?.focus({ preventScroll: true })

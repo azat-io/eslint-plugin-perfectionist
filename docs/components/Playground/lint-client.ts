@@ -120,8 +120,6 @@ interface LintWorker {
 
 type LintStatus = 'loading' | 'failed' | 'ready'
 
-type Timer = ReturnType<typeof setTimeout>
-
 type LintInput = Omit<LintRequest, 'id'>
 
 export const INITIAL_LINT_STATE: LintState = {
@@ -151,6 +149,8 @@ export function createLintClient({
   delay = 200,
   onChange,
 }: LintClientOptions): LintClient {
+  type Timer = ReturnType<typeof setTimeout>
+
   let state = INITIAL_LINT_STATE
   let worker: LintWorker | null = null
   let input: LintInput | null = null

@@ -12,8 +12,6 @@ interface EndpointProps {
 
 type SupportedCollection = 'configs' | 'guide' | 'rules'
 
-type Entry = CollectionEntry<SupportedCollection>
-
 export function createMarkdownEndpoint(collection: SupportedCollection): {
   getStaticPaths(): Promise<
     {
@@ -29,6 +27,8 @@ export function createMarkdownEndpoint(collection: SupportedCollection): {
       props: EndpointProps
     }[]
   > {
+    type Entry = CollectionEntry<SupportedCollection>
+
     let entries = await getCollection(collection)
     return entries.map((entry: Entry) => ({
       props: { title: entry.data.title, body: entry.body ?? '' },
