@@ -29,11 +29,6 @@ import { buildCommonGroupsJsonSchemas } from '../utils/json-schemas/common-group
 import { buildAstListeners } from '../utils/build-ast-listeners'
 import { createEslintRule } from '../utils/create-eslint-rule'
 
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
-
 const ORDER_ERROR_ID = 'unexpectedConstructorParametersOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedConstructorParametersGroupOrder'
 const EXTRA_SPACING_ERROR_ID = 'extraSpacingBetweenConstructorParametersMembers'
@@ -140,7 +135,6 @@ function sorter({
       unexpectedGroupOrder: GROUP_ORDER_ERROR_ID,
       unexpectedOrder: ORDER_ERROR_ID,
     },
-    cachedGroupsByModifiersAndSelectors,
     mustHaveMatchedContextOptions: true,
     matchedAstSelectors,
     defaultOptions,
