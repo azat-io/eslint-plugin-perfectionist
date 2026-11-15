@@ -32,7 +32,10 @@ export type ShouldIgnoreSortingNodeComputer<T> = (sortingNode: T) => boolean
  */
 export function computeDependenciesBySortingNode<
   Node extends TSESTree.Node,
-  T extends Pick<SortingNodeWithDependencies<Node>, 'dependencyNames' | 'node'>,
+  T extends Pick<
+    SortingNodeWithDependencies<Node>,
+    'implicitDecorators' | 'dependencyNames' | 'node'
+  >,
 >({
   additionalIdentifierDependenciesComputer,
   shouldIgnoreSortingNodeComputer,
@@ -49,7 +52,10 @@ export function computeDependenciesBySortingNode<
   let returnValue = new Map<T, T[]>()
 
   let references = computeDeepScopeReferences(
-    sortingNodes.map(sortingNode => sortingNode.node),
+    sortingNodes.flatMap(({ implicitDecorators, node }) => [
+      ...(implicitDecorators ?? []),
+      node,
+    ]),
     sourceCode,
   )
 
@@ -143,11 +149,17 @@ function computeMainIdentifierDependencies<
   return [referencedSortingNode]
 }
 
-function findSortingNodeContainingIdentifier<T extends { node: TSESTree.Node }>(
+function findSortingNodeContainingIdentifier<
+  T extends Pick<SortingNodeWithDependencies, 'implicitDecorators' | 'node'>,
+>(
   sortingNodes: T[],
   identifier: TSESTree.JSXIdentifier | TSESTree.Identifier,
 ): undefined | T {
-  return sortingNodes.find(sortingNode =>
-    rangeContainsRange(sortingNode.node.range, identifier.range),
+  return sortingNodes.find(
+    ({ implicitDecorators, node }) =>
+      rangeContainsRange(node.range, identifier.range) ||
+      implicitDecorators?.some(decorator =>
+        rangeContainsRange(decorator.range, identifier.range),
+      ),
   )
 }

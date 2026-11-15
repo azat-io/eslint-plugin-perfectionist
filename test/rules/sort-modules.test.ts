@@ -2688,6 +2688,94 @@ describe('sort-modules', () => {
           })
         })
 
+        it('detects dependencies in class decorators', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'B' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              class B {}
+
+              @SomeDecorator(B)
+              class A {}
+            `,
+            code: dedent`
+              @SomeDecorator(B)
+              class A {}
+
+              class B {}
+            `,
+          })
+        })
+
+        it('detects dependencies in decorators before export', async () => {
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'B' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              export class B {}
+
+              @SomeDecorator(B)
+              export class A {}
+            `,
+            code: dedent`
+              @SomeDecorator(B)
+              export class A {}
+
+              export class B {}
+            `,
+          })
+
+          await invalid({
+            errors: [
+              {
+                data: { nodeDependentOnRight: 'A', right: 'B' },
+                messageId: 'unexpectedModulesDependencyOrder',
+              },
+            ],
+            options: [
+              {
+                ...options,
+                useExperimentalDependencyDetection,
+                groups: ['unknown'],
+              },
+            ],
+            output: dedent`
+              class B {}
+
+              @SomeDecorator(B)
+              export default class A {}
+            `,
+            code: dedent`
+              @SomeDecorator(B)
+              export default class A {}
+
+              class B {}
+            `,
+          })
+        })
+
         it('detects and handles circular dependencies', async () => {
           await invalid({
             output: dedent`
@@ -2825,6 +2913,432 @@ describe('sort-modules', () => {
     }
     testDependencyDetection(true)
     testDependencyDetection(false)
+
+    describe('experimental detection specific', () => {
+      it('detects dependencies in method decorators', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @SomeDecorator(B)
+              method() {}
+            }
+          `,
+          code: dedent`
+            class A {
+              @SomeDecorator(B)
+              method() {}
+            }
+
+            class B {}
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @SomeDecorator(B)
+              static method() {}
+            }
+          `,
+          code: dedent`
+            class A {
+              @SomeDecorator(B)
+              static method() {}
+            }
+
+            class B {}
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @SomeDecorator(B)
+              set value(value) {}
+            }
+          `,
+          code: dedent`
+            class A {
+              @SomeDecorator(B)
+              set value(value) {}
+            }
+
+            class B {}
+          `,
+        })
+      })
+
+      it('detects dependencies in parameter decorators', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              constructor(@SomeDecorator(B) readonly b) {}
+            }
+          `,
+          code: dedent`
+            class A {
+              constructor(@SomeDecorator(B) readonly b) {}
+            }
+
+            class B {}
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              method(@SomeDecorator(B) b) {}
+            }
+          `,
+          code: dedent`
+            class A {
+              method(@SomeDecorator(B) b) {}
+            }
+
+            class B {}
+          `,
+        })
+      })
+
+      it('detects dependencies in computed method keys', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            enum B {
+              V = 'V'
+            }
+
+            class A {
+              [B.V]() {}
+            }
+          `,
+          code: dedent`
+            class A {
+              [B.V]() {}
+            }
+
+            enum B {
+              V = 'V'
+            }
+          `,
+        })
+      })
+
+      it('detects dependencies in decorators and computed keys of arrow function properties', async () => {
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            class B {}
+
+            class A {
+              @SomeDecorator(B)
+              method = () => {}
+            }
+          `,
+          code: dedent`
+            class A {
+              @SomeDecorator(B)
+              method = () => {}
+            }
+
+            class B {}
+          `,
+        })
+
+        await invalid({
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          output: dedent`
+            enum B {
+              V = 'V'
+            }
+
+            class A {
+              [B.V] = () => {}
+            }
+          `,
+          code: dedent`
+            class A {
+              [B.V] = () => {}
+            }
+
+            enum B {
+              V = 'V'
+            }
+          `,
+        })
+      })
+
+      it('ignores dependencies in bodies and parameter defaults of decorated members', async () => {
+        await valid({
+          code: dedent`
+            class A {
+              @SomeDecorator()
+              method() {
+                return B
+              }
+            }
+
+            class B {}
+          `,
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            class A {
+              @SomeDecorator()
+              method(@SomeDecorator() b = B) {}
+            }
+
+            class B {}
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            class A {
+              @SomeDecorator()
+              method = () => B
+            }
+
+            class B {}
+          `,
+        })
+
+        await valid({
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+          code: dedent`
+            class A {
+              method: (b: typeof B) => void = () => {}
+            }
+
+            class B {}
+          `,
+        })
+      })
+
+      it('detects dependencies of classes nested in static properties', async () => {
+        await invalid({
+          output: dedent`
+            class B {}
+
+            class A {
+              static Inner = class {
+                @SomeDecorator(B)
+                method() {}
+              }
+            }
+          `,
+          code: dedent`
+            class A {
+              static Inner = class {
+                @SomeDecorator(B)
+                method() {}
+              }
+            }
+
+            class B {}
+          `,
+          errors: [
+            {
+              data: { nodeDependentOnRight: 'A', right: 'B' },
+              messageId: 'unexpectedModulesDependencyOrder',
+            },
+          ],
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+
+      it('ignores dependencies of classes nested in methods', async () => {
+        await valid({
+          code: dedent`
+            class Z {
+              create() {
+                class Inner {
+                  @SomeDecorator(A)
+                  method() {}
+                }
+                return Inner
+              }
+            }
+
+            class A extends Z {}
+          `,
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+        })
+
+        await valid({
+          code: dedent`
+            class Z {
+              create() {
+                class Inner {
+                  static a = A
+                }
+                return Inner
+              }
+            }
+
+            class A extends Z {}
+          `,
+          options: [
+            {
+              ...options,
+              useExperimentalDependencyDetection: true,
+              groups: ['unknown'],
+            },
+          ],
+        })
+      })
+    })
 
     describe('decorator metadata dependency detection', () => {
       let metadataOptions = {

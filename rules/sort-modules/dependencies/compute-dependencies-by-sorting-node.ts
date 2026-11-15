@@ -19,6 +19,8 @@ import { doesSortingNodeHaveOneOfDependencyNames } from '../../../utils/does-sor
 import { computeParentNodesWithTypes } from '../../../utils/compute-parent-nodes-with-types'
 import { UnreachableCaseError } from '../../../utils/unreachable-case-error'
 import { isPropertyOrAccessorNode } from '../is-property-or-accessor-node'
+import { rangeContainsRange } from '../../../utils/range-contains-range'
+import { getNodeDecorators } from '../../../utils/get-node-decorators'
 import { isArrowFunctionNode } from '../is-arrow-function-node'
 
 type HardDependencyDetectionParameters = {
@@ -96,54 +98,35 @@ function buildShouldIgnoreIdentifierComputer({
         throw new UnreachableCaseError(dependencyDetection)
     }
 
+    /**
+     * Checks whether the identifier is evaluated when the sorting node is
+     * defined. Every class element between them, including the elements of
+     * nested classes, must be evaluated when its own class is defined.
+     *
+     * @returns True if the identifier is evaluated when the sorting node is
+     *   defined.
+     */
     function isInRelevantClassContext(): boolean {
-      let relevantParentNodes = computeParentNodesWithTypes({
+      let classElements = computeParentNodesWithTypes({
         allowedTypes: [
-          AST_NODE_TYPES.ClassBody,
           AST_NODE_TYPES.PropertyDefinition,
           AST_NODE_TYPES.AccessorProperty,
           AST_NODE_TYPES.MethodDefinition,
-          AST_NODE_TYPES.ArrowFunctionExpression,
         ],
         maxParent: referencingSortingNode.node,
         consecutiveOnly: false,
         node: identifier,
       })
-      let firstClassBodyParent = relevantParentNodes.findIndex(
-        parentNode => parentNode.type === AST_NODE_TYPES.ClassBody,
-      )
-      if (firstClassBodyParent < 0) {
-        return true
-      }
-      let classBody = relevantParentNodes[
-        firstClassBodyParent
-      ] as TSESTree.ClassBody
-
-      let searchStaticMethodsAndFunctionProperties = classBody.body.some(
-        classElement =>
-          classElement.type === AST_NODE_TYPES.StaticBlock ||
-          (classElement.static &&
-            isPropertyOrAccessorNode(classElement) &&
-            !isArrowFunctionNode(classElement)),
-      )
-
-      let otherParents = relevantParentNodes.slice(0, firstClassBodyParent)
-      return otherParents.every(otherParent =>
-        isClassElementRelevant(
-          otherParent,
-          searchStaticMethodsAndFunctionProperties,
-        ),
+      return classElements.every(classElement =>
+        isClassElementRelevant(classElement),
       )
     }
 
     function isClassElementRelevant(
       classElement:
-        | TSESTree.ArrowFunctionExpression
         | TSESTree.PropertyDefinition
         | TSESTree.AccessorProperty
-        | TSESTree.MethodDefinition
-        | TSESTree.ClassBody,
-      searchStaticMethodsAndFunctionProperties: boolean,
+        | TSESTree.MethodDefinition,
     ): boolean {
       if (
         classElement.type !== AST_NODE_TYPES.MethodDefinition &&
@@ -152,7 +135,39 @@ function buildShouldIgnoreIdentifierComputer({
         return true
       }
 
-      return classElement.static && searchStaticMethodsAndFunctionProperties
+      if (isEvaluatedWithClassDefinition(classElement)) {
+        return true
+      }
+
+      return (
+        classElement.static &&
+        shouldSearchStaticMethodsAndFunctionProperties(classElement.parent)
+      )
+    }
+
+    /**
+     * Checks whether the identifier is in a decorator, a computed key or a
+     * parameter decorator of a function class element. These parts are
+     * evaluated when the class is defined, unlike the function body.
+     *
+     * @param classElement - The method or the arrow function property.
+     * @returns True if the identifier is evaluated when the class is defined.
+     */
+    function isEvaluatedWithClassDefinition(
+      classElement:
+        | TSESTree.PropertyDefinition
+        | TSESTree.AccessorProperty
+        | TSESTree.MethodDefinition,
+    ): boolean {
+      let parameters =
+        classElement.type === AST_NODE_TYPES.MethodDefinition ?
+          classElement.value.params
+        : []
+      return [
+        ...parameters.flatMap(parameter => getNodeDecorators(parameter)),
+        ...getNodeDecorators(classElement),
+        classElement.key,
+      ].some(node => rangeContainsRange(node.range, identifier.range))
     }
   }
 }
@@ -208,4 +223,25 @@ function buildShouldIgnoreSortingNodeComputer(
         throw new UnreachableCaseError(dependencyDetection)
     }
   }
+}
+
+/**
+ * Checks whether the static methods and function properties of a class can run
+ * when the class is defined: the class has a static block or a static property
+ * that is not an arrow function.
+ *
+ * @param classBody - The body of the class whose static elements are checked.
+ * @returns True if static methods and function properties can run when the
+ *   class is defined.
+ */
+function shouldSearchStaticMethodsAndFunctionProperties(
+  classBody: TSESTree.ClassBody,
+): boolean {
+  return classBody.body.some(
+    classElement =>
+      classElement.type === AST_NODE_TYPES.StaticBlock ||
+      (classElement.static &&
+        isPropertyOrAccessorNode(classElement) &&
+        !isArrowFunctionNode(classElement)),
+  )
 }
