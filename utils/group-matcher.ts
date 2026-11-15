@@ -3,6 +3,7 @@ import type {
   CustomGroupsOption,
 } from '../types/common-groups-options'
 
+import { parsePredefinedGroup } from './parse-predefined-group'
 import { computeGroupsNames } from './compute-groups-names'
 
 type CustomGroupMatcher<AdditionalSortOptions> = (
@@ -13,6 +14,10 @@ type CustomGroupMatcher<AdditionalSortOptions> = (
   >[number],
 ) => boolean
 
+/**
+ * A predefined group from the `groups` option, split into its selector and
+ * modifiers.
+ */
 class GroupName<Selector extends string, Modifier extends string> {
   public readonly name: string
   private readonly _modifiers: Modifier[]
@@ -23,8 +28,6 @@ class GroupName<Selector extends string, Modifier extends string> {
     selector,
     name,
   }: {
-    allSelectors: readonly Selector[]
-    allModifiers: readonly Modifier[]
     modifiers: Modifier[]
     selector: Selector
     name: string
@@ -34,6 +37,15 @@ class GroupName<Selector extends string, Modifier extends string> {
     this._modifiers = modifiers
   }
 
+  /**
+   * Parses a group name from the `groups` option.
+   *
+   * @param params - Parameters object.
+   * @param params.allSelectors - Available selectors for the rule.
+   * @param params.allModifiers - Available modifiers for the rule.
+   * @param params.name - Group name to parse.
+   * @returns The parsed group, or null if the name is not a predefined group.
+   */
   public static parse<Selector extends string, Modifier extends string>({
     allSelectors,
     allModifiers,
@@ -43,38 +55,33 @@ class GroupName<Selector extends string, Modifier extends string> {
     allModifiers: readonly Modifier[]
     name: string
   }): GroupName<Selector, Modifier> | null {
-    let possibleSelectors = computePossibleElements()
-    let selector = allSelectors.find(currentSelector =>
-      possibleSelectors.has(currentSelector),
-    )
-    if (!selector) {
+    let parsedGroup = parsePredefinedGroup({
+      allSelectors,
+      allModifiers,
+      name,
+    })
+    if (!parsedGroup) {
       return null
     }
 
-    let rest = name.slice(0, -selector.length)
-    let dashedRest = `-${rest}`
-    let modifiers = allModifiers.filter(modifier =>
-      dashedRest.includes(`-${modifier}-`),
-    )
-
     return new GroupName({
-      allSelectors,
-      allModifiers,
-      modifiers,
-      selector,
+      ...parsedGroup,
       name,
     })
-
-    function computePossibleElements(): Set<string> {
-      let elementsSeparatedWithDash = name.split('-')
-      return new Set([
-        elementsSeparatedWithDash.slice(-3).join('-'),
-        elementsSeparatedWithDash.slice(-2).join('-'),
-        elementsSeparatedWithDash.at(-1)!,
-      ])
-    }
   }
 
+  /**
+   * Compares two groups by specificity. More specific groups come first: by
+   * selector order in `allSelectors`, then by modifier count, then by modifier
+   * order in `allModifiers`.
+   *
+   * @param other - Group to compare with.
+   * @param params - Parameters object.
+   * @param params.selectorsByIndex - Index of each selector in `allSelectors`.
+   * @param params.modifiersByIndex - Index of each modifier in `allModifiers`.
+   * @returns A negative number if this group is more specific, a positive
+   *   number if it is less specific, 0 otherwise.
+   */
   public compare(
     other: GroupName<Selector, Modifier>,
     {
@@ -106,6 +113,15 @@ class GroupName<Selector extends string, Modifier extends string> {
     return 0
   }
 
+  /**
+   * Checks if an element belongs to this group.
+   *
+   * @param params - Parameters object.
+   * @param params.selectors - Selectors of the element.
+   * @param params.modifiers - Modifiers of the element.
+   * @returns True if the element has the selector and every modifier of the
+   *   group.
+   */
   public doesMatch({
     selectors,
     modifiers,
@@ -125,6 +141,29 @@ const CACHED_PREDEFINED_GROUPS_BY_SELECTORS = new WeakMap<
   Map<string, GroupName<string, string>[]>
 >()
 
+/**
+ * Computes the group of an element from the groups listed in the `groups`
+ * option.
+ *
+ * Custom groups are checked first, in the order of `customGroups`. Predefined
+ * groups are then checked from the most to the least specific.
+ *
+ * @example
+ *
+ * ```ts
+ * let groupMatcher = new GroupMatcher({
+ *   options: { groups: ['method', 'static-method'], customGroups: [] },
+ *   allSelectors: ['method'],
+ *   allModifiers: ['static'],
+ * })
+ * groupMatcher.computeGroup({
+ *   customGroupMatcher: () => false,
+ *   modifiers: ['static'],
+ *   selectors: ['method'],
+ * })
+ * // Returns: 'static-method'
+ * ```
+ */
 export class GroupMatcher<
   AdditionalSortOptions,
   Selector extends string,
@@ -155,12 +194,13 @@ export class GroupMatcher<
       groupsSet.has(group.groupName),
     )
 
-    let customGroupNameSet = new Set(
-      this._customGroups.map(group => group.groupName),
-    )
-    let predefinedGroupNames = groupsList.filter(
-      name => !customGroupNameSet.has(name),
-    )
+    /*
+     * Every name in `groups` is a predefined group candidate, custom group
+     * names included: a custom group that reuses a predefined group name keeps
+     * that predefined group as a fallback. Names that are not predefined groups
+     * are dropped when parsed.
+     */
+    let predefinedGroupNames = groupsList
 
     let cachedPredefinedGroupsByKey =
       CACHED_PREDEFINED_GROUPS_BY_SELECTORS.get(allSelectors)
@@ -225,12 +265,22 @@ export class GroupMatcher<
     array: readonly T[],
   ): Map<T, number> {
     let returnValue = new Map<T, number>()
-    for (let [i, allSelector] of array.entries()) {
-      returnValue.set(allSelector, i)
+    for (let [i, element] of array.entries()) {
+      returnValue.set(element, i)
     }
     return returnValue
   }
 
+  /**
+   * Computes the group of an element.
+   *
+   * @param params - Parameters object.
+   * @param params.customGroupMatcher - Checks if the element matches a custom
+   *   group.
+   * @param params.selectors - Selectors of the element.
+   * @param params.modifiers - Modifiers of the element.
+   * @returns The name of the first matching group, or 'unknown'.
+   */
   public computeGroup({
     customGroupMatcher,
     selectors,

@@ -58,6 +58,26 @@ describe('group-matcher', () => {
         }),
       ).toBe('b')
     })
+
+    it('keeps a predefined group with the same name as a fallback', () => {
+      expect(
+        computeGroup({
+          customGroups: [{ groupName: 'method' }],
+          groups: ['method', 'unknown'],
+          selectors: ['method'],
+        }),
+      ).toBe('method')
+    })
+
+    it('does not treat custom group names as predefined groups', () => {
+      expect(
+        computeGroup({
+          customGroups: [{ groupName: 'lifecycle-method' }],
+          groups: ['lifecycle-method', 'unknown'],
+          selectors: ['method'],
+        }),
+      ).toBe('unknown')
+    })
   })
 
   describe('predefined groups', () => {
@@ -124,6 +144,15 @@ describe('group-matcher', () => {
         computeGroup({
           groups: ['static', 'method'],
           modifiers: ['static'],
+          selectors: ['method'],
+        }),
+      ).toBe('method')
+    })
+
+    it('ignores group names with unknown words', () => {
+      expect(
+        computeGroup({
+          groups: ['lifecycle-method', 'method'],
           selectors: ['method'],
         }),
       ).toBe('method')

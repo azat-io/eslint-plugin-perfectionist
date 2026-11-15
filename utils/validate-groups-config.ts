@@ -2,6 +2,7 @@ import type { CommonGroupsOptions } from '../types/common-groups-options'
 
 import { validateObjectsInsideGroups } from './validate-objects-inside-groups'
 import { validateNoDuplicatedGroups } from './validate-no-duplicated-groups'
+import { parsePredefinedGroup } from './parse-predefined-group'
 import { computeGroupsNames } from './compute-groups-names'
 
 /**
@@ -93,7 +94,12 @@ export function validateGroupsConfig({
   )
   let invalidGroups = computeGroupsNames(options.groups).filter(
     group =>
-      !isPredefinedGroup(selectors, modifiers, group) &&
+      group !== 'unknown' &&
+      !parsePredefinedGroup({
+        allSelectors: selectors,
+        allModifiers: modifiers,
+        name: group,
+      }) &&
       !availableCustomGroupNames.has(group),
   )
   if (invalidGroups.length > 0) {
@@ -101,147 +107,4 @@ export function validateGroupsConfig({
   }
   validateNoDuplicatedGroups(options)
   validateObjectsInsideGroups(options)
-}
-
-/**
- * Checks if a group name is a valid predefined group.
- *
- * Predefined groups are formed by combining modifiers and selectors with
- * dashes. The function parses the group name from right to left, first
- * extracting the selector (which can be up to 3 words), then the modifiers.
- *
- * @example
- *
- * ```ts
- * // Valid predefined groups
- * isPredefinedGroup(
- *   ['property', 'method'],
- *   ['static', 'private'],
- *   'static-private-property',
- * )
- * // Returns: true (static + private + property)
- * ```
- *
- * @example
- *
- * ```ts
- * // Special 'unknown' group
- * isPredefinedGroup([], [], 'unknown')
- * // Returns: true (always valid)
- * ```
- *
- * @example
- *
- * ```ts
- * // Invalid group - not matching selectors
- * isPredefinedGroup(
- *   ['import', 'export'],
- *   ['type', 'value'],
- *   'custom-group',
- * )
- * // Returns: false ('group' is not a valid selector)
- * ```
- *
- * @param allSelectors - Available selectors for the rule.
- * @param allModifiers - Available modifiers for the rule.
- * @param input - Group name to validate.
- * @returns True if the group is a valid predefined combination.
- */
-function isPredefinedGroup(
-  allSelectors: readonly string[],
-  allModifiers: readonly string[],
-  input: string,
-): boolean {
-  if (input === 'unknown') {
-    return true
-  }
-
-  let elementsSeparatedWithDash = input.split('-')
-
-  let longestAllowedSelector = computeLongestAllowedWord({
-    allowedValues: allSelectors,
-    elementsSeparatedWithDash,
-  })
-  if (!longestAllowedSelector) {
-    return false
-  }
-
-  let modifiersToParse = elementsSeparatedWithDash.slice(
-    0,
-    -longestAllowedSelector.wordCount,
-  )
-  let parsedModifiers = new Set<string>()
-  while (modifiersToParse.length > 0) {
-    let longestAllowedModifier = computeLongestAllowedWord({
-      elementsSeparatedWithDash: modifiersToParse,
-      allowedValues: allModifiers,
-    })
-    if (!longestAllowedModifier) {
-      return false
-    }
-    if (parsedModifiers.has(longestAllowedModifier.word)) {
-      return false
-    }
-    parsedModifiers.add(longestAllowedModifier.word)
-    modifiersToParse = modifiersToParse.slice(
-      0,
-      -longestAllowedModifier.wordCount,
-    )
-  }
-
-  return true
-}
-
-/**
- * Finds the longest valid word from the end of a dash-separated array.
- *
- * Attempts to match 3-word, 2-word, then 1-word combinations from the end of
- * the array against allowed values. This is used to parse selectors and
- * modifiers from group names.
- *
- * @example
- *
- * ```ts
- * // Matching a multi-word selector
- * computeLongestAllowedWord({
- *   elementsSeparatedWithDash: ['static', 'get', 'accessor'],
- *   allowedValues: ['accessor', 'get-accessor', 'property'],
- * })
- * // Returns: { word: 'get-accessor', wordCount: 2 }
- * ```
- *
- * @example
- *
- * ```ts
- * // Matching a single-word modifier
- * computeLongestAllowedWord({
- *   elementsSeparatedWithDash: ['private', 'static'],
- *   allowedValues: ['static', 'private', 'public'],
- * })
- * // Returns: { word: 'static', wordCount: 1 }
- * ```
- *
- * @param params - Parameters for word matching.
- * @returns Matched word with its word count, or null if no match.
- */
-function computeLongestAllowedWord({
-  elementsSeparatedWithDash,
-  allowedValues,
-}: {
-  elementsSeparatedWithDash: string[]
-  allowedValues: readonly string[]
-}): { wordCount: number; word: string } | null {
-  let match = [
-    { word: elementsSeparatedWithDash.slice(-3).join('-'), wordCount: 3 },
-    { word: elementsSeparatedWithDash.slice(-2).join('-'), wordCount: 2 },
-    { word: elementsSeparatedWithDash.at(-1)!, wordCount: 1 },
-  ]
-    .filter(({ wordCount }) => elementsSeparatedWithDash.length >= wordCount)
-    .find(({ word }) => word && allowedValues.includes(word))
-
-  if (!match) {
-    return null
-  }
-
-  return match
 }
