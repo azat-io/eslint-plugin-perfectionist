@@ -1733,6 +1733,72 @@ describe('sort-modules', () => {
       })
     })
 
+    it('prioritizes async modifier over export modifier for default-exported functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'async-function',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'f',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['async-function', 'interface', 'export-function'],
+          },
+        ],
+        output: dedent`
+          export default async function f() {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          export default async function f() {}
+        `,
+      })
+    })
+
+    it('prioritizes decorated modifier over export modifier for default-exported classes', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'decorated-class',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'Class',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['decorated-class', 'interface', 'export-class'],
+          },
+        ],
+        output: dedent`
+          @Decorator
+          export default class Class {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          @Decorator
+          export default class Class {}
+        `,
+      })
+    })
+
     it('prioritizes declare modifier over export modifier for enum declarations', async () => {
       await invalid({
         errors: [
@@ -6685,6 +6751,72 @@ describe('sort-modules', () => {
       })
     })
 
+    it('prioritizes async modifier over export modifier for default-exported functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'async-function',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'f',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['async-function', 'interface', 'export-function'],
+          },
+        ],
+        output: dedent`
+          export default async function f() {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          export default async function f() {}
+        `,
+      })
+    })
+
+    it('prioritizes decorated modifier over export modifier for default-exported classes', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'decorated-class',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'Class',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['decorated-class', 'interface', 'export-class'],
+          },
+        ],
+        output: dedent`
+          @Decorator
+          export default class Class {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          @Decorator
+          export default class Class {}
+        `,
+      })
+    })
+
     it('prioritizes declare modifier over export modifier for enum declarations', async () => {
       await invalid({
         errors: [
@@ -9105,6 +9237,72 @@ describe('sort-modules', () => {
           interface Interface {}
 
           export async function f() {}
+        `,
+      })
+    })
+
+    it('prioritizes async modifier over export modifier for default-exported functions', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'async-function',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'f',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['async-function', 'interface', 'export-function'],
+          },
+        ],
+        output: dedent`
+          export default async function f() {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          export default async function f() {}
+        `,
+      })
+    })
+
+    it('prioritizes decorated modifier over export modifier for default-exported classes', async () => {
+      await invalid({
+        errors: [
+          {
+            data: {
+              rightGroup: 'decorated-class',
+              leftGroup: 'interface',
+              left: 'Interface',
+              right: 'Class',
+            },
+            messageId: 'unexpectedModulesGroupOrder',
+          },
+        ],
+        options: [
+          {
+            ...options,
+            groups: ['decorated-class', 'interface', 'export-class'],
+          },
+        ],
+        output: dedent`
+          @Decorator
+          export default class Class {}
+
+          interface Interface {}
+        `,
+        code: dedent`
+          interface Interface {}
+
+          @Decorator
+          export default class Class {}
         `,
       })
     })

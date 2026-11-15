@@ -5,7 +5,10 @@ import { AST_NODE_TYPES } from '@typescript-eslint/types'
 
 import type {
   SortModulesSortingNode,
+  AdditionalSortOptions,
   SortModulesNode,
+  Modifier,
+  Selector,
   Options,
 } from './sort-modules/types'
 
@@ -46,7 +49,6 @@ import { splitGroupsAtArrowFunctions } from './sort-modules/split-groups-at-arro
 import { limitDependenciesToBlocks } from './sort-modules/limit-dependencies-to-blocks'
 import { validateCustomSortConfig } from '../utils/validate-custom-sort-config'
 import { tsconfigJsonSchema } from '../utils/json-schemas/tsconfig-json-schema'
-import { generatePredefinedGroups } from '../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../utils/sort-nodes-by-dependencies'
 import { getEslintDisabledLines } from '../utils/get-eslint-disabled-lines'
 import { computeNodeDetails } from './sort-modules/compute-node-details'
@@ -60,15 +62,10 @@ import { reportAllErrors } from '../utils/report-all-errors'
 import { shouldPartition } from '../utils/should-partition'
 import { getGroupIndex } from '../utils/get-group-index'
 import { assertIsNever } from '../utils/assert-is-never'
-import { computeGroup } from '../utils/compute-group'
+import { GroupMatcher } from '../utils/group-matcher'
 import { rangeToDiff } from '../utils/range-to-diff'
 import { getSettings } from '../utils/get-settings'
 import { complete } from '../utils/complete'
-
-/**
- * Cache computed groups by modifiers and selectors for performance.
- */
-let cachedGroupsByModifiersAndSelectors = new Map<string, string[]>()
 
 const ORDER_ERROR_ID = 'unexpectedModulesOrder'
 const GROUP_ORDER_ERROR_ID = 'unexpectedModulesGroupOrder'
@@ -184,6 +181,11 @@ export default createEslintRule<Options, MessageId>({
     validateNewlinesAndPartitionConfig(options)
 
     let { sourceCode, id } = context
+    let groupMatcher = new GroupMatcher({
+      allModifiers,
+      allSelectors,
+      options,
+    })
     let eslintDisabledLines = getEslintDisabledLines({
       ruleName: id,
       sourceCode,
@@ -194,6 +196,7 @@ export default createEslintRule<Options, MessageId>({
         analyzeModule({
           eslintDisabledLines,
           module: program,
+          groupMatcher,
           sourceCode,
           options,
           context,
@@ -209,6 +212,7 @@ export default createEslintRule<Options, MessageId>({
  *
  * @param params - Parameters.
  * @param params.eslintDisabledLines - Lines where the rule is disabled.
+ * @param params.groupMatcher - Computes the group of each element.
  * @param params.sourceCode - The source code object.
  * @param params.options - The completed options.
  * @param params.context - The rule context.
@@ -216,11 +220,13 @@ export default createEslintRule<Options, MessageId>({
  */
 function analyzeModule({
   eslintDisabledLines,
+  groupMatcher,
   sourceCode,
   options,
   context,
   module,
 }: {
+  groupMatcher: GroupMatcher<AdditionalSortOptions, Selector, Modifier>
   context: TSESLint.RuleContext<MessageId, Options>
   module: { body: TSESTree.ProgramStatement[] }
   eslintDisabledLines: ReadonlySet<number>
@@ -251,6 +257,7 @@ function analyzeModule({
       analyzeModule({
         module: { body: additionalModuleStatements },
         eslintDisabledLines,
+        groupMatcher,
         sourceCode,
         options,
         context,
@@ -320,6 +327,7 @@ function analyzeModule({
         analyzeModule({
           module: details.moduleBlock,
           eslintDisabledLines,
+          groupMatcher,
           sourceCode,
           options,
           context,
@@ -347,28 +355,24 @@ function analyzeModule({
       nonDeclareClassOrEnumNodes.add(node)
     }
 
-    let predefinedGroups = generatePredefinedGroups({
-      cache: cachedGroupsByModifiersAndSelectors,
-      selectors: [selector],
-      modifiers,
-    })
     let decoratorNames = decorators.map(decorator =>
       getDecoratorName({
         sourceCode,
         decorator,
       }),
     )
-    let group = computeGroup({
+    let selectors = [selector]
+    let group = groupMatcher.computeGroup({
       customGroupMatcher: customGroup =>
         doesCustomGroupMatch({
-          selectors: [selector],
           elementName: name,
           decoratorNames,
           customGroup,
+          selectors,
           modifiers,
         }),
-      predefinedGroups,
-      options,
+      selectors,
+      modifiers,
     })
 
     let sortingNode: Omit<

@@ -82,6 +82,12 @@ interface CustomGroupMatchOptions {
 
 type AdditionalSortOptions = object
 
+export let allSelectors = [] as const
+export type Selector = (typeof allSelectors)[number]
+
+export let allModifiers = [] as const
+export type Modifier = (typeof allModifiers)[number]
+
 /**
  * Additional custom group match options JSON schema. Used by ESLint to validate
  * rule options at configuration time.

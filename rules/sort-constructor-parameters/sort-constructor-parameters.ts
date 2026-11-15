@@ -15,7 +15,6 @@ import { defaultComparatorByOptionsComputer } from '../../utils/compare/default-
 import { validateNewlinesAndPartitionConfig } from '../../utils/validate-newlines-and-partition-config'
 import { buildOptionsByGroupIndexComputer } from '../../utils/build-options-by-group-index-computer'
 import { validateCustomSortConfig } from '../../utils/validate-custom-sort-config'
-import { generatePredefinedGroups } from '../../utils/generate-predefined-groups'
 import { sortNodesByDependencies } from '../../utils/sort-nodes-by-dependencies'
 import { computeMatchedContextOptions } from './compute-matched-context-options'
 import { getEslintDisabledLines } from '../../utils/get-eslint-disabled-lines'
@@ -29,7 +28,7 @@ import { getDecoratorName } from '../../utils/get-decorator-name'
 import { reportAllErrors } from '../../utils/report-all-errors'
 import { shouldPartition } from '../../utils/should-partition'
 import { getGroupIndex } from '../../utils/get-group-index'
-import { computeGroup } from '../../utils/compute-group'
+import { GroupMatcher } from '../../utils/group-matcher'
 import { rangeToDiff } from '../../utils/range-to-diff'
 import { getSettings } from '../../utils/get-settings'
 import { computeNodeName } from './compute-node-name'
@@ -38,7 +37,6 @@ import { allSelectors, allModifiers } from './types'
 import { complete } from '../../utils/complete'
 
 export function sortConstructorParameters<MessageIds extends string>({
-  cachedGroupsByModifiersAndSelectors,
   mustHaveMatchedContextOptions,
   availableMessageIds,
   matchedAstSelectors,
@@ -53,7 +51,6 @@ export function sortConstructorParameters<MessageIds extends string>({
     unexpectedGroupOrder: MessageIds
     unexpectedOrder: MessageIds
   }
-  cachedGroupsByModifiersAndSelectors: Map<string, string[]>
   context: Readonly<RuleContext<MessageIds, Options>>
   defaultOptions: Required<Options[number]>
   matchedAstSelectors: ReadonlySet<string>
@@ -92,6 +89,11 @@ export function sortConstructorParameters<MessageIds extends string>({
   })
   validateNewlinesAndPartitionConfig(options)
 
+  let groupMatcher = new GroupMatcher({
+    allModifiers,
+    allSelectors,
+    options,
+  })
   let eslintDisabledLines = getEslintDisabledLines({
     ruleName: id,
     sourceCode,
@@ -111,27 +113,22 @@ export function sortConstructorParameters<MessageIds extends string>({
         }
 
         let name = computeNodeName({ node: parameter, sourceCode })
-        let selector: Selector = 'parameter'
+        let selectors: Selector[] = ['parameter']
         let modifiers = computeParameterModifiers(parameter)
         let decoratorNames = getNodeDecorators(parameter).map(decorator =>
           getDecoratorName({ sourceCode, decorator }),
         )
-        let predefinedGroups = generatePredefinedGroups({
-          cache: cachedGroupsByModifiersAndSelectors,
-          selectors: [selector],
-          modifiers,
-        })
-        let group = computeGroup({
+        let group = groupMatcher.computeGroup({
           customGroupMatcher: customGroup =>
             doesCustomGroupMatch({
-              selectors: [selector],
               elementName: name,
               decoratorNames,
               customGroup,
+              selectors,
               modifiers,
             }),
-          predefinedGroups,
-          options,
+          selectors,
+          modifiers,
         })
 
         let sortingNode: Omit<
