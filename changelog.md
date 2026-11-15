@@ -1,5 +1,23 @@
 # Changelog
 
+## v5.14.0
+
+[compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.13.0...v5.14.0)
+
+### 🚀 Features
+
+- **sort-modules:** Allow sorting arrow functions
+  ([17f6aa9](https://github.com/azat-io/eslint-plugin-perfectionist/commit/17f6aa9))
+
+### 🐞 Bug Fixes
+
+- **sort-modules:** Detect dependencies in decorators
+  ([f6636e0](https://github.com/azat-io/eslint-plugin-perfectionist/commit/f6636e0))
+
+### ❤️ Contributors
+
+- Azat S. ([@azat-io](https://github.com/azat-io))
+
 ## v5.13.0
 
 [compare changes](https://github.com/azat-io/eslint-plugin-perfectionist/compare/v5.12.1...v5.13.0)
