@@ -28,15 +28,13 @@ let { heading } = Astro.props
       {heading.text}
     </Typography>
   </a>
-  {
-    heading.subheadings && heading.subheadings.length > 0 && (
-      <ul class="subheadings-list">
-        {heading.subheadings.map(subheading => (
-          <Astro.self heading={subheading} />
-        ))}
-      </ul>
-    )
-  }
+  {heading.subheadings && heading.subheadings.length > 0 && (
+    <ul class="subheadings-list">
+      {heading.subheadings.map(subheading => (
+        <Astro.self heading={subheading} />
+      ))}
+    </ul>
+  )}
 </li>
 
 <style>

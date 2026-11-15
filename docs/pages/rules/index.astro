@@ -38,19 +38,21 @@ let recommendedRules = new Set(
   <h1>Rules</h1>
   <p>Check out the list of all ESLint rules that this plugin includes.</p>
   <p>
-    If you have any ideas what rules this plugin is missing, feel free to <a
-      href="https://github.com/azat-io/eslint-plugin-perfectionist/issues/new?labels=enhancement&template=new-rule.yml&title=Feature%3A+%28fill+in%29"
-      >create an issue on GitHub</a
-    >.
+    If you have any ideas what rules this plugin is missing, feel free to{' '}
+    <a href="https://github.com/azat-io/eslint-plugin-perfectionist/issues/new?labels=enhancement&template=new-rule.yml&title=Feature%3A+%28fill+in%29">
+      create an issue on GitHub
+    </a>
+    .
   </p>
   <div class="definition">
     <IconTool class="icon" />
-    <Typography
-      >Automatically fixable by the
+    <Typography>
+      Automatically fixable by the
       <a href="https://eslint.org/docs/latest/use/command-line-interface#--fix">
         <code>--fix</code> CLI option
-      </a>.</Typography
-    >
+      </a>
+      .
+    </Typography>
   </div>
   <div class="definition">
     <IconStar class="icon" />
@@ -69,24 +71,22 @@ let recommendedRules = new Set(
       </tr>
     </thead>
     <tbody>
-      {
-        rules.map(rule => (
-          <tr>
-            <td>
-              <a href={`/rules/${rule.id}`}>{rule.data.title}</a>
-            </td>
-            <td>{rule.data.shortDescription}</td>
-            <td>
-              <IconTool class="icon" />
-            </td>
-            <td>
-              {recommendedRules.has(`perfectionist/${rule.id}`) && (
-                <IconStar class="icon" />
-              )}
-            </td>
-          </tr>
-        ))
-      }
+      {rules.map(rule => (
+        <tr>
+          <td>
+            <a href={`/rules/${rule.id}`}>{rule.data.title}</a>
+          </td>
+          <td>{rule.data.shortDescription}</td>
+          <td>
+            <IconTool class="icon" />
+          </td>
+          <td>
+            {recommendedRules.has(`perfectionist/${rule.id}`) && (
+              <IconStar class="icon" />
+            )}
+          </td>
+        </tr>
+      ))}
     </tbody>
   </table>
 </ContentLayout>

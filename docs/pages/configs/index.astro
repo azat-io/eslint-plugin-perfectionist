@@ -42,10 +42,11 @@ configs.sort(
   <p>This plugin provides four configs out of the box.</p>
 
   <p>
-    See the <a
-      href="https://eslint.org/docs/latest/use/configure/configuration-files#extending-configuration-files"
-      >ESLint docs</a
-    > for more information about extending config files.
+    See the{' '}
+    <a href="https://eslint.org/docs/latest/use/configure/configuration-files#extending-configuration-files">
+      ESLint docs
+    </a>{' '}
+    for more information about extending config files.
   </p>
 
   <table class="table">
@@ -56,16 +57,14 @@ configs.sort(
       </tr>
     </thead>
     <tbody>
-      {
-        configs.map(config => (
-          <tr>
-            <td>
-              <a href={`/configs/${config.id}`}>{config.data.title}</a>
-            </td>
-            <td>{config.data.shortDescription}</td>
-          </tr>
-        ))
-      }
+      {configs.map(config => (
+        <tr>
+          <td>
+            <a href={`/configs/${config.id}`}>{config.data.title}</a>
+          </td>
+          <td>{config.data.shortDescription}</td>
+        </tr>
+      ))}
     </tbody>
   </table>
 </ContentLayout>

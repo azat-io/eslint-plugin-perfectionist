@@ -179,30 +179,28 @@ let isProduction = import.meta.env.PROD
     property="og:image:alt"
   />
 
-  {
-    type === 'article' && (
-      <>
+  {type === 'article' && (
+    <>
+      <meta
+        property="article:author"
+        content={author}
+      />
+      {keywords?.map(keyword => (
         <meta
-          property="article:author"
-          content={author}
+          property="article:tag"
+          content={keyword}
         />
-        {keywords?.map(keyword => (
-          <meta
-            property="article:tag"
-            content={keyword}
-          />
-        ))}
-        <meta
-          property="article:section"
-          content="Technology"
-        />
-        <meta
-          property="article:opinion"
-          content="true"
-        />
-      </>
-    )
-  }
+      ))}
+      <meta
+        property="article:section"
+        content="Technology"
+      />
+      <meta
+        property="article:opinion"
+        content="true"
+      />
+    </>
+  )}
 
   <meta
     content="summary_large_image"

@@ -24,14 +24,12 @@ let { isMobileOnly = false } = Astro.props
       <IconCross class="icon" />
     </button>
   </header>
-  {
-    pages.map(linkBlock => (
-      <SidebarLinkBlock
-        class="menu-item"
-        {...linkBlock}
-      />
-    ))
-  }
+  {pages.map(linkBlock => (
+    <SidebarLinkBlock
+      class="menu-item"
+      {...linkBlock}
+    />
+  ))}
 </aside>
 
 <script>

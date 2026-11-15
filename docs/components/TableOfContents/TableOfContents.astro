@@ -40,26 +40,24 @@ function buildToc(headingsValues?: Heading[]): HeadingWithSubheadings[] {
 let toc = buildToc(headings)
 ---
 
-{
-  toc.length > 0 && (
-    <div class="table-of-content">
-      <Typography
-        class="title"
-        tag="h2"
-        size="m"
-        mbs="s"
-      >
-        {' '}
-        Table of Contents{' '}
-      </Typography>
-      <ul class="list">
-        {toc.map(heading => (
-          <TableOfContentsHeading heading={heading} />
-        ))}
-      </ul>
-    </div>
-  )
-}
+{toc.length > 0 && (
+  <div class="table-of-content">
+    <Typography
+      class="title"
+      tag="h2"
+      size="m"
+      mbs="s"
+    >
+      {' '}
+      Table of Contents{' '}
+    </Typography>
+    <ul class="list">
+      {toc.map(heading => (
+        <TableOfContentsHeading {heading} />
+      ))}
+    </ul>
+  </div>
+)}
 
 <script>
   import './table-of-contents.client'

@@ -74,35 +74,33 @@ let footerLinks = [
       <Typography size="xl"> Perfectionist </Typography>
     </div>
     <div class="links">
-      {
-        footerLinks.map(({ title, links }) => (
-          <div>
-            <Typography
-              class="title"
-              size="m"
-              mbe="m"
-            >
-              {title}
-            </Typography>
-            <ul class="list">
-              {links.map(({ title: linkTitle, url }) => {
-                let isInternal = url.startsWith('/')
-                return (
-                  <li class="item">
-                    <a
-                      target={isInternal ? '_self' : '_blank'}
-                      class="link"
-                      href={url}
-                    >
-                      <Typography size="xs">{linkTitle}</Typography>
-                    </a>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        ))
-      }
+      {footerLinks.map(({ title, links }) => (
+        <div>
+          <Typography
+            class="title"
+            size="m"
+            mbe="m"
+          >
+            {title}
+          </Typography>
+          <ul class="list">
+            {links.map(({ title: linkTitle, url }) => {
+              let isInternal = url.startsWith('/')
+              return (
+                <li class="item">
+                  <a
+                    target={isInternal ? '_self' : '_blank'}
+                    class="link"
+                    href={url}
+                  >
+                    <Typography size="xs">{linkTitle}</Typography>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
     </div>
   </Container>
   <Container class="license">

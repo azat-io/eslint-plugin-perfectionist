@@ -29,14 +29,12 @@ let { class: className, title, links, url } = Astro.props
     {title}
   </Typography>
 </a>
-{
-  links.map(link => (
-    <SidebarLink
-      class:list={[className]}
-      {...link}
-    />
-  ))
-}
+{links.map(link => (
+  <SidebarLink
+    class:list={[className]}
+    {...link}
+  />
+))}
 
 <style>
   .title-link {

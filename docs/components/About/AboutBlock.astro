@@ -21,7 +21,9 @@ import Title from '../Title.astro'
       {DESCRIPTION}
     </Typography>
     <div class="data">
-      {BENEFITS.map(benefit => <AboutElement {...benefit} />)}
+      {BENEFITS.map(benefit => (
+        <AboutElement {...benefit} />
+      ))}
     </div>
   </Container>
 
