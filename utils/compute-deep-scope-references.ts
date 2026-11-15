@@ -20,7 +20,7 @@ export function computeDeepScopeReferences(
   let visitedScopes = new Set<TSESLint.Scope.Scope>()
   let references: TSESLint.Scope.Reference[] = []
   for (let node of nodes) {
-    collectScopeReferences(sourceCode.getScope(node))
+    collectScopeReferences(computeDeclarationScope(node, sourceCode))
   }
   return references
 
@@ -61,6 +61,27 @@ function computeNodesRange(nodes: TSESTree.Node[]): TSESTree.Range {
     end = Math.max(end, node.range[1])
   }
   return [start, end]
+}
+
+/**
+ * Computes the scope in which a node is declared.
+ *
+ * A node that creates its own scope, such as a class, can still hold references
+ * that belong to the upper scope, such as those in its decorators.
+ *
+ * @param node - The AST node.
+ * @param sourceCode - The source code object.
+ * @returns The scope in which the node is declared.
+ */
+function computeDeclarationScope(
+  node: TSESTree.Node,
+  sourceCode: TSESLint.SourceCode,
+): TSESLint.Scope.Scope {
+  let scope = sourceCode.getScope(node)
+  if (scope.block === node && scope.upper) {
+    return scope.upper
+  }
+  return scope
 }
 
 /**
